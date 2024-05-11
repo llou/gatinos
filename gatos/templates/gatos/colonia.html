@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Colonia</h1>
+<a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
+<a href="{% url 'colonia-update' slug=colonia.slug %}">Editar Colonia</a>
+<a href="{% url 'colonia-delete' slug=colonia.slug %}">Borrar Colonia</a>
+<h2>{{ object.nombre }}</h2>
+{{ object.descripcion }}
+<h2>Gatos</h2>
+<ul>
+  {% for gato in gatos %}
+    <li>
+      <a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a>
+    </li>
+  {% empty %}
+    No hay gatos
+  {% endfor %}
+</ul>
+{% endblock %}

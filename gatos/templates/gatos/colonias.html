@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Colonias</h1>
+<a href="{% url "colonia-add" %}">Añadir colonia</a></br>
+<ul>
+{% for colonia in object_list %}
+  <li><a href="{{ colonia.get_absolute_url }}">{{ colonia.nombre }}</a></li>
+{% empty %}
+  No hay colonias
+{% endfor %}
+</ul>
+{% endblock %}

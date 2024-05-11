@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Gato</h1>
+Colonia: <a href="{% url 'colonia' colonia=colonia.slug %}">{{ colonia.nombre }}</a><br>
+<a href="{% url 'gato-update' colonia=colonia.slug slug=gato.slug %}">Editar Gato</a>
+<a href="{% url 'gato-delete' colonia=colonia.slug slug=gato.slug %}">Borrar Gato</a>
+<h2>{{ gato.nombre }}</h2>
+<a href="{% url 'gato-update' colonia.slug gato.slug %}">Edita</a></br>
+Color: {{ gato.color }}</br>
+Descripcion: </br>{{ gato.descripcion }}
+{% endblock %}

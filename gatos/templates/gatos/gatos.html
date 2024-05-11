@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Gatos</h1>
+{% for gato in object_list %}
+<a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a>
+{% empty %}
+<p>No hay gatos</p>
+{% endfor %}
+{% endblock %}

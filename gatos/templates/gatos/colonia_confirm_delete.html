@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>¿Borrar {{ colonia.nombre }}?</h1>
+<form method="POST">
+  <p>Estas seguro de que quieres borrar la colonia <b>{{ colonia.nombre }}</b></p>
+  {% csrf_token %}
+  <input type="submit" value="Confirmar"/>
+</form>
+{% endblock %}
