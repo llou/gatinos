@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Add foto</h1>
+{{ colonia }}
+<form action="{% url 'foto-add' colonia=colonia.slug %}" method="POST" enctype="multipart/form-data">
+{{ form.as_p }}
+{% csrf_token %}
+<input type="submit" value="Sube"\>
+</form>
+{% endblock %}

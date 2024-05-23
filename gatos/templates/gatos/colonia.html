@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block body %}
 <h1>Colonia</h1>
-<a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
 <a href="{% url 'colonia-update' slug=colonia.slug %}">Editar Colonia</a>
 <a href="{% url 'colonia-delete' slug=colonia.slug %}">Borrar Colonia</a>
 <h2>{{ object.nombre }}</h2>
 {{ object.descripcion }}
 <h2>Gatos</h2>
+<a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
 <ul>
   {% for gato in gatos %}
     <li>
@@ -15,5 +15,17 @@
   {% empty %}
     No hay gatos
   {% endfor %}
+</ul>
+<h2>Fotos</h2>
+<a href="{% url 'foto-add' colonia=colonia.slug %}">Añadir foto</a>
+<ul>
+  {% for foto in fotos %}
+    <li>
+      <a href="{{ foto.get_absolute_url }}"><img src="{{ foto.foto.url }}" /></a>
+    </li>
+  {% empty %}
+    No hay fotos
+  {% endfor %}
+  
 </ul>
 {% endblock %}

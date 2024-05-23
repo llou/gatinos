@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 
-gatos_urls = [
+colonia_urls = [
     path('gatos/', views.GatosView.as_view(), name="gatos"),
     path('gatos-add', views.GatoCreateView.as_view(), name="gato-add"),
     path('gatos/<slug:gato>', views.GatoView.as_view(), name="gato"),
@@ -9,7 +9,17 @@ gatos_urls = [
          name="gato-update"),
     path('gatos/<slug:slug>/delete', views.GatoDeleteView.as_view(),
          name="gato-delete"),
+    path('fotos/', views.FotosView.as_view(), name="fotos"),
+    path('fotos-add', views.FotoCreateView.as_view(), name="foto-add"),
+    path('fotos/<uuid:foto>', views.FotoView.as_view(),
+         name="foto"),
+    path('fotos/<uuid:foto>/update', views.FotoUpdateView.as_view(),
+         name="foto-update"),
+    path('fotos/<uuid:foto>/delete', views.FotoDeleteView.as_view(),
+         name="foto-delete")
+
     ]
+
 
 urlpatterns = [
     path("", views.ColoniasList.as_view(), name="colonias"),
@@ -20,5 +30,5 @@ urlpatterns = [
          name="colonia-update"),
     path('colonia/<slug:slug>/delete', views.ColoniaDeleteView.as_view(),
          name="colonia-delete"),
-    path('colonia/<slug:colonia>/', include(gatos_urls)),
+    path('colonia/<slug:colonia>/', include(colonia_urls)),
     ]

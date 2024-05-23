@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Actualiza Foto</h1>
+<img src="{{ foto.foto.url }}"/>>
+<form action="{% url 'foto-update' colonia=foto.colonia.slug foto=foto.uuid %}" method="POST" enctype="multipart/form-data">
+{{ form.as_p }}
+{% csrf_token %}
+<input type="submit" value="Actualiza"\>
+</form>
+{% endblock %}

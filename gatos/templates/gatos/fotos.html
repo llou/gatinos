@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Fotos</h1>
+{% for foto in object_list %}
+<a href="{{ foto.get_absolute_url }}">{{ foto.uuid }}</a>
+{% empty %}
+<p>No hay fotos</p>
+{% endfor %}
+{% endblock %}

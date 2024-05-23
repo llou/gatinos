@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+  <h1>Foto de {{ foto.colonia.nombre }}{% if gatos %}con {{ gatos|join:", " }}{% endif %}</h1>
+Colonia: <a href="{{ foto.colonia.get_absolute_url }}">{{ colonia.nombre }}</a><br>
+<img src="{{ foto.foto.url }}"/><br>
+<a href="{% url 'foto-update' colonia=foto.colonia.slug foto=foto.uuid %}">Editar Foto</a>
+<a href="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.uuid %}">Borrar Foto</a>
+<a href="{% url 'foto-update' colonia=foto.colonia.slug foto=foto.uuid %}">Edita</a></br>
+{% endblock %}

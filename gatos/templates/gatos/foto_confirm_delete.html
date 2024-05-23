@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Borrar Foto</h1>
+<img src="{{ foto.foto.url }}"/>
+<form action="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.uuid %}" method="POST">
+  <p>¿Estas seguro de que quieres borrar la foto?</p>
+  {% csrf_token %}
+  <input type="submit" value="Confirmar"/>
+</form>
+{% endblock %}

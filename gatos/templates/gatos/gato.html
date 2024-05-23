@@ -8,4 +8,12 @@ Colonia: <a href="{% url 'colonia' colonia=colonia.slug %}">{{ colonia.nombre }}
 <a href="{% url 'gato-update' colonia.slug gato.slug %}">Edita</a></br>
 Color: {{ gato.color }}</br>
 Descripcion: </br>{{ gato.descripcion }}
+<p><b>Fotos</b></p>
+<ul>
+{% for foto in gato.fotos.all %}
+  <li>
+    <a href="{{ foto.get_absolute_url }}"><img src="{{ foto.foto.url }}"/></a>
+  </li>
+{% endfor %}
+</ul>
 {% endblock %}

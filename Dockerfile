@@ -42,3 +42,4 @@ RUN chown -R app:app $APP_HOME
 USER app
 ENTRYPOINT ["/home/app/web/entrypoint.sh"]
 
+# vim: ft=dockerfile
