@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h1>Fotos</h1>
+<h2>Fotos</h2>
 {% for foto in object_list %}
 <a href="{{ foto.get_absolute_url }}">{{ foto.uuid }}</a>
 {% empty %}

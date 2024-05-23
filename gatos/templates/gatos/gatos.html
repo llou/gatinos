@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h1>Gatos</h1>
+<h2>Gatos</h2>
 {% for gato in object_list %}
 <a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a>
 {% empty %}

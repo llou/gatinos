@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-{% block head %}
-{% endblock %}
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="description" content="" />
 	<meta name="author" content="" />
 	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
-	<title></title>
+    <title>{{ title }}</title>
 	<link href="css/style.css" rel="stylesheet" />
+{% block base_head %}
+{% endblock %}
 </head>
 <body>
   <b>Aplicación para la gestión de colonias de gatos</b></br>
   <a href="{% url 'colonias' %}">Listado de Colonias</a>
-{% block body %}
+{% block base_body %}
 {% endblock %}
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </body>

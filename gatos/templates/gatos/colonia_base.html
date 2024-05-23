@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block base_head %}
+{% block head %}
+
+{% endblock %}
+{% endblock %}
+{% block base_body %}
+  <h1>Colonia: <a href="{% url 'colonia' colonia=colonia.slug %}">{{ colonia.nombre }}</a></h1>
+{% block body %}
+{% endblock %}
+{% endblock %}

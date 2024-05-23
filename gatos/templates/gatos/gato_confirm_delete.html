@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h1>¿Borrar {{ gato.nombre }}?</h1>
+<h2>¿Borrar {{ gato.nombre }}?</h2>
 <form method="POST">
   <p>Estas seguro de que quieres borrar el gato {{ gato.nombre }}</p>
   {% csrf_token %}

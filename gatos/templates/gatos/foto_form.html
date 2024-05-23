@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h1>Add foto</h1>
+<h2>Añadir Foto</h2>
 {{ colonia }}
 <form action="{% url 'foto-add' colonia=colonia.slug %}" method="POST" enctype="multipart/form-data">
 {{ form.as_p }}

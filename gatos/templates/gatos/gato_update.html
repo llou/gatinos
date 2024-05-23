@@ -1,5 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'gatos/colonia_base.html' %}
 {% block body %}
+<h2>Actualizar Gato</h2>
   <form action="{% url 'gato-add' colonia=colonia.slug %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
