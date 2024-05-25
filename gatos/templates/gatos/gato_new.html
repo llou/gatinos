@@ -4,10 +4,6 @@
   <form action="{% url 'gato-add' colonia=colonia.slug %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
-{% if nuevo %}
 <input type="submit" value="Crea"\>
-{% else %}
-<input type="submit" value="Actualiza"\>
-{% endif %}
 </form>
 {% endblock %}

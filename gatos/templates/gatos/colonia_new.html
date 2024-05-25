@@ -1,13 +1,8 @@
 {% extends 'base.html' %}
-{% block body %}
+{% block base_body %}
 <form action="{% url 'colonia-add' %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
-{% if nueva %}
 <input type="submit" value="Crea">
-{% else %}
-<input type="submit" value="Actualiza">
-{% endif %}
- 
 </form>
 {% endblock %}

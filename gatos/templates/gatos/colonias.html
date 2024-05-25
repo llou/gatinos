@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% block base_body %}
-<h1>Colonias</h1>
-<a href="{% url "colonia-add" %}">Añadir colonia</a></br>
-<ul>
+<div id="subheader">
+  <div id="titulo-colonias">
+    <h1>Colonias</h1>
+  </div>
+  <div id="acciones-colonias">
+    <a href="{% url "colonia-add" %}">Añadir Colonia</a>
+  </div>
+</div>
+<div id="colonias">
 {% for colonia in object_list %}
-  <li><a href="{{ colonia.get_absolute_url }}">{{ colonia.nombre }}</a></li>
+  <div class="colonia"><a href="{{ colonia.get_absolute_url }}">{{ colonia.nombre }}</a></div>
 {% empty %}
   No hay colonias
 {% endfor %}
-</ul>
+</div>
 {% endblock %}

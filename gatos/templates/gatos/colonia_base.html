@@ -5,7 +5,10 @@
 {% endblock %}
 {% endblock %}
 {% block base_body %}
-  <h1>Colonia: <a href="{% url 'colonia' colonia=colonia.slug %}">{{ colonia.nombre }}</a></h1>
+  <div class="main-header">
+    <p>Colonia:</p>
+    <h1><a href="{% url 'colonia' colonia=colonia.slug %}">{{ colonia.nombre }}</a></h1>
+  </div>
 {% block body %}
 {% endblock %}
 {% endblock %}

@@ -3,6 +3,11 @@ from django.urls import reverse
 from django.db import models
 from django.utils.text import slugify
 
+SEXOS = [
+          ("M", "Macho"),
+          ("H", "Hembra")
+]
+
 
 class Gato(models.Model):
     slug = models.SlugField(max_length=200, unique=True, default="")
@@ -13,6 +18,7 @@ class Gato(models.Model):
                                 related_name="gatos")
     retrato = models.ForeignKey("gatos.Foto", on_delete=models.SET_NULL,
                                 null=True)
+    sexo = models.CharField(max_length=10, choices=SEXOS)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nombre)
@@ -22,7 +28,7 @@ class Gato(models.Model):
         return reverse("gato", kwargs={"colonia": self.colonia.slug,
                                        "gato": self.slug})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nombre
 
     def __repr__(self):
@@ -30,7 +36,7 @@ class Gato(models.Model):
 
 
 class Colonia(models.Model):
-    slug = models.SlugField(max_length=200, default="")
+    slug = models.SlugField(max_length=200, unique=True, default="")
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
 
@@ -61,8 +67,8 @@ class Foto(models.Model):
         return reverse("foto", kwargs={"colonia": self.colonia.slug,
                                        "foto": self.uuid})
 
-    def __unicode__(self):
-        return self.foto
+    def __str__(self):
+        return str(self.uuid)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id}>"

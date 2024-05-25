@@ -1,0 +1,134 @@
+:root {
+  --page-bg-color: #eee;
+  --body-bg-color: white;
+  --text-color: black;
+  --link-color: blue;
+  --visited-color: blue;
+  --body-margin: 40px;
+  --header-height: 40px;
+  --footer-height: 40px;
+  --header-padding: 40px;
+  --footer-padding: 40px;
+}
+
+html {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--page-bg-color);
+}
+
+body {
+  min-height: calc(100vh - 2 * var(--body-margin));
+  width: 1024px;
+  margin: 40px auto;
+  background-color: var(--body-bg-color);
+}
+
+
+a:visited {
+  color: var(--visited-color);
+}
+
+label {
+  text-align: right;
+  display: inline-block;
+  font-weight: bold;
+  width: 100px;
+}
+
+header {
+  height: var(--header-height);
+  width: 100%;
+  padding: 20px;
+  line-height: var(--header-height);
+  vertical-align: middle;
+}
+
+#titulo-aplicacion {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+header a {
+  text-decoration: none;
+  color: var(--link-color);
+}
+
+header a:hover {
+  color: blue;
+}
+
+#app-title {
+  font-weight: bold;
+}
+
+main {
+  min-height: calc(100vh - 2 * var(--body-margin) - var(--header-height) - var(--footer-height) - var(--header-padding) - var(--footer-padding));
+  padding: 0 20px;
+}
+
+main h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+main h1 a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+main h2 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+footer {
+  height: var(--header-height);
+  width: 964px;
+  padding: 20px;
+  text-align: center;
+}
+
+form p {
+  margin-bottom: 1em;
+}
+
+.main-header {
+  margin-bottom: 20px;
+}
+
+.main-subheader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1em;
+}
+
+.actions {
+}
+
+.subtitle {
+  padding-top: 1em;
+}
+
+#colonias {
+  padding-top: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+}
+
+.colonia {
+  font-size: 1.7em;
+  margin: 30px;
+}
+
+#lista-de-gatos ul{
+  list-style-type: circle;
+  list-style-position: inside;
+}
+
+

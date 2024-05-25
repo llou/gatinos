@@ -1,84 +1,62 @@
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
 from .models import Gato, Colonia, Foto
 from .forms import ColoniaFotoForm
 
 
-class GatosView(ListView):
-    template_name = "gatos/gatos.html"
-    queryset = Gato.objects.all()
-    context_object_name = "gatos"
+class BaseColoniaMixin:
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
 
 
-class GatoView(DetailView):
-    template_name = "gatos/gato.html"
-    queryset = Gato.objects.all()
-    fields = ["nombre", "color", "descripcion"]
-    context_object_name = "gato"
-
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        data['colonia'] = colonia
-        data['nuevo'] = False
-        return data
-
-    def get_object(self):
-        colonia = get_object_or_404(Colonia,
-                                    slug=self.kwargs['colonia'])
-        gatos = Gato.objects.filter(colonia=colonia,
-                                    slug=self.kwargs['gato'])
-        return gatos[0] if gatos else None
-
-
-class GatoCreateView(CreateView):
-    template_name = "gatos/gato_new.html"
-    model = Gato
-    context_object_name = "gato"
-
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        data['colonia'] = colonia
-        data['nuevo'] = True
-        return data
-
-    def form_valid(self, form):
-        colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
-        form.instance.colonia_id = colonia.id
-        return super().form_valid(form)
-
-    fields = ["nombre", "color", "descripcion"]
-
-
-class GatoDeleteView(DeleteView):
-    model = Gato
-    context_object_name = "gato"
-
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        data['colonia'] = colonia
+class SubColoniaMixin(BaseColoniaMixin):
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['colonia'] = self.colonia
         return data
 
     def get_success_url(self):
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        return reverse("colonia", kwargs={"colonia": colonia.slug})
+        return self.colonia.get_absolute_url()
 
 
-class GatoUpdateView(UpdateView):
-    model = Gato
-    context_object_name = "gato"
-    template_name = "gatos/gato_update.html"
-    fields = "nombre", "descripcion", "color"
+class ColoniaMixin(BaseColoniaMixin):
+    def get_object(self):
+        return self.colonia
 
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        data['colonia'] = colonia
+
+class GatoMixin:
+    gato_slug = "gato"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.gato = get_object_or_404(Gato, slug=self.kwargs[self.gato_slug])
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['gato'] = self.gato
         return data
+
+    def get_object(self):
+        return self.gato
+
+
+class FotoMixin:
+    foto_uuid = "foto"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.foto = get_object_or_404(Foto, uuid=self.kwargs[self.foto_uuid])
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['foto'] = self.foto
+        return data
+
+    def get_object(self):
+        return self.foto
 
 
 class ColoniasList(ListView):
@@ -86,60 +64,70 @@ class ColoniasList(ListView):
     queryset = Colonia.objects.all()
     context_object_name = "colonias"
 
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        data['colonia'] = colonia
-        return data
 
-
-class ColoniaView(DetailView):
+class ColoniaView(ColoniaMixin, DetailView):
     template_name = "gatos/colonia.html"
     queryset = Colonia.objects.all()
-    context_object_name = "colonia"
 
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        data['colonia'] = colonia
-        data['gatos'] = self.object.gatos.all()
-        data['fotos'] = self.object.fotos.all()
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        colonia = self.get_object()
+        data['gatos'] = colonia.gatos.all()
+        data['fotos'] = colonia.fotos.all()
         return data
-
-    def get_object(self):
-        return get_object_or_404(Colonia, slug=self.kwargs['colonia'])
 
 
 class ColoniaCreateView(CreateView):
+    template_name = "gatos/colonia_new.html"
     model = Colonia
     fields = ["nombre", "descripcion"]
-    success_url = reverse_lazy("colonias")
-    context_object_name = "colonia"
-
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        data['nueva'] = True
-        return data
 
 
-class ColoniaDeleteView(DeleteView):
+class ColoniaDeleteView(ColoniaMixin, DeleteView):
     model = Colonia
-    context_object_name = "colonia"
+    success_url = reverse_lazy("colonias")
 
 
-class ColoniaUpdateView(UpdateView):
+class ColoniaUpdateView(ColoniaMixin, UpdateView):
+    template_name = "gatos/colonia_update.html"
     model = Colonia
     fields = ["nombre", "descripcion"]
-    context_object_name = "colonia"
-    success_url = reverse_lazy("colonias")
-
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        data['nueva'] = True
-        return data
 
 
-class FotoCreateView(CreateView):
+class GatosView(SubColoniaMixin, ListView):
+    template_name = "gatos/gatos.html"
+    queryset = Gato.objects.all()
+
+
+class GatoView(SubColoniaMixin, GatoMixin, DetailView):
+    template_name = "gatos/gato.html"
+    queryset = Gato.objects.all()
+    fields = ["nombre", "color", "descripcion"]
+
+
+class GatoCreateView(SubColoniaMixin, CreateView):
+    template_name = "gatos/gato_new.html"
+    model = Gato
+    fields = ["nombre", "sexo", "color", "descripcion"]
+
+    def form_valid(self, form):
+        form.instance.colonia_id = self.colonia.id
+        return super().form_valid(form)
+
+
+class GatoDeleteView(GatoMixin, SubColoniaMixin, DeleteView):
+    model = Gato
+
+
+class GatoUpdateView(GatoMixin, SubColoniaMixin, UpdateView):
+    model = Gato
+    context_object_name = "gato"
+    template_name = "gatos/gato_update.html"
+    fields = "nombre", "descripcion", "sexo", "color", "retrato"
+
+
+class FotoCreateView(SubColoniaMixin, CreateView):
+    template_name = "gatos/foto_create.html"
     model = Foto
     form_class = ColoniaFotoForm
 
@@ -147,56 +135,30 @@ class FotoCreateView(CreateView):
     # el campo colonia ya que este aparece.
     def get_initial(self):
         initial = super().get_initial()
-        slug = self.kwargs['colonia']
-        colonia = get_object_or_404(Colonia, slug=slug)
-        initial['colonia'] = colonia
+        initial['colonia'] = self.colonia
         return initial
 
     # Pasa el objeto colonia para poder acceder a los datos de la colonia
     # cuando se genere el queryset de los gatos que aparecen en la foto.
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs["slug"] = self.kwargs['colonia']
+        form_kwargs["colonia"] = self.colonia
         return form_kwargs
 
-    # Pasar el objeto colonia a la plantilla para poder acceder al reverse
-    # al enviar el formulario.
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
-        data['colonia'] = colonia
-        return data
 
-    def get_success_url(self):
-        return reverse("colonia", kwargs={"colonia": self.kwargs["colonia"]})
-
-
-class FotoView(DetailView):
+class FotoView(SubColoniaMixin, FotoMixin, DetailView):
     template_name = "gatos/foto.html"
     queryset = Foto.objects.select_related("colonia").all()
     context_name = "foto"
 
-    def get_object(self):
-        fotos = Foto.objects.filter(colonia__slug=self.kwargs['colonia'],
-                                    uuid=self.kwargs['foto'])
-        return fotos[0] if fotos else None
 
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data()
-        foto = kwargs['object']
-        data['gatos'] = foto.gatos.all()
-        colonia = get_object_or_404(Colonia, slug=self.kwargs["colonia"])
-        data['colonia'] = colonia
-        return data
-
-
-class FotosView(ListView):
+class FotosView(SubColoniaMixin, ListView):
     template_name = "gatos/fotos.html"
     queryset = Foto.objects.all()
     context_name = "fotos"
 
 
-class FotoUpdateView(UpdateView):
+class FotoUpdateView(SubColoniaMixin, FotoMixin, UpdateView):
     model = Foto
     template_name = "gatos/foto_update.html"
     context_name = "foto"
@@ -206,42 +168,10 @@ class FotoUpdateView(UpdateView):
     # cuando se genere el queryset de los gatos que aparecen en la foto.
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs["slug"] = self.kwargs['colonia']
+        form_kwargs["colonia"] = self.colonia
         return form_kwargs
 
-    # Pasar el objeto colonia a la plantilla para poder acceder al reverse
-    # al enviar el formulario.
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
-        data['colonia'] = colonia
-        return data
 
-    def get_success_url(self):
-        return reverse("colonia", kwargs={"colonia": self.kwargs["colonia"]})
-
-    def get_object(self):
-        fotos = Foto.objects.filter(colonia__slug=self.kwargs['colonia'],
-                                    uuid=self.kwargs['foto'])
-        return fotos[0] if fotos else None
-
-
-class FotoDeleteView(DeleteView):
+class FotoDeleteView(SubColoniaMixin, FotoMixin, DeleteView):
     model = Foto
     context_object_name = "foto"
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
-        data['colonia'] = colonia
-        return data
-
-    def get_success_url(self):
-        return reverse("colonia", kwargs={"colonia": self.kwargs["colonia"]})
-
-    def get_object(self):
-        fotos = Foto.objects.filter(colonia__slug=self.kwargs['colonia'],
-                                    uuid=self.kwargs['foto'])
-        return fotos[0] if fotos else None
-
-

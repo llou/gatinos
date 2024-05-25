@@ -31,6 +31,9 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="localhost 127.0.
 
 # Application definition
 
+APPLICATION_TITLE = "Aplicacion para la Gestión de Colonias de Gatos"
+VERSION = "alfa"
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'gatos',
+    'utils',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +68,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'utils.context_processors.version',
+                'utils.context_processors.title',
             ],
         },
     },
@@ -121,6 +127,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+STORAGES = {
+        "default": {
+            "BACKEND": os.environ.get("STORAGES_BACKEND",
+                                      default = "django.core.files.storage.FileSystemStorage"),
+            },
+        "staticfiles": {
+            "BACKEND": os.environ.get("STATICFILES_STORAGES_BACKEND",
+                                      default = "django.contrib.staticfiles.storage.StaticFilesStorage"),
+            }
+        }
+
+
 STATIC_URL = os.environ.get("STATIC_URL", default="/static/")
 STATIC_ROOT = os.environ.get("STATIC_ROOT", default="/var/www/gatinos/static/")
 
@@ -131,7 +149,7 @@ STATICFILES_DIRS = [
         BASE_DIR / "gatinos/static",
         ]
 
-MEDIA_URL = os.environ.get("MEDIA_URL", default="/media/")
+MEDIA_URL = os.environ.get("MEDIA_URL", default="media/")
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default="/var/www/gatinos/media/")
 
 # Default primary key field type

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,14 +7,23 @@
 	<meta name="author" content="" />
 	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
     <title>{{ title }}</title>
-	<link href="css/style.css" rel="stylesheet" />
+    <link href="{% get_static_prefix %}css/reset.css" rel="stylesheet" />
+    <link href="{% get_static_prefix %}css/gatos.css" rel="stylesheet" />
 {% block base_head %}
 {% endblock %}
 </head>
 <body>
-  <b>Aplicación para la gestión de colonias de gatos</b></br>
-  <a href="{% url 'colonias' %}">Listado de Colonias</a>
+  <header>
+    <div id="titulo-aplicacion">
+      <a href="{% url 'colonias' %}">{{ title }}</a> ({{ version }})
+    </div>
+  </header>
+  <main>
 {% block base_body %}
 {% endblock %}
+  </main>
+  <footer>
+    (c) 2024 Jorge Monforte González 
+  </footer>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </body>

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block base_body %}
+<form action="{% url 'colonia-update' colonia=colonia.slug %}" method="POST">
+{{ form.as_p }}
+{% csrf_token %}
+<input type="submit" value="Actualiza">
+</form>
+{% endblock %}

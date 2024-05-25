@@ -2,3 +2,4 @@ Django==4.2.3
 psycopg2-binary==2.9.6
 gunicorn==21.2.0
 pillow==10.3.0
+django-storages==1.14.3

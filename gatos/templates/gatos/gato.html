@@ -1,15 +1,24 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h2>Gato: {{ gato.nombre }}</h2>
-<a href="{% url 'gato-update' colonia=colonia.slug slug=gato.slug %}">Editar Gato</a>
-<a href="{% url 'gato-delete' colonia=colonia.slug slug=gato.slug %}">Borrar Gato</a>
-<a href="{% url 'gato-update' colonia.slug gato.slug %}">Edita</a></br>
+<div class="main-subheader">
+  <div class="subtitle">
+  <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
+    <h2>{{ gato.nombre }}</h2>
+  </div>
+  <div class="actions">
+    <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar Gato</a>
+    <a href="{% url 'gato-delete' colonia=colonia.slug gato=gato.slug %}">Borrar Gato</a>
+  </div>
+</div>
+    {% if gato.retrato.foto.url %}<img src="{{ gato.retrato.foto.url }}" />{% endif %}
+</div>
+
 Color: {{ gato.color }}</br>
 Descripcion: </br>{{ gato.descripcion }}
 <p><b>Fotos</b></p>
 <ul>
 {% for foto in gato.fotos.all %}
-  <li>
+  <div 
     <a href="{{ foto.get_absolute_url }}"><img src="{{ foto.foto.url }}"/></a>
   </li>
 {% endfor %}

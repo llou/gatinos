@@ -14,14 +14,25 @@ class ColoniaFotoForm(forms.ModelForm):
 
     gatos = forms.ModelMultipleChoiceField(
                 widget=forms.CheckboxSelectMultiple,
-                queryset=Foto.objects.all(),
+                queryset=None,
                 required=False
                 )
 
     def __init__(self, *args, **kwargs):
-        slug = kwargs.pop("slug")
+        colonia = kwargs.pop("colonia")
         super().__init__(*args, **kwargs)
-        colonia = get_object_or_404(Colonia, slug=slug)
         self.fields["colonia"].initial = colonia
         self.fields["colonia"].widget.attrs['readonly'] = True
-        self.fields["gatos"].queryset = Gato.objects.filter(colonia__slug=slug)
+        self.fields["gatos"].queryset = colonia.gatos.all()
+
+
+class GatoForm(forms.ModelForm):
+    class Meta:
+        model = Gato
+        fields = ["nombre", "sexo", "descripcion", "color", "retrato"]
+
+    retrato = forms.ModelChoiceField(required=False, queryset=None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["retrato"].queryset = Gato.fotos.all()

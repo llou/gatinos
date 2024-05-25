@@ -1,12 +1,31 @@
 {% extends 'base.html' %}
 {% block base_body %}
+<div class="main-subheader">
+  <div class="subtitle">
+    <p>Colonia:</p>
 <h1>{{ object.nombre }}</h1>
-<a href="{% url 'colonia-update' slug=colonia.slug %}">Editar Colonia</a>
-<a href="{% url 'colonia-delete' slug=colonia.slug %}">Borrar Colonia</a>
+  </div>
+  <div class="actions">
+<a href="{% url 'colonia-update' colonia=colonia.slug %}">Editar Colonia</a>
+<a href="{% url 'colonia-delete' colonia=colonia.slug %}">Borrar Colonia</a>
+  </div>
+</div>
+<div id="descripcion-colonia">
 {{ object.descripcion }}
-<h2>Gatos</h2>
+</div>
+<div id="mapa-colonia">
+</div>
+
+
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Gatos</h2>
+  </div>
+  <div class="actions">
 <a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
-<ul>
+   </div>
+</div>
+<ul id="lista-de-gatos">
   {% for gato in gatos %}
     <li>
       <a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a>
@@ -15,12 +34,20 @@
     No hay gatos
   {% endfor %}
 </ul>
+
+
+<div class="main-subheader">
+  <div class="subtitle">
 <h2>Fotos</h2>
+  </div>
+  <div class="actions">
 <a href="{% url 'foto-add' colonia=colonia.slug %}">Añadir foto</a>
+  </div>
+</div>
 <ul>
   {% for foto in fotos %}
     <li>
-      <a href="{{ foto.get_absolute_url }}"><img src="{{ foto.foto.url }}" /></a>
+      <a href="{{ foto.get_absolute_url }}"><img width="100px" src="{{ foto.foto.url }}" /></a>
     </li>
   {% empty %}
     No hay fotos
