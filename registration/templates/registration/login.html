@@ -1,0 +1,14 @@
+{% extends "registration/registration.html" %}
+{% load static %}
+
+{% block content %}
+<div id="registration-container">
+  <h1>Identifiquese</h1>
+  <form method="post" action="{% url 'registration:login' %}">
+  {% csrf_token %}
+  {{ form.as_div }}
+    <button id="submit" type="submit">Acceder</button>
+  </form>
+</div>
+
+{% endblock %}

@@ -35,14 +35,15 @@ APPLICATION_TITLE = "Aplicacion para la Gestión de Colonias de Gatos"
 VERSION = "alfa"
 
 INSTALLED_APPS = [
+    'gatos',
+    'registration',
+    'utils',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gatos',
-    'utils',
 ]
 
 MIDDLEWARE = [
@@ -115,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
 TIME_ZONE = 'UTC'
 
@@ -152,6 +153,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = os.environ.get("MEDIA_URL", default="media/")
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default="/var/www/gatinos/media/")
 
+RELLENO_FOTO_URL = "fotos/relleno.svg"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

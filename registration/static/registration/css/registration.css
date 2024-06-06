@@ -1,0 +1,46 @@
+#registration-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: calc(2 * var(--page-width) / 3);
+  min-height: calc(100vh - 2 * var(--body-margin) - var(--header-height) - var(--footer-height) - var(--header-padding) - var(--footer-padding));
+  margin: 0 auto;
+  
+}
+
+#registration-container form div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px;
+
+}
+
+#registration-container form .helptext, #registration-container form .errorlist {
+  display: none;
+}
+
+label {
+  width: calc(var(--page-width) / 3 - 10px);
+  font-size: 1.2em;
+}
+
+input[type=text], input[type=password] {
+  width: calc(var(--page-width) / 3 - 10px);
+  font-size: 1.2em;
+  height: 1.2em;
+}
+
+input[type=submit], button {
+  font-size: 1.2em;
+  margin: 0 auto;
+}
+
+p {
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  margin-bottom: 0.5em;
+}

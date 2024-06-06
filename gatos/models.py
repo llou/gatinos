@@ -1,7 +1,14 @@
 import uuid
+from io import BytesIO
+from pathlib import Path
+from PIL import Image
+from PIL.ExifTags import TAGS
+from django.core.files import File
+from django.conf import settings
 from django.urls import reverse
 from django.db import models
 from django.utils.text import slugify
+from .utils import pil_to_django_file
 
 SEXOS = [
           ("M", "Macho"),
@@ -28,6 +35,13 @@ class Gato(models.Model):
         return reverse("gato", kwargs={"colonia": self.colonia.slug,
                                        "gato": self.slug})
 
+    @property
+    def foto(self):
+        if self.retrato:
+            return self.retrato.foto.url
+        else:
+            return settings.RELLENO_FOTO_URL
+
     def __str__(self):
         return self.nombre
 
@@ -47,7 +61,7 @@ class Colonia(models.Model):
     def get_absolute_url(self):
         return reverse("colonia", kwargs={"colonia": self.slug})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nombre
 
     def __repr__(self):
@@ -55,13 +69,41 @@ class Colonia(models.Model):
 
 
 class Foto(models.Model):
+    MINIATURA_SIZE = (170, 120)
+
     colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
                                 related_name="fotos")
-    foto = models.ImageField(upload_to="fotos/")
+    foto = models.ImageField(upload_to="fotos/%Y/%m/%d")
+    miniatura = models.ImageField(upload_to="miniaturas/%Y/%m/%d", default="")
+    exif = models.JSONField(default=dict)
     descripcion = models.TextField(blank=True)
     gatos = models.ManyToManyField("gatos.Gato", related_name="fotos",
                                    blank=True)
+    fecha = models.DateTimeField(auto_now_add=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    @property
+    def foto_name(self):
+        return Path(self.foto.name).name
+
+    def get_pil_image(self):
+        return Image.open(self.foto.path)
+
+    def update_miniatura(self, pil_image=None):
+        if pil_image is None:
+            pil_image = self.get_pil_image()
+        pil_image.thumbnail(self.MINIATURA_SIZE)
+        django_file = pil_to_django_file(pil_image)
+        self.miniatura.save(self.foto_name, django_file)
+        self.save()
+
+    def update_exif(self, pil=None):
+        if pil is None:
+            pil = self.get_pil_image()
+        exif = pil._getexif()
+        if exif is not None:
+            self.exif = {TAGS.get(tag, tag): value for tag, value in exif.items()}
+        self.save()
 
     def get_absolute_url(self):
         return reverse("foto", kwargs={"colonia": self.colonia.slug,

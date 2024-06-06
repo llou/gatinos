@@ -6,8 +6,10 @@
 {% endblock %}
 {% block base_body %}
   <div class="main-header">
+    <div>
     <p>Colonia:</p>
     <h1><a href="{% url 'colonia' colonia=colonia.slug %}">{{ colonia.nombre }}</a></h1>
+    </div>
   </div>
 {% block body %}
 {% endblock %}

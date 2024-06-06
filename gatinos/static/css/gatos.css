@@ -1,14 +1,28 @@
 :root {
-  --page-bg-color: #eee;
+  --shade: #eee;
+  --page-bg-color: var(--shade);
   --body-bg-color: white;
   --text-color: black;
   --link-color: blue;
   --visited-color: blue;
+  --ficha-color: rgb(255, 255, 204);
   --body-margin: 40px;
   --header-height: 40px;
   --footer-height: 40px;
   --header-padding: 40px;
   --footer-padding: 40px;
+  --img-background-color: var(--shade);
+  --border-radius: 10px;
+  --numero-aureo: 1.618033;
+  --page-width: 1024px;
+  --ratio-a4: 1.414;
+  --image-aspect-ratio: var(--ratio-a4);
+  --foto-ficha-ancho: 350px;
+  --foto-ficha-alto: calc(var(--foto-ficha-ancho) * var(--image-aspect-ratio));
+  --foto-miniatura-ancho: 120px;
+  --foto-miniatura-alto: calc(var(--foto-miniatura-ancho) * var(--image-aspect-ratio));
+  --enlace-gato-ancho: 120px;
+  --enlace-gato-alto: calc(var(--foto-enlace-ancho) * var(--image-aspect-ratio) + 45px);
 }
 
 html {
@@ -18,11 +32,17 @@ html {
 
 body {
   min-height: calc(100vh - 2 * var(--body-margin));
-  width: 1024px;
+  width: var(--page-width);
   margin: 40px auto;
   background-color: var(--body-bg-color);
 }
 
+img {
+  padding: 5px;
+  margin: 5px;
+  border-radius: var(--border-radius);
+  background-color: var(--img-background-color);
+}
 
 a:visited {
   color: var(--visited-color);
@@ -37,7 +57,6 @@ label {
 
 header {
   height: var(--header-height);
-  width: 100%;
   padding: 20px;
   line-height: var(--header-height);
   vertical-align: middle;
@@ -79,6 +98,11 @@ main h1 a {
 main h2 {
   font-size: 2em;
   font-weight: bold;
+}
+
+main h3 {
+  font-size: 1.5em;
+  font-weight: bold;
   margin-bottom: 20px;
 }
 
@@ -94,7 +118,9 @@ form p {
 }
 
 .main-header {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .main-subheader {
@@ -102,7 +128,7 @@ form p {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 1em;
+  margin-bottom: 20px;
 }
 
 .actions {
@@ -131,4 +157,79 @@ form p {
   list-style-position: inside;
 }
 
+.foto {
+  margin-top: 20px;
+}
+
+.ficha {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid var(--shade);
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  background-color: var(--ficha-color);
+  height: calc(var(--foto-ficha-alto) + 2 * 10px);
+}
+
+.ficha-foto-relleno {
+  width: var(--foto-ficha-ancho);
+  max-height: var(--foto-ficha-alto);
+  padding: 5px;
+  margin: 5px;
+  border-radius: var(--border-radius);
+  background-color: var(--img-background-color);
+}
+
+.ficha-foto {
+  width: var(--foto-ficha-ancho);
+  max-height: var(--foto-ficha-alto);
+  object-fit: contain;
+}
+
+.ficha-texto {
+  border-radius: var(--border-radius);
+  padding: 10px;
+  width: 500px;
+}
+
+.galeria-fotos {
+  display: flex;
+  flex-direction: row;
+  justify-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.galeria-fotos-miniatura {
+  width: var(--foto-miniatura-ancho);
+  height: var(--foto-miniatura-alto);
+  object-fit: contain;
+}
+
+.foto {
+  max-width: calc(var(--page-width) - 2 * 40px);
+  object-fit: contain;
+}
+
+#id_gatos {
+  display: flex;
+  flex-direction: row;
+  justify-items: flex-start;
+}
+
+.enlace-gato {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: var(--enlace-gato-ancho);
+  height: var(--enlace-gato-alto);
+  padding: 5px;
+  margin: 5px;
+}
+
+.enlace-gato-nombre {
+  text-align: center;
+}
 

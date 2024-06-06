@@ -1,9 +1,11 @@
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
 from .models import Gato, Colonia, Foto
 from .forms import ColoniaFotoForm
+from . import tasks
 
 
 class BaseColoniaMixin:
@@ -53,6 +55,7 @@ class FotoMixin:
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['foto'] = self.foto
+        data['gatos'] = self.foto.gatos.all()
         return data
 
     def get_object(self):
@@ -72,7 +75,7 @@ class ColoniaView(ColoniaMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         colonia = self.get_object()
-        data['gatos'] = colonia.gatos.all()
+        data['gatos'] = colonia.gatos.all().select_related("retrato")
         data['fotos'] = colonia.fotos.all()
         return data
 
@@ -145,6 +148,11 @@ class FotoCreateView(SubColoniaMixin, CreateView):
         form_kwargs["colonia"] = self.colonia
         return form_kwargs
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        tasks.process_image.delay(self.instance.id)
+        return response
+
 
 class FotoView(SubColoniaMixin, FotoMixin, DetailView):
     template_name = "gatos/foto.html"
@@ -171,7 +179,23 @@ class FotoUpdateView(SubColoniaMixin, FotoMixin, UpdateView):
         form_kwargs["colonia"] = self.colonia
         return form_kwargs
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        tasks.process_image.delay(self.instance.id)
+        return response
+
 
 class FotoDeleteView(SubColoniaMixin, FotoMixin, DeleteView):
     model = Foto
     context_object_name = "foto"
+
+
+def update_miniaturas(request, colonia="ponte"):
+    tasks.update_miniaturas.delay(colonia)
+    return HttpResponse("Ok, Updating Miniaturas")
+
+
+def update_exifs(request, colonia="ponte"):
+    c = get_object_or_404(Colonia, slug=colonia)
+    tasks.update_exifs.delay(c.slug)
+    return HttpResponse("Ok, Updating Exifs")

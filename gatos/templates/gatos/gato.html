@@ -2,25 +2,37 @@
 {% block body %}
 <div class="main-subheader">
   <div class="subtitle">
-  <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
-    <h2>{{ gato.nombre }}</h2>
   </div>
   <div class="actions">
     <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar Gato</a>
     <a href="{% url 'gato-delete' colonia=colonia.slug gato=gato.slug %}">Borrar Gato</a>
   </div>
 </div>
-    {% if gato.retrato.foto.url %}<img src="{{ gato.retrato.foto.url }}" />{% endif %}
 </div>
-
-Color: {{ gato.color }}</br>
-Descripcion: </br>{{ gato.descripcion }}
-<p><b>Fotos</b></p>
-<ul>
+<div class="ficha">
+  {% if gato.retrato.foto.url %}
+  <img class="ficha-foto" src="{{ gato.retrato.foto.url }}" />
+  {% else %}
+  <div class="ficha-foto-relleno"></div>
+  {% endif %}
+  <div class="ficha-texto">
+  <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
+    <h2>{{ gato.nombre }}</h2>
+    <p>Color: {{ gato.color }}</p>
+    <p>Descripcion:</p>
+    {{ gato.descripcion }}
+  </div>
+</div>
+<h2>Fotos<h2>
+<div class="galeria-fotos">
 {% for foto in gato.fotos.all %}
-  <div 
-    <a href="{{ foto.get_absolute_url }}"><img src="{{ foto.foto.url }}"/></a>
-  </li>
+  <div>
+    <a href="{{ foto.get_absolute_url }}"><img class="galeria-fotos-miniatura" src="{{ foto.foto.url }}"/></a>
+  </div>
+{% empty %}
+  <div class="relleno">
+    No hay fotos
+  </div>
 {% endfor %}
-</ul>
+</div>
 {% endblock %}

@@ -1,15 +1,19 @@
 {% extends 'gatos/colonia_base.html' %}
+{% load l10n %}
 {% block body %}
-<h2>Fotos</h2>
-<img src="{{ foto.foto.url }}"/><br>
-<a href="{% url 'foto-update' colonia=foto.colonia.slug foto=foto.uuid %}">Editar Foto</a>
-<a href="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.uuid %}">Borrar Foto</a>
-<a href="{% url 'foto-update' colonia=foto.colonia.slug foto=foto.uuid %}">Edita</a></br>
-
+<div class="main-subheader">
+  <div class="subtitle">
+    <p>{{ foto.uuid }}</p>
+    <h2>Foto del {{ foto.fecha|localize }}</h2>
+  </div>
+  <div class="actions">
+    <a href="{% url 'foto-update' colonia=foto.colonia.slug foto=foto.uuid %}">Editar Foto</a>
+    <a href="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.uuid %}">Borrar Foto</a>
+  </div>
+</div>
+{% if gatos %}
 <h3>Gatos</h3>
-<ul>
-{% for gato in foto.gatos.all %}
-  <li><a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a></li>
-{% endfor %}
-</ul>
+<p>{% for gato in gatos %}<a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+{% endif %}
+<img class="foto" src="{{ foto.foto.url }}"/><br>
 {% endblock %}

@@ -2,7 +2,16 @@
 {% block body %}
 <h2>Gatos</h2>
 {% for gato in object_list %}
-<a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a>
+  <a href="{{ gato.get_absolute_url }}">
+    <div class="enlace-gato">
+      <div class="enlace-gato-foto">
+        <img src="{{ gato.foto.url }}"/>
+      </div>
+      <div class="enlace-gato-nombre">
+      {{ gato.nombre }}</a>
+      </div>
+    </div>
+  </a>
 {% empty %}
 <p>No hay gatos</p>
 {% endfor %}

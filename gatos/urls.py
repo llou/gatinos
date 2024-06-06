@@ -10,6 +10,10 @@ colonia_urls = [
     path('gatos/<slug:gato>/delete', views.GatoDeleteView.as_view(),
          name="gato-delete"),
     path('fotos/', views.FotosView.as_view(), name="fotos"),
+    path('fotos/update-miniaturas', views.update_miniaturas,
+         name="update-miniaturas"),
+    path('fotos/update-exifs', views.update_exifs,
+         name="update-exifs"),
     path('foto-add', views.FotoCreateView.as_view(), name="foto-add"),
     path('fotos/<uuid:foto>', views.FotoView.as_view(),
          name="foto"),
@@ -17,7 +21,6 @@ colonia_urls = [
          name="foto-update"),
     path('fotos/<uuid:foto>/delete', views.FotoDeleteView.as_view(),
          name="foto-delete")
-
     ]
 
 

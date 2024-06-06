@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block base_head %}
+<link rel="stylesheet" type="text/css" href="{% static "registration/css/registration.css" %}">
+{% block head %}{% endblock %}
+{% endblock %}
+
+{% block base_body %}
+{% block content %}{% endblock %}
+{% endblock %}
