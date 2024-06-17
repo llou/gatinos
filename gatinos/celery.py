@@ -3,6 +3,6 @@ from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gatinos.settings')
 
-app = Celery('gatinos', broker='redis://redis', backend='redis://redis')
+app = Celery('gatinos', broker='redis://redis:6379', backend='redis://redis:6379/0')
 app.config_from_object('django.conf:settings', namespace="CELERY")
 app.autodiscover_tasks()

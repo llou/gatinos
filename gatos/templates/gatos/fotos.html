@@ -1,11 +1,5 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
 <h2>Fotos</h2>
-<div class="galeria-fotos">
-{% for foto in object_list %}
-  <a href="{{ foto.get_absolute_url }}"><img class="galeria-fotos-miniatura" src="{{ foto.foto.url }}"></a>
-{% empty %}
-<p>No hay fotos</p>
-{% endfor %}
-</div>
+{% include "gatos/fotos-block.html" with fotos=object_list %}
 {% endblock %}

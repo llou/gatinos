@@ -89,11 +89,11 @@ class Foto(models.Model):
     def get_pil_image(self):
         return Image.open(self.foto.path)
 
-    def update_miniatura(self, pil_image=None):
-        if pil_image is None:
-            pil_image = self.get_pil_image()
-        pil_image.thumbnail(self.MINIATURA_SIZE)
-        django_file = pil_to_django_file(pil_image)
+    def update_miniatura(self, pil=None):
+        if pil is None:
+            pil = self.get_pil_image()
+        pil.thumbnail(self.MINIATURA_SIZE)
+        django_file = pil_to_django_file(pil)
         self.miniatura.save(self.foto_name, django_file)
         self.save()
 

@@ -76,6 +76,10 @@ TEMPLATES = [
     },
 ]
 
+
+FORM_RENDERER = "gatinos.forms.FormRenderer"
+
+
 WSGI_APPLICATION = 'gatinos.wsgi.application'
 
 
@@ -123,6 +127,38 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+# Security
+
+LOGIN_URL = "cuentas/login"
+
+GROUPS_PERMISSIONS = {
+        "cuidador": ["view_colonia",
+                     "view_gato",
+                     "view_foto",
+                     "add_foto",
+                     ],
+        "veterinario": ["view_colonia",
+                        "view_gato",
+                        "change_gato",
+                        "view_foto",
+                        "add_foto",
+                        "add_gato",
+                        ],
+        "autoridad": ["view_colonia",
+                      "change_colonia",
+                      "view_gato",
+                      "change_gato",
+                      "add_gato",
+                      "view_foto",
+                      "add_foto",
+                      "change_foto",
+                      ],
+        "visitante": ["view_colonia",
+                      "view_gato",
+                      "view_foto",
+                      ]
+        }
 
 
 # Static files (CSS, JavaScript, Images)

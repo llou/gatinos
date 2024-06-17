@@ -1,10 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
 from .models import Gato, Colonia, Foto
-from .forms import ColoniaFotoForm
+from .forms import ColoniaFotoForm, GatoForm
 from . import tasks
 
 
@@ -62,80 +63,92 @@ class FotoMixin:
         return self.foto
 
 
-class ColoniasList(ListView):
+class ColoniasList(PRMixin, ListView):
     template_name = "gatos/colonias.html"
     queryset = Colonia.objects.all()
     context_object_name = "colonias"
+    permission_required = "gatos.view_colonia"
 
 
-class ColoniaView(ColoniaMixin, DetailView):
+class ColoniaView(PRMixin, ColoniaMixin, DetailView):
     template_name = "gatos/colonia.html"
     queryset = Colonia.objects.all()
+    permission_required = "gatos.view_colonia"
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         colonia = self.get_object()
-        data['gatos'] = colonia.gatos.all().select_related("retrato")
-        data['fotos'] = colonia.fotos.all()
+        data['gatos'] = colonia.gatos.order_by("nombre").all().select_related("retrato")
+        data['fotos'] = colonia.fotos.order_by("fecha").all()[:20]
         return data
 
 
-class ColoniaCreateView(CreateView):
+class ColoniaCreateView(PRMixin, CreateView):
     template_name = "gatos/colonia_new.html"
     model = Colonia
     fields = ["nombre", "descripcion"]
+    permission_required = "gatos.create_colonia"
 
 
-class ColoniaDeleteView(ColoniaMixin, DeleteView):
+class ColoniaDeleteView(PRMixin, ColoniaMixin, DeleteView):
     model = Colonia
     success_url = reverse_lazy("colonias")
+    permission_required = "gatos.delete_colonia"
 
 
-class ColoniaUpdateView(ColoniaMixin, UpdateView):
+class ColoniaUpdateView(PRMixin, ColoniaMixin, UpdateView):
     template_name = "gatos/colonia_update.html"
     model = Colonia
     fields = ["nombre", "descripcion"]
+    permission_required = "gatos.update_colonia"
 
 
-class GatosView(SubColoniaMixin, ListView):
+class GatosView(PRMixin, SubColoniaMixin, ListView):
     template_name = "gatos/gatos.html"
     queryset = Gato.objects.all()
+    permission_required = "gatos.view_gato"
 
 
-class GatoView(SubColoniaMixin, GatoMixin, DetailView):
+class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
     template_name = "gatos/gato.html"
     queryset = Gato.objects.all()
     fields = ["nombre", "color", "descripcion"]
+    permission_required = "gatos.view_gato"
 
 
-class GatoCreateView(SubColoniaMixin, CreateView):
+class GatoCreateView(PRMixin, SubColoniaMixin, CreateView):
     template_name = "gatos/gato_new.html"
     model = Gato
     fields = ["nombre", "sexo", "color", "descripcion"]
+    permission_required = "gatos.create_gato"
 
     def form_valid(self, form):
         form.instance.colonia_id = self.colonia.id
         return super().form_valid(form)
 
 
-class GatoDeleteView(GatoMixin, SubColoniaMixin, DeleteView):
+class GatoDeleteView(PRMixin, GatoMixin, SubColoniaMixin, DeleteView):
     model = Gato
+    permission_required = "gatos.delete_gato"
 
 
-class GatoUpdateView(GatoMixin, SubColoniaMixin, UpdateView):
+class GatoUpdateView(PRMixin, GatoMixin, SubColoniaMixin, UpdateView):
     model = Gato
     context_object_name = "gato"
     template_name = "gatos/gato_update.html"
-    fields = "nombre", "descripcion", "sexo", "color", "retrato"
+    form_class = GatoForm
+    permission_required = "gatos.update_gato"
 
 
-class FotoCreateView(SubColoniaMixin, CreateView):
+class FotoCreateView(PRMixin, SubColoniaMixin, CreateView):
     template_name = "gatos/foto_create.html"
     model = Foto
     form_class = ColoniaFotoForm
+    permission_required = "gatos.create_foto"
 
     # Relleno previo de los datos del formulario para no tener que rellenar
     # el campo colonia ya que este aparece.
+    # XXX Borrar esto porque ya esta en SubColoniaMixin
     def get_initial(self):
         initial = super().get_initial()
         initial['colonia'] = self.colonia
@@ -143,6 +156,7 @@ class FotoCreateView(SubColoniaMixin, CreateView):
 
     # Pasa el objeto colonia para poder acceder a los datos de la colonia
     # cuando se genere el queryset de los gatos que aparecen en la foto.
+    # XXX Borrar esto porque ya esta en SubColoniaMixin
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
         form_kwargs["colonia"] = self.colonia
@@ -150,27 +164,32 @@ class FotoCreateView(SubColoniaMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        tasks.process_image.delay(self.instance.id)
+        tasks.process_image.delay(form.instance.uuid)
         return response
 
 
-class FotoView(SubColoniaMixin, FotoMixin, DetailView):
+class FotoView(PRMixin, SubColoniaMixin, FotoMixin, DetailView):
     template_name = "gatos/foto.html"
     queryset = Foto.objects.select_related("colonia").all()
     context_name = "foto"
+    permission_required = "gatos.view_foto"
 
 
-class FotosView(SubColoniaMixin, ListView):
+class FotosView(PRMixin, SubColoniaMixin, ListView):
     template_name = "gatos/fotos.html"
-    queryset = Foto.objects.all()
     context_name = "fotos"
+    permission_required = "gatos.view_foto"
+
+    def get_queryset(self):
+        return self.colonia.fotos.all()
 
 
-class FotoUpdateView(SubColoniaMixin, FotoMixin, UpdateView):
+class FotoUpdateView(PRMixin, SubColoniaMixin, FotoMixin, UpdateView):
     model = Foto
     template_name = "gatos/foto_update.html"
     context_name = "foto"
     form_class = ColoniaFotoForm
+    permission_required = "gatos.update_foto"
 
     # Pasa el objeto colonia para poder acceder a los datos de la colonia
     # cuando se genere el queryset de los gatos que aparecen en la foto.
@@ -181,13 +200,17 @@ class FotoUpdateView(SubColoniaMixin, FotoMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        tasks.process_image.delay(self.instance.id)
+        tasks.process_image.delay(form.instance.uuid)
         return response
 
 
-class FotoDeleteView(SubColoniaMixin, FotoMixin, DeleteView):
+class FotoDeleteView(PRMixin, SubColoniaMixin, FotoMixin, DeleteView):
     model = Foto
     context_object_name = "foto"
+    permission_required = "gatos.delete_foto"
+
+
+# Acciones Provisionales
 
 
 def update_miniaturas(request, colonia="ponte"):

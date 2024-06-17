@@ -1,0 +1,14 @@
+<div class="galeria-gatos">
+{% for gato in gatos %}
+  <a class="no-decoration" href="{{ gato.get_absolute_url }}">
+    <div class="enlace-gato">
+      {% if gato.retrato.miniatura %}
+      <img class="galeria-gatos-miniatura" src="{{ gato.retrato.miniatura.url }}">
+    {% else %}
+      <div class="galeria-gatos-no-miniatura">No hay foto</div>
+    {% endif %}
+      <div class="enlace-gato-nombre">{{ gato.nombre }}</div>
+    </div>
+</a>
+{% empty %}No hay gatos{% endfor %}
+</div>

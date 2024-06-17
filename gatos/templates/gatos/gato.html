@@ -13,7 +13,7 @@
   {% if gato.retrato.foto.url %}
   <img class="ficha-foto" src="{{ gato.retrato.foto.url }}" />
   {% else %}
-  <div class="ficha-foto-relleno"></div>
+  <div class="ficha-foto-relleno">No hay foto</div>
   {% endif %}
   <div class="ficha-texto">
   <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
@@ -23,16 +23,6 @@
     {{ gato.descripcion }}
   </div>
 </div>
-<h2>Fotos<h2>
-<div class="galeria-fotos">
-{% for foto in gato.fotos.all %}
-  <div>
-    <a href="{{ foto.get_absolute_url }}"><img class="galeria-fotos-miniatura" src="{{ foto.foto.url }}"/></a>
-  </div>
-{% empty %}
-  <div class="relleno">
-    No hay fotos
-  </div>
-{% endfor %}
-</div>
+<h2>Fotos</h2>
+{% include "gatos/fotos-block.html" with fotos=gato.fotos.all %}
 {% endblock %}

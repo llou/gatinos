@@ -13,7 +13,7 @@
 </div>
 {% if gatos %}
 <h3>Gatos</h3>
-<p>{% for gato in gatos %}<a href="{{ gato.get_absolute_url }}">{{ gato.nombre }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+{% include "gatos/gatos-block.html" with gatos=gatos %}
 {% endif %}
 <img class="foto" src="{{ foto.foto.url }}"/><br>
 {% endblock %}

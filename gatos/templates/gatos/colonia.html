@@ -20,39 +20,22 @@
 <div class="main-subheader">
   <div class="subtitle">
     <h2>Gatos</h2>
+    {% include "gatos/gatos-block.html" with gatos=gatos %}
   </div>
   <div class="actions">
 <a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
    </div>
 </div>
-<div class="galeria-fotos">
-{% for gato in gatos %}
-  <a href="{{ gato.get_absolute_url }}">
-    <div class="enlace-gato">
-      {% if gato.retrato.miniatura %}
-      <img class="galeria-fotos-miniatura" src="{{ gato.retrato.miniatura.url }}">
-    {% else %}
-      <p>No hay miniatura</p>
-    {% endif %}
-      <div class="enlace-gato-nombre">{{ gato.nombre }}</div>
-    </div>
-</a>
-{% empty %}No hay gatos{% endfor %}
-</div>
+
 
 <div class="main-subheader">
   <div class="subtitle">
-    <h2>Fotos</h2>
+    <h2>Últimas Fotos</h2>
   </div>
   <div class="actions">
+<a href="{% url 'fotos' colonia=colonia.slug %}">Ver Fotos</a>
 <a href="{% url 'foto-add' colonia=colonia.slug %}">Añadir foto</a>
   </div>
 </div>
-<div class="galeria-fotos">
-  {% for foto in fotos %}
-      <a href="{{ foto.get_absolute_url }}"><img class="galeria-fotos-miniatura" src="{{ foto.foto.url }}" /></a>
-  {% empty %}
-    No hay fotos
-  {% endfor %}
-</div>
+{% include "gatos/fotos-block.html" with fotos=fotos %}
 {% endblock %}

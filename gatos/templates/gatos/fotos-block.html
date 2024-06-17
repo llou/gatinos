@@ -1,0 +1,14 @@
+<div class="galeria-fotos">
+{% for foto in fotos %}
+  <a class="no-decoration" href="{{ foto.get_absolute_url }}">
+    <div class="enlace-foto">
+      {% if foto.miniatura %}
+      <img class="galeria-fotos-miniatura" src="{{ foto.miniatura.url }}">
+    {% else %}
+      <div class="galeria-fotos-no-miniatura">No hay miniatura</div>
+    {% endif %}
+      <div class="enlace-foto-fecha">{{ foto.fecha|date:"d/m/Y"}}</div>
+    </div>
+</a>
+{% empty %}No hay fotos{% endfor %}
+</div>

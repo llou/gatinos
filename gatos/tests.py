@@ -26,6 +26,7 @@ class FotoTest(TestCase):
 
     def test_miniatura(self):
         self.foto.update_miniatura()
+        self.assertTrue(Path(self.foto.miniatura.path).exists)
 
     def test_exif(self):
         self.foto.update_exif()

@@ -4,6 +4,7 @@
   --body-bg-color: white;
   --text-color: black;
   --link-color: blue;
+  --disabled-color: grey;
   --visited-color: blue;
   --ficha-color: rgb(255, 255, 204);
   --body-margin: 40px;
@@ -42,6 +43,10 @@ img {
   margin: 5px;
   border-radius: var(--border-radius);
   background-color: var(--img-background-color);
+}
+
+.no-decoration {
+  text-decoration: none;
 }
 
 a:visited {
@@ -88,6 +93,7 @@ main {
 main h1 {
   font-size: 2.5em;
   font-weight: bold;
+  margin-bottom: 20px;
 }
 
 main h1 a {
@@ -98,6 +104,7 @@ main h1 a {
 main h2 {
   font-size: 2em;
   font-weight: bold;
+  margin-bottom: 20px;
 }
 
 main h3 {
@@ -128,7 +135,7 @@ form p {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .actions {
@@ -180,6 +187,11 @@ form p {
   margin: 5px;
   border-radius: var(--border-radius);
   background-color: var(--img-background-color);
+  text-align: center;
+  line-height: var(--foto-ficha-alto);
+  vertical-align: middle;
+  color: var(--disabled-color);
+  font-size: 2em;
 }
 
 .ficha-foto {
@@ -194,6 +206,33 @@ form p {
   width: 500px;
 }
 
+.galeria-gatos {
+  display: flex;
+  flex-direction: row;
+  justify-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.galeria-gatos-miniatura {
+  width: var(--foto-miniatura-ancho);
+  height: var(--foto-miniatura-alto);
+  object-fit: contain;
+}
+
+.galeria-gatos-no-miniatura {
+  width: var(--foto-miniatura-ancho);
+  height: var(--foto-miniatura-alto);
+  padding: 5px;
+  margin: 5px;
+  border-radius: var(--border-radius);
+  background-color: var(--img-background-color);
+  color: var(--disabled-color);
+  line-height: var(--foto-miniatura-alto);
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+}
+
 .galeria-fotos {
   display: flex;
   flex-direction: row;
@@ -205,6 +244,24 @@ form p {
   width: var(--foto-miniatura-ancho);
   height: var(--foto-miniatura-alto);
   object-fit: contain;
+}
+
+.galeria-fotos-no-miniatura {
+  width: var(--foto-miniatura-ancho);
+  height: var(--foto-miniatura-alto);
+  padding: 5px;
+  margin: 5px;
+  border-radius: var(--border-radius);
+  background-color: var(--img-background-color);
+  color: var(--disabled-color);
+  line-height: var(--foto-miniatura-alto);
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+}
+
+.no-foto {
+  text-decoration: none;
 }
 
 .foto {
@@ -231,5 +288,11 @@ form p {
 
 .enlace-gato-nombre {
   text-align: center;
+  text-decoration: underline;
+}
+
+.enlace-foto-fecha {
+  text-align: center;
+  text-decoration: underline;
 }
 

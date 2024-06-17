@@ -35,4 +35,4 @@ class GatoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["retrato"].queryset = Gato.fotos.all()
+        self.fields["retrato"].queryset = self.instance.fotos.all()

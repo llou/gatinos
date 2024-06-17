@@ -4,8 +4,9 @@ from .models import Foto, Colonia
 
 
 @shared_task()
-def process_image(foto_id):
-    foto_instancia = Foto.objects.get(foto_id)
+def process_image(foto_uuid):
+    print(dir(foto_uuid))
+    foto_instancia = Foto.objects.get(uuid=foto_uuid)
     foto_pil = foto_instancia.get_pil_image()
     foto_instancia.update_miniatura(pil=foto_pil)
     foto_instancia.update_exif(pil=foto_pil)
