@@ -195,9 +195,10 @@ form p {
 }
 
 .ficha-foto {
+  padding: 15px;
   width: var(--foto-ficha-ancho);
   max-height: var(--foto-ficha-alto);
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .ficha-texto {
@@ -243,7 +244,7 @@ form p {
 .galeria-fotos-miniatura {
   width: var(--foto-miniatura-ancho);
   height: var(--foto-miniatura-alto);
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .galeria-fotos-no-miniatura {
