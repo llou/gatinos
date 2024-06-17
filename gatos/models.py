@@ -114,3 +114,44 @@ class Foto(models.Model):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id}>"
+
+
+EVENTOS_GATO = (
+        ('PESADA', 'PESADA'),
+        ('NACIMIENTO', 'Nacimiento'),
+        ('CAPTURA', 'Captura'),
+        ('DEVOLUCION', 'Devolución'),
+        ('MUERTE', 'Muerte'),
+        ('APARICION', 'Aparición'),
+        ('DESAPARICION', 'Desaparición'),
+        ('REAPARICION', 'Reaparición'),
+        ('VACUNACION', 'Vacunación'),
+        ('ENFERMEDAD', 'Enfermedad'),
+        ('CURACION', 'Curación'),
+        ('ESTERILIZACION', 'Esterilización'),
+        )
+
+
+class GatoEvent(models.Model):
+    gato = models.ForeignKey("gatos.Gato", related_name="eventos",
+                             on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=50, choices=EVENTOS_GATO)
+    momento = models.DateTimeField(auto_now=True)
+    valor = models.DecimalField(max_digits=6, decimal_places=2)
+    observaciones = models.TextField(blank=True)
+
+
+EVENTOS_COLONIA = (
+        ('FUNDACION', 'Fundación'),
+        ('CLAUSURA', 'Clausura'),
+        ('ABANDONO', 'Abandono'),
+        )
+
+
+class ColoniaEvent(models.Model):
+    colonia = models.ForeignKey("gatos.Colonia", related_name="eventos",
+                                on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=50, choices=EVENTOS_COLONIA)
+    momento = models.DateTimeField(auto_now=True)
+    valor = models.DecimalField(max_digits=6, decimal_places=2)
+    observaciones = models.TextField(blank=True)
