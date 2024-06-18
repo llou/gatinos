@@ -217,7 +217,7 @@ form p {
 .galeria-gatos-miniatura {
   width: var(--foto-miniatura-ancho);
   height: var(--foto-miniatura-alto);
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .galeria-gatos-no-miniatura {
@@ -295,5 +295,9 @@ form p {
 .enlace-foto-fecha {
   text-align: center;
   text-decoration: underline;
+}
+
+ul.ErrorList {
+  font-weight: bold;
 }
 
