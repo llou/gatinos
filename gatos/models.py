@@ -121,6 +121,7 @@ EVENTOS_GATO = (
         ('NACIMIENTO', 'Nacimiento'),
         ('CAPTURA', 'Captura'),
         ('DEVOLUCION', 'Devolución'),
+        ('DIAGNOSTICO', 'Diagnóstico'),
         ('MUERTE', 'Muerte'),
         ('APARICION', 'Aparición'),
         ('DESAPARICION', 'Desaparición'),
