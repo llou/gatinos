@@ -1,5 +1,6 @@
 import uuid
 from io import BytesIO
+from datetime import date, timedelta
 from pathlib import Path
 from PIL import Image
 from PIL.ExifTags import TAGS

@@ -3,7 +3,7 @@
   <a class="no-decoration" href="{{ foto.get_absolute_url }}">
     <div class="enlace-foto">
       {% if foto.miniatura %}
-      <img class="galeria-fotos-miniatura" src="{{ foto.miniatura.url }}">
+      <img class="galeria-fotos-miniatura foto" src="{{ foto.miniatura.url }}">
     {% else %}
       <div class="galeria-fotos-no-miniatura">No hay miniatura</div>
     {% endif %}

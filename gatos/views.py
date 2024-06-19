@@ -4,6 +4,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
+from .data import draw_colonia_activity_map
+from .utils import response_matplotlib_plot
 from .models import Gato, Colonia, Foto
 from .forms import ColoniaFotoForm, GatoForm
 from . import tasks
@@ -101,6 +103,12 @@ class ColoniaUpdateView(PRMixin, ColoniaMixin, UpdateView):
     model = Colonia
     fields = ["nombre", "descripcion"]
     permission_required = "gatos.update_colonia"
+
+
+def colonia_activity_plot(request, colonia=None):
+    colonia = get_object_or_404(Colonia, slug=colonia)
+    fig = draw_colonia_activity_map(colonia).figure
+    return response_matplotlib_plot(fig, "activity.png")
 
 
 class GatosView(PRMixin, SubColoniaMixin, ListView):

@@ -38,11 +38,12 @@ body {
   background-color: var(--body-bg-color);
 }
 
-img {
+img.foto {
   padding: 5px;
   margin: 5px;
   border-radius: var(--border-radius);
   background-color: var(--img-background-color);
+  object-fit: cover;
 }
 
 .no-decoration {
