@@ -58,7 +58,7 @@ label {
   text-align: right;
   display: inline-block;
   font-weight: bold;
-  width: 100px;
+  width: 150px;
 }
 
 header {
@@ -97,7 +97,7 @@ main h1 {
   margin-bottom: 20px;
 }
 
-main h1 a {
+main h1 a, main h2 a {
   color: var(--link-color);
   text-decoration: none;
 }
@@ -158,6 +158,11 @@ form p {
 .colonia {
   font-size: 1.7em;
   margin: 30px;
+}
+
+#mapa-colonia img {
+  display: block;
+  margin: 0 auto;
 }
 
 #lista-de-gatos ul{

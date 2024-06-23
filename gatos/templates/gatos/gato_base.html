@@ -1,0 +1,16 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block head %}
+{% block gato_head %}
+
+{% endblock %}
+{% endblock %}
+{% block body %}
+  <div class="main-header">
+    <div>
+    <p>Gato:</p>
+    <h2><a href="{% url 'gato' colonia=colonia.slug gato=gato.slug %}">{{ gato.nombre }}</a></h2>
+    </div>
+  </div>
+{% block gato_body %}
+{% endblock %}
+{% endblock %}

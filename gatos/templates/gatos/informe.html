@@ -1,0 +1,16 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<div>
+  <h2>{{ informe.titulo }}</h2>
+  {{ informe.texto }}
+</div>
+
+<ul>
+  <li><a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar Informe</a></li>
+  <li><a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar Informe</a></li>
+</ul>
+
+{% endblock %}

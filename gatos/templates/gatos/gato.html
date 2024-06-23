@@ -21,6 +21,17 @@
     <p>Color: {{ gato.color }}</p>
     <p>Descripcion:</p>
     {{ gato.descripcion }}
+    <p>Acciones</p>
+    <ul>
+      <li>
+        {% if not gato.capturado %}
+          <a href="{% url 'capturar'  colonia=colonia.slug gato=gato.slug %}">Capturar</a>
+        {% else %}
+          <a href="">Liberar</a>
+        {% endif %}
+       </li>
+       <li><a href="">Diagnosticar</a></li>
+    </ul>
   </div>
 </div>
 <h2>Fotos</h2>

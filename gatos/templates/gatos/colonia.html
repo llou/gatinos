@@ -28,6 +28,23 @@
    </div>
 </div>
 
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Últimos Informes</h2>
+    {% if informes %}
+    <ul>
+      {% for informe in informes %}
+      <li><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{% if not informe.titulo %}Informe{% else %}{{ informe.titulo }}{% endif %} ({{ informe.fecha }})</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay informes</p>
+  {% endif %}
+  </div>
+  <div class="actions">
+<a href="{% url 'informe-create' colonia=colonia.slug %}">Crear Informe</a>
+   </div>
+</div>
 
 <div class="main-subheader">
   <div class="subtitle">

@@ -1,13 +1,13 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from datetime import date
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
-from .data import draw_colonia_activity_map
-from .utils import response_matplotlib_plot
-from .models import Gato, Colonia, Foto
-from .forms import ColoniaFotoForm, GatoForm
+from .models import Gato, Colonia, Foto, Enfermedad, Captura, Informe
+from .forms import (ColoniaFotoForm, GatoForm, CapturaForm, EnfermedadForm,
+                    InformeForm)
 from . import tasks
 
 
@@ -65,6 +65,23 @@ class FotoMixin:
         return self.foto
 
 
+class InformeMixin:
+    informe_pk = "pk"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.informe = get_object_or_404(Informe, pk=self.kwargs[self.informe_pk])
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['informe'] = self.informe
+        data['gatos'] = self.informe.gatos.all()
+        return data
+
+    def get_object(self):
+        return self.informe
+
+
 class ColoniasList(PRMixin, ListView):
     template_name = "gatos/colonias.html"
     queryset = Colonia.objects.all()
@@ -82,6 +99,7 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
         colonia = self.get_object()
         data['gatos'] = colonia.gatos.order_by("nombre").all().select_related("retrato")
         data['fotos'] = colonia.fotos.order_by("fecha").all()[:20]
+        data['informes'] = colonia.informes.order_by("fecha").all()[:20]
         return data
 
 
@@ -105,16 +123,15 @@ class ColoniaUpdateView(PRMixin, ColoniaMixin, UpdateView):
     permission_required = "gatos.update_colonia"
 
 
-def colonia_activity_plot(request, colonia=None):
-    colonia = get_object_or_404(Colonia, slug=colonia)
-    fig = draw_colonia_activity_map(colonia).figure
-    return response_matplotlib_plot(fig, "activity.png")
-
-
 class GatosView(PRMixin, SubColoniaMixin, ListView):
     template_name = "gatos/gatos.html"
     queryset = Gato.objects.all()
     permission_required = "gatos.view_gato"
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['eventos'] = [x[0].lower() for x in models.EVENTOS_GATO]
+        return data
 
 
 class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
@@ -217,6 +234,153 @@ class FotoDeleteView(PRMixin, SubColoniaMixin, FotoMixin, DeleteView):
     context_object_name = "foto"
     permission_required = "gatos.delete_foto"
 
+# TODO Gato y Colonia Events
+
+
+class BaseInformeView(SubColoniaMixin):
+    model = Informe
+    context_name = "informe"
+
+
+class InformeView(BaseInformeView, DetailView):
+    template_name = "gatos/informe.html"
+
+
+class InformeCreateView(PRMixin, SubColoniaMixin, CreateView):
+    template_name = "gatos/informe_create.html"
+    model = Informe
+    form_class = InformeForm
+    permission_required = "gatos.create_informe"
+
+    # Relleno previo de los datos del formulario para no tener que rellenar
+    # el campo colonia ya que este aparece.
+    # XXX Borrar esto porque ya esta en SubColoniaMixin
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['colonia'] = self.colonia
+        return initial
+
+    # Pasa el objeto colonia para poder acceder a los datos de la colonia
+    # cuando se genere el queryset de los gatos que aparecen en la foto.
+    # XXX Borrar esto porque ya esta en SubColoniaMixin
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["colonia"] = self.colonia
+        return form_kwargs
+
+
+class InformeUpdateView(PRMixin, SubColoniaMixin, InformeMixin, UpdateView):
+    model = Informe
+    template_name = "gatos/informe_update.html"
+    context_name = "informe"
+    form_class = InformeForm
+    permission_required = "gatos.update_informe"
+
+    # Pasa el objeto colonia para poder acceder a los datos de la colonia
+    # cuando se genere el queryset de los gatos que aparecen en la foto.
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["colonia"] = self.colonia
+        return form_kwargs
+
+
+class InformeDeleteView(BaseInformeView, DeleteView):
+    pass
+
+
+class CapturaBaseView(GatoMixin, SubColoniaMixin):
+    model = Captura
+
+
+def capturar_gato(request, colonia_slug, gato_slug):
+    colonia = get_object_or_404(Colonia, slug=colonia_slug)
+    gato = get_object_or_404(Gato, colonia=colonia, slug=gato_slug)
+    if gato.capturado:
+        return render(request, "gatos/mensaje.html", {
+                          "colonia": colonia,
+                          "gato": gato,
+                          "mensaje": "Gato ya capturado."})
+    if bool(request['GET'].get("confirmado", False)):
+        captura = Captura(gato=gato, fecha_captura=date.today(), peso=None)
+        captura.save()
+        return HttpResponseRedirect(gato.get_absolute_url())
+    mensaje = f"¿Seguro que ha capturado al gato {gato.nombre}?"
+    url = reverse("capturar", gato=gato.slug, colonia=colonia.slug)
+    url += "?confirmado=True"
+    return render(request, "gatos/confirmacion.html", {"colonia": colonia,
+                  "gato": gato, "mensaje": mensaje, "url": url})
+
+
+def liberar_gato(request, colonia_slug, gato_slug):
+    colonia = get_object_or_404(Colonia, slug=colonia_slug)
+    gato = get_object_or_404(Gato, colonia=colonia, slug=gato_slug)
+    if not gato.capturado:
+        return render(request, "gatos/mensaje.html", {
+                          "colonia": colonia,
+                          "gato": gato,
+                          "mensaje": "Gato no capturado"})
+
+    if bool(request['GET'].get("confirmado", False)):
+        captura = Captura(gato=gato, fecha_captura=date.today(), peso=None)
+        captura.save()
+        return HttpResponseRedirect(gato.get_absolute_url())
+    mensaje = f"¿Seguro que ha capturado al gato {gato.nombre}?"
+    url = reverse("capturar", gato=gato.slug, colonia=colonia.slug)
+    url += "?confirmado=True"
+    return render(request, "gatos/confirmacion.html", {"gato": gato,
+                  "colonia": colonia, "mensaje": mensaje, "url": url})
+
+
+class CapturaView(CapturaBaseView, DetailView):
+    template_name = "gatos/captura_view.html"
+    context_name = "captura"
+
+
+class CapturaCreateView(CapturaBaseView, CreateView):
+    template_name = "gatos/captura_create_view.html"
+    form_class = CapturaForm
+    context_name = "captura"
+
+
+class CapturaUpdateView(CapturaBaseView, UpdateView):
+    template_name = "gatos/captura_update_view.html"
+    form_class = CapturaForm
+    context_name = "captura"
+
+
+class CapturaDeleteView(CapturaBaseView, DeleteView):
+    context_object_name = "captura"
+
+
+class EnfermedadBaseView(GatoMixin, SubColoniaMixin):
+    model = Enfermedad
+
+
+class EnfermedadView(EnfermedadBaseView, DetailView):
+    template_name = "gatos/enfermedad_view.html"
+    context_name = "enfermedad"
+
+
+class EnfermedadCreateView(EnfermedadBaseView, CreateView):
+    template_name = "gatos/enfermedad_create_view.html"
+    form_class = EnfermedadForm
+    context_name = "enfermedad"
+
+
+class EnfermedadUpdateView(EnfermedadBaseView, UpdateView):
+    template_name = "gatos/enfermedad_update_view.html"
+    form_class = EnfermedadForm
+    context_name = "enfermedad"
+
+
+class EnfermedadDeleteView(EnfermedadBaseView, DeleteView):
+    context_object_name = "enfermedad"
+
+
+class ColoniaBaseEventView(SubColoniaMixin, ColoniaMixin, CreateView):
+
+    def get_success_url(self):
+        return self.colonia.get_absolute_url()
 
 # Acciones Provisionales
 

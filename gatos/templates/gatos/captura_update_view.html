@@ -1,0 +1,12 @@
+{% extends 'gatos/gato_base.html' %}
+{% block gato_head %}
+{% endblock %}
+
+{% block gato_body %}
+<h3>Captura de Gato</h3>
+<form action="{% url 'captura-update' colonia=colonia.slug gato=gato.slug %}" method="POST">
+{{ form.as_p }}
+{% csrf_token %}
+<input type="submit" value="Actualiza"\>
+</form>
+{% endblock %}

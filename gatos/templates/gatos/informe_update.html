@@ -1,0 +1,12 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<h3>Informe</h3>
+<form action="{% url 'informe-update' colonia=colonia.slug pk=informe.pk %}" method="POST">
+{{ form.as_p }}
+{% csrf_token %}
+<input type="submit" value="Nueva"\>
+</form>
+{% endblock %}

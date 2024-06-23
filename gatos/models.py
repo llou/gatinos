@@ -1,10 +1,7 @@
 import uuid
-from io import BytesIO
-from datetime import date, timedelta
 from pathlib import Path
 from PIL import Image
 from PIL.ExifTags import TAGS
-from django.core.files import File
 from django.conf import settings
 from django.urls import reverse
 from django.db import models
@@ -27,6 +24,44 @@ class Gato(models.Model):
     retrato = models.ForeignKey("gatos.Foto", on_delete=models.SET_NULL,
                                 null=True)
     sexo = models.CharField(max_length=10, choices=SEXOS)
+    esterilizacion = models.DateField(null=True)
+
+    @property
+    def estado(self):
+        return ""
+
+    @property
+    def peso(self):
+        return 0
+
+    @property
+    def capturado(self):
+        return False
+
+    def aparicion(self):
+        pass
+
+    def desaparicion(self):
+        pass
+
+    def observacion(self):
+        pass
+
+    def diagnostico(self):
+        pass
+
+    def captura(self):
+        pass
+
+    def devolucion(self):
+        pass
+
+    def sexuacion(self, sexo):
+        self.sexo = sexo
+        self.save()
+
+    def pesada(self, peso):
+        pass
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nombre)
@@ -53,7 +88,17 @@ class Gato(models.Model):
 class Colonia(models.Model):
     slug = models.SlugField(max_length=200, unique=True, default="")
     nombre = models.CharField(max_length=200)
-    descripcion = models.TextField()
+    descripcion = models.TextField(blank=True, default="")
+
+    @property
+    def gatos_activos(self):
+        return 0
+
+    def nacimiento(self, nombre, madre, color, sexo=None):
+        pass
+
+    def aparicion(self, nombre, sexo="gato"):
+        pass
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nombre)
@@ -69,7 +114,24 @@ class Colonia(models.Model):
         return f"<{self.__class__.__name__} nombre='{self.nombre}'>"
 
 
-class Foto(models.Model):
+class UserBound(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                on_delete=models.SET_NULL,
+                                blank=True,
+                                null=True)
+    nombre_usuario = models.CharField(max_length=200, blank=True, default="")
+
+    def save(self, *args, **kwargs):
+        if self.usuario is not None and self.nombre_usuario != "":
+            self.nombre_usuario = " ".join((self.usuario.first_name,
+                                            self.usuario.last_name))
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+class Foto(UserBound):
     MINIATURA_SIZE = (170, 120)
 
     colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
@@ -117,30 +179,92 @@ class Foto(models.Model):
         return f"<{self.__class__.__name__} id={self.id}>"
 
 
-EVENTOS_GATO = (
-        ('PESADA', 'PESADA'),
-        ('NACIMIENTO', 'Nacimiento'),
-        ('CAPTURA', 'Captura'),
-        ('DEVOLUCION', 'Devolución'),
-        ('DIAGNOSTICO', 'Diagnóstico'),
-        ('MUERTE', 'Muerte'),
-        ('APARICION', 'Aparición'),
-        ('DESAPARICION', 'Desaparición'),
-        ('REAPARICION', 'Reaparición'),
-        ('VACUNACION', 'Vacunación'),
-        ('ENFERMEDAD', 'Enfermedad'),
-        ('CURACION', 'Curación'),
-        ('ESTERILIZACION', 'Esterilización'),
-        )
+class Informe(UserBound):
+    colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
+                                related_name="informes")
+    fecha = models.DateTimeField(auto_now=True)
+    titulo = models.CharField(max_length=250)
+    texto = models.TextField(blank=True, default="")
+    gatos = models.ManyToManyField("gatos.Gato", related_name="informes")
+
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        name = self.gato.name
+        tipo = self.tipo
+        return f"<{class_name} gato={name} tipo={tipo}>"
+
+    def __str__(self):
+        return f"{self.tipo}"
 
 
-class GatoEvent(models.Model):
-    gato = models.ForeignKey("gatos.Gato", related_name="eventos",
+class Captura(UserBound):
+    gato = models.ForeignKey("gatos.Gato", related_name="capturas",
                              on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=50, choices=EVENTOS_GATO)
-    momento = models.DateTimeField(auto_now=True)
-    valor = models.DecimalField(max_digits=6, decimal_places=2)
-    observaciones = models.TextField(blank=True)
+    fecha_captura = models.DateField(auto_now=True)
+    fecha_liberacion = models.DateField(null=True, default=None)
+    peso = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    esterilizacion = models.BooleanField(default=False)
+    sacrificio = models.BooleanField(default=False)
+    observaciones = models.TextField(blank=True, default="")
+
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        name = self.gato.name
+        fecha = self.gato.fecha_captura
+        return f"<{class_name} gato={name} fecha={fecha}>"
+
+    def __str__(self):
+        return f"{self.tipo}"
+
+
+class Vacunacion(models.Model):
+    captura = models.ForeignKey("gatos.Captura", on_delete=models.CASCADE)
+    tipo = models.ForeignKey("gatos.TipoVacunacion",
+                             on_delete=models.CASCADE)
+    efecto = models.DurationField()
+
+    @property
+    def fecha(self):
+        return self.captura.fecha
+
+    def __repr__(self):
+        cls = self.__class__.__name__
+        vcn = self.vacuna.nombre
+        fecha = self.captura.fecha
+        return f"<{cls} nombre={vcn} fecha={fecha}>"
+
+    def __str__(self):
+        return self.vacuna
+
+
+class TipoVacunacion(models.Model):
+    nombre = models.CharField(max_length=250)
+    efecto = models.DurationField()
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} nombre={self.nombre}>"
+
+    def __str__(self):
+        return self.nombre
+
+
+class Enfermedad(UserBound):
+    gato = models.ForeignKey("gatos.Gato", related_name="enfermedades",
+                             on_delete=models.CASCADE)
+    diagnostico = models.CharField(max_length=200)
+    fecha_diagnostico = models.DateField(auto_now=True)
+    fecha_curacion = models.DateField(blank=True)
+    observaciones = models.TextField(blank=True, default="")
+
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        name = self.gato.name
+        nombre = self.nombre
+        fecha = self.fecha_diagnostico
+        return f"<{class_name} gato={name} nombre={nombre} fecha={fecha}>"
+
+    def __str__(self):
+        return f"{self.nombre}"
 
 
 EVENTOS_COLONIA = (
@@ -150,10 +274,9 @@ EVENTOS_COLONIA = (
         )
 
 
-class ColoniaEvent(models.Model):
+class EventoColonia(UserBound):
     colonia = models.ForeignKey("gatos.Colonia", related_name="eventos",
                                 on_delete=models.CASCADE)
     tipo = models.CharField(max_length=50, choices=EVENTOS_COLONIA)
-    momento = models.DateTimeField(auto_now=True)
-    valor = models.DecimalField(max_digits=6, decimal_places=2)
+    fecha = models.DateField(auto_now=True)
     observaciones = models.TextField(blank=True)
