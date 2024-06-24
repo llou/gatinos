@@ -1,7 +1,7 @@
 from datetime import date
-from django.shortcuts import get_object_or_404
 from django import forms
-from .models import Foto, Gato, Colonia, Captura, Enfermedad, Informe
+from .data import vacunas
+from .models import Foto, Gato, Captura, Enfermedad, Informe, Vacunacion
 
 
 class ColoniaFotoForm(forms.ModelForm):
@@ -88,3 +88,21 @@ class EnfermedadUpdateForm(forms.ModelForm):
     class Meta:
         model = Enfermedad
         fields = ["diagnostico", "observaciones"]
+
+
+class VacunarGatoForm(forms.ModelForm):
+    class Meta:
+        model = Vacunacion
+        fields = ['tipo']
+
+    def __init__(self, *args, **kwargs):
+        self.captura = kwargs.pop('captura')
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        if not self.captura.capturado:
+            raise Exception("No se puede vacunar a un gato no capturado")
+        self.instance.captura = self.captura
+        tipo = self.instance.tipo
+        self.instance.efecto = vacunas[tipo]["efecto"]
+        super().save(commit=commit)

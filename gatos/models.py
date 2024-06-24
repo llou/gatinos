@@ -6,6 +6,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.db import models
 from django.utils.text import slugify
+from .data import vacunas
 from .utils import pil_to_django_file
 
 SEXOS = [
@@ -27,10 +28,6 @@ class Gato(models.Model):
     esterilizacion = models.DateField(null=True)
 
     @property
-    def estado(self):
-        return ""
-
-    @property
     def peso(self):
         return self.get_ultima_captura().peso
 
@@ -38,17 +35,12 @@ class Gato(models.Model):
     def capturado(self):
         return self.get_ultima_captura() is not None
 
-    def aparicion(self):
-        pass
+    @property
+    def estado(self):
+        return "Vivito"
 
-    def desaparicion(self):
-        pass
-
-    def observacion(self):
-        pass
-
-    def diagnostico(self):
-        pass
+    def get_vacunas(self):
+        return Vacunacion.objects.filter(captura__gato=self)
 
     def get_ultima_captura(self):
         capturas = self.capturas.filter(fecha_liberacion=None).order_by("-fecha_captura")
@@ -91,7 +83,10 @@ class Gato(models.Model):
         return self.nombre
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} nombre='{self.nombre}'>"
+        clase = self.__class__.__name__
+        nombre = self.nombre
+        colonia = self.colonia.nombre
+        return f"<{clase} nombre='{nombre}' colonia='{colonia}'>"
 
 
 class Colonia(models.Model):
@@ -237,34 +232,33 @@ class Captura(UserBound):
 
 
 class Vacunacion(UserBound):
-    captura = models.ForeignKey("gatos.Captura", on_delete=models.CASCADE)
-    tipo = models.ForeignKey("gatos.TipoVacunacion",
-                             on_delete=models.CASCADE)
+    captura = models.ForeignKey("gatos.Captura", related_name="vacunas",
+                                on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=100,
+                            choices=vacunas.get_choices())
     efecto = models.DurationField()
+
+    @property
+    def duracion(self):
+        return vacunas[self.tipo]["duracion"]
 
     @property
     def fecha(self):
         return self.captura.fecha_captura
 
+    @property
+    def gato(self):
+        return self.captura.gato
+
     def __repr__(self):
         cls = self.__class__.__name__
-        vcn = self.vacuna.nombre
-        fecha = self.captura.fecha
-        return f"<{cls} nombre={vcn} fecha={fecha}>"
+        vcn = self.get_tipo_display()
+        fecha = self.captura.fecha_captura
+        gato = self.gato.nombre
+        return f"<{cls} nombre={vcn} gato={gato} fecha={fecha}>"
 
     def __str__(self):
-        return self.vacuna
-
-
-class TipoVacunacion(models.Model):
-    nombre = models.CharField(max_length=250)
-    efecto = models.DurationField()
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} nombre={self.nombre}>"
-
-    def __str__(self):
-        return self.nombre
+        return self.get_tipo_display()
 
 
 class Enfermedad(UserBound):
@@ -284,18 +278,3 @@ class Enfermedad(UserBound):
 
     def __str__(self):
         return f"{self.diagnostico} ({self.fecha_diagnostico})"
-
-
-EVENTOS_COLONIA = (
-        ('FUNDACION', 'Fundación'),
-        ('CLAUSURA', 'Clausura'),
-        ('ABANDONO', 'Abandono'),
-        )
-
-
-class EventoColonia(UserBound):
-    colonia = models.ForeignKey("gatos.Colonia", related_name="eventos",
-                                on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=50, choices=EVENTOS_COLONIA)
-    fecha = models.DateField(auto_now=True)
-    observaciones = models.TextField(blank=True)

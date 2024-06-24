@@ -1,0 +1,12 @@
+{% extends 'gatos/gato_base.html' %}
+{% block gato_head %}
+{% endblock %}
+
+{% block gato_body %}
+<h3>Vacunar</h3>
+<form action="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=captura.id %}" method="POST">
+{{ form.as_p }}
+{% csrf_token %}
+<input type="submit" value="Vacunar"\>
+</form>
+{% endblock %}

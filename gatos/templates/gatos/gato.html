@@ -6,9 +6,9 @@
   <div class="actions">
     <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a> |
     <a href="{% url 'gato-delete' colonia=colonia.slug gato=gato.slug %}">Borrar</a> |
-  {% if ultima_captura is None %} <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a> {% else %} <a href="{% url 'liberar' colonia=colonia.slug gato=gato.slug %}">Liberar</a>{% endif %} |
-  <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a>
-  </div>
+  {% if ultima_captura is None %} <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a> {% else %} <a href="{% url 'liberar' colonia=colonia.slug gato=gato.slug %}">Liberar</a> | <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a> | <a href="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=ultima_captura.id %}">Vacunar</a> 
+{% endif %} 
+    </div>
 </div>
 </div>
 <div class="ficha">
@@ -42,6 +42,15 @@
      No hay enfermedades
     {% endfor %}
     </ul>
+    <h3>Vacunaciones</h3>
+    <ul>
+    {% for v in vacunas %}
+      <li>{{ v }}</li>
+    {% empty %}
+     No hay vacunaciones
+    {% endfor %}
+    <ul>
+
   </div>
 </div>
 <h2>Fotos</h2>

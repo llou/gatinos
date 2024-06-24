@@ -8,7 +8,8 @@ from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
 from .models import Gato, Colonia, Foto, Enfermedad, Captura, Informe
 from .forms import (ColoniaFotoForm, GatoForm, CapturaForm, InformeForm,
-                    EnfermedadCreateForm, EnfermedadUpdateForm)
+                    EnfermedadCreateForm, EnfermedadUpdateForm,
+                    VacunarGatoForm)
 from . import tasks
 
 
@@ -83,6 +84,7 @@ class BaseGatoMixin:
         self.peso = self.gato.get_peso()
         self.enfermedades = self.gato.enfermedades.all()
         self.capturas = self.gato.capturas.order_by("-fecha_captura").select_related("gato__colonia").all()[:5]
+        self.vacunas = self.gato.get_vacunas()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,6 +92,7 @@ class BaseGatoMixin:
         context['enfermedades'] = self.enfermedades
         context['peso'] = self.peso
         context['capturas'] = self.capturas
+        context['vacunas'] = self.vacunas
         return context
 
 
@@ -103,10 +106,28 @@ class SubGatoMixin(BaseGatoMixin):
         return self.gato.get_absolute_url()
 
 
-
 class GatoMixin(BaseGatoMixin):
     def get_object(self):
         return self.gato
+
+
+class BaseCapturaMixin:
+    captura_pk = "pk"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.captura = get_object_or_404(Captura, id=kwargs[self.captura_pk])
+
+
+class SubCapturaMixin(BaseCapturaMixin):
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        print(data)
+        data['captura'] = self.captura
+        return data
+
+    def get_success_url(self):
+        return self.captura.gato.get_absolute_url()
 
 
 class FotoMixin:
@@ -131,7 +152,8 @@ class InformeMixin:
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.informe = get_object_or_404(Informe, pk=self.kwargs[self.informe_pk])
+        self.informe = get_object_or_404(Informe,
+                                         pk=self.kwargs[self.informe_pk])
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -192,11 +214,6 @@ class GatosView(PRMixin, SubColoniaMixin, ListView):
     template_name = "gatos/gatos.html"
     queryset = Gato.objects.all()
     permission_required = "gatos.view_gato"
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['eventos'] = [x[0].lower() for x in models.EVENTOS_GATO]
-        return data
 
 
 class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
@@ -334,7 +351,7 @@ class InformeCreateView(PRMixin, SubColoniaMixin, CreateView):
     # cuando se genere el queryset de los gatos que aparecen en la foto.
     # XXX Borrar esto porque ya esta en SubColoniaMixin
     def get_form_kwargs(self):
-        form_kwargs = s23uper().get_form_kwargs()
+        form_kwargs = super().get_form_kwargs()
         form_kwargs["colonia"] = self.colonia
         return form_kwargs
 
@@ -393,6 +410,7 @@ class GatoConfirmationView(ConfirmationView):
         return context
 
 # TODO Aqui hay un problema con la ultima captura
+
 
 class CapturarGato(GatoConfirmationView):
     def get_question(self):
@@ -474,7 +492,24 @@ class EnfermedadDeleteView(EnfermedadBaseView, DeleteView):
 
 
 # ------------------------------------------------------------------------
-#                          Acciones Provisionales
+
+
+class VacunarGato(SubColoniaMixin, SubGatoMixin, SubCapturaMixin, CreateView):
+    template_name = "gatos/vacunar_gato.html"
+    form_class = VacunarGatoForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["captura"] = self.captura
+        return form_kwargs
+
+    def get_success_url(self):
+        return self.captura.gato.get_absolute_url()
+
+
+
+# ------------------------------------------------------------------------
+#                Acciones Provisionales
 # ------------------------------------------------------------------------
 
 

@@ -7,6 +7,8 @@ gato_urls = [
     path("liberar", views.LiberarGato.as_view(), name="liberar"),
     path("capturas/c/<int:pk>", views.CapturaView.as_view(),
          name="captura"),
+    path("capturas/c/<int:pk>/vacunar", views.VacunarGato.as_view(),
+         name="vacunar"),
     path("capturas/c/<int:pk>/update", views.CapturaUpdateView.as_view(),
          name="captura-update"),
     path("capturas/c/<int:pk>/delete",
