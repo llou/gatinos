@@ -3,23 +3,23 @@ from . import views, plots
 
 
 gato_urls = [
-    path("capturas/capturar", views.capturar_gato, name="capturar"),
-    path("capturas/liberar", views.liberar_gato, name="liberar"),
-    path("capturas/<int:id>", views.CapturaView.as_view(),
+    path("capturar", views.CapturarGato.as_view(), name="capturar"),
+    path("liberar", views.LiberarGato.as_view(), name="liberar"),
+    path("capturas/c/<int:pk>", views.CapturaView.as_view(),
+         name="captura"),
+    path("capturas/c/<int:pk>/update", views.CapturaUpdateView.as_view(),
          name="captura-update"),
-    path("capturas/<int:id>/update", views.CapturaUpdateView.as_view(),
-         name="captura-update"),
-    path("capturas/<int:id>/delete",
+    path("capturas/c/<int:pk>/delete",
          views.CapturaDeleteView.as_view(),
          name="captura-delete"),
-    path("enfermedad/create", views.EnfermedadView.as_view(),
-         name="captura-create"),
-    path("enfermedad/<int:id>", views.EnfermedadView.as_view(),
-         name="captura-update"),
-    path("enfermedad/<int:id>/update", views.EnfermedadUpdateView.as_view(),
-         name="captura-update"),
-    path("enfermedad/<int:id>/delete", views.EnfermedadDeleteView.as_view(),
-         name="captura-delete"),
+    path("enfermedad/create", views.EnfermedadCreateView.as_view(),
+         name="enfermedad-create"),
+    path("enfermedad/<int:pk>", views.EnfermedadView.as_view(),
+         name="enfermedad"),
+    path("enfermedad/e/<int:pk>/update", views.EnfermedadUpdateView.as_view(),
+         name="enfermedad-update"),
+    path("enfermedad/e/<int:pk>/delete", views.EnfermedadDeleteView.as_view(),
+         name="enfermedad-delete"),
 ]
 
 

@@ -6,7 +6,7 @@
 <h1>{{ object.nombre }}</h1>
   </div>
   <div class="actions">
-<a href="{% url 'colonia-update' colonia=colonia.slug %}">Editar Colonia</a>
+<a href="{% url 'colonia-update' colonia=colonia.slug %}">Editar Colonia</a> |
 <a href="{% url 'colonia-delete' colonia=colonia.slug %}">Borrar Colonia</a>
   </div>
 </div>
@@ -51,7 +51,7 @@
     <h2>Últimas Fotos</h2>
   </div>
   <div class="actions">
-<a href="{% url 'fotos' colonia=colonia.slug %}">Ver Fotos</a>
+<a href="{% url 'fotos' colonia=colonia.slug %}">Ver Fotos</a> |
 <a href="{% url 'foto-add' colonia=colonia.slug %}">Añadir foto</a>
   </div>
 </div>

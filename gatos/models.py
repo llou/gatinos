@@ -32,11 +32,11 @@ class Gato(models.Model):
 
     @property
     def peso(self):
-        return 0
+        return self.get_ultima_captura().peso
 
     @property
     def capturado(self):
-        return False
+        return self.get_ultima_captura() is not None
 
     def aparicion(self):
         pass
@@ -50,8 +50,17 @@ class Gato(models.Model):
     def diagnostico(self):
         pass
 
-    def captura(self):
-        pass
+    def get_ultima_captura(self):
+        capturas = self.capturas.filter(fecha_liberacion=None).order_by("-fecha_captura")
+        if capturas:
+            return capturas[0]
+        return None
+
+    def get_peso(self):
+        capturas = self.capturas.exclude(peso=None).order_by("-fecha_captura")
+        if capturas:
+            return capturas[0].peso
+        return None
 
     def devolucion(self):
         pass
@@ -207,6 +216,16 @@ class Captura(UserBound):
     sacrificio = models.BooleanField(default=False)
     observaciones = models.TextField(blank=True, default="")
 
+    @property
+    def capturado(self):
+        return self.fecha_liberacion is None
+
+    def get_absolute_url(self):
+        view = "captura-update" if self.capturado else "captura"
+        return reverse(view, kwargs={"colonia": self.gato.colonia.slug,
+                                     "gato": self.gato.slug,
+                                     "pk": self.id})
+
     def __repr__(self):
         class_name = self.__class__.__name__
         name = self.gato.name
@@ -214,10 +233,10 @@ class Captura(UserBound):
         return f"<{class_name} gato={name} fecha={fecha}>"
 
     def __str__(self):
-        return f"{self.tipo}"
+        return "Capturado" if self.capturado else f"{self.fecha_captura}"
 
 
-class Vacunacion(models.Model):
+class Vacunacion(UserBound):
     captura = models.ForeignKey("gatos.Captura", on_delete=models.CASCADE)
     tipo = models.ForeignKey("gatos.TipoVacunacion",
                              on_delete=models.CASCADE)
@@ -225,7 +244,7 @@ class Vacunacion(models.Model):
 
     @property
     def fecha(self):
-        return self.captura.fecha
+        return self.captura.fecha_captura
 
     def __repr__(self):
         cls = self.__class__.__name__
@@ -253,7 +272,7 @@ class Enfermedad(UserBound):
                              on_delete=models.CASCADE)
     diagnostico = models.CharField(max_length=200)
     fecha_diagnostico = models.DateField(auto_now=True)
-    fecha_curacion = models.DateField(blank=True)
+    fecha_curacion = models.DateField(blank=True, null=True)
     observaciones = models.TextField(blank=True, default="")
 
     def __repr__(self):
@@ -264,7 +283,7 @@ class Enfermedad(UserBound):
         return f"<{class_name} gato={name} nombre={nombre} fecha={fecha}>"
 
     def __str__(self):
-        return f"{self.nombre}"
+        return f"{self.diagnostico} ({self.fecha_diagnostico})"
 
 
 EVENTOS_COLONIA = (

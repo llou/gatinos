@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import get_object_or_404
 from django import forms
 from .models import Foto, Gato, Colonia, Captura, Enfermedad, Informe
@@ -67,7 +68,23 @@ class CapturaForm(forms.ModelForm):
         fields = ["observaciones", "peso"]
 
 
-class EnfermedadForm(forms.ModelForm):
+class EnfermedadCreateForm(forms.ModelForm):
     class Meta:
         model = Enfermedad
-        fields = ["observaciones"]
+        fields = ["diagnostico", "observaciones", "gato"]
+        exclude = ["gato"]
+
+    def __init__(self, *args, **kwargs):
+        self.gato = kwargs.pop("gato")
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        self.instance.fecha_diagnostico = date.today()
+        self.instance.gato = self.gato
+        super().save(commit=commit)
+
+
+class EnfermedadUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Enfermedad
+        fields = ["diagnostico", "observaciones"]

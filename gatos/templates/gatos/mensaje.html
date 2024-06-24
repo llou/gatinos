@@ -1,0 +1,15 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block body %}
+<div id="mensaje-cuerpo">
+  {{ mensaje }}
+</div>
+<div id="mensaje-ok">
+  {% if gato %}
+    <a href="{{ gato.get_absolute_url }}">Ok</a>
+  {% elif colonia %}
+    <a href="{{ colonia.get_absolute_url }}">Ok</a>
+  {% else %}
+    <a href="{% url 'colonias' %}">Ok</a>
+  {% endif %}
+</div>
+{% endblock %}

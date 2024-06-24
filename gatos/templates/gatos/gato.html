@@ -4,8 +4,10 @@
   <div class="subtitle">
   </div>
   <div class="actions">
-    <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar Gato</a>
-    <a href="{% url 'gato-delete' colonia=colonia.slug gato=gato.slug %}">Borrar Gato</a>
+    <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a> |
+    <a href="{% url 'gato-delete' colonia=colonia.slug gato=gato.slug %}">Borrar</a> |
+  {% if ultima_captura is None %} <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a> {% else %} <a href="{% url 'liberar' colonia=colonia.slug gato=gato.slug %}">Liberar</a>{% endif %} |
+  <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a>
   </div>
 </div>
 </div>
@@ -16,21 +18,29 @@
   <div class="ficha-foto-relleno">No hay foto</div>
   {% endif %}
   <div class="ficha-texto">
-  <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
+    <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
     <h2>{{ gato.nombre }}</h2>
-    <p>Color: {{ gato.color }}</p>
-    <p>Descripcion:</p>
-    {{ gato.descripcion }}
-    <p>Acciones</p>
+    <div class="entrada"><span class="label">Color</span>: {{ gato.color }}</div>
+    <div class="entrada"><span class="label">Peso</span>: {% if peso is not None %}{{ peso }}{% else %}No se ha pesado todavía{% endif %}</div>
+    <p><span class="label">Descripcion</span>:</p>
+    <div class="texto">{{ gato.descripcion }}</div>
+    <h3>Capturas</h3>
     <ul>
-      <li>
-        {% if not gato.capturado %}
-          <a href="{% url 'capturar'  colonia=colonia.slug gato=gato.slug %}">Capturar</a>
-        {% else %}
-          <a href="">Liberar</a>
-        {% endif %}
-       </li>
-       <li><a href="">Diagnosticar</a></li>
+    {% for captura in capturas %}
+      <li><a href="{{ captura.get_absolute_url }}">{{ captura }}</a> (<a href="{% url 'captura-delete' colonia=colonia.slug gato=gato.slug pk=captura.id %}">Borrar</a>)</li>
+    {% empty %}
+      No hay capturas
+    {% endfor %}
+    </ul>
+    <h3>Enfermedades</h3>
+    <ul>
+    {% for e in enfermedades %}
+      <li><a href="{% url "enfermedad" colonia=colonia.slug gato=gato.slug pk=e.id %}">{{ e.diagnostico }}</a> (
+          <a href="{% url "enfermedad-update" colonia=colonia.slug gato=gato.slug pk=e.id %}">Editar</a>, 
+          <a href="{% url "enfermedad-delete" colonia=colonia.slug gato=gato.slug pk=e.id %}">Borrar</a> )</li>
+    {% empty %}
+     No hay enfermedades
+    {% endfor %}
     </ul>
   </div>
 </div>

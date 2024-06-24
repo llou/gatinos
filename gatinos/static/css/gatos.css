@@ -114,6 +114,12 @@ main h3 {
   margin-bottom: 20px;
 }
 
+main ul {
+  list-style-type: circle;
+  list-style-position: inside;
+  padding-bottom: 20px;
+}
+
 footer {
   height: var(--header-height);
   width: 964px;
@@ -183,7 +189,7 @@ form p {
   flex-direction: row;
   justify-content: flex-start;
   background-color: var(--ficha-color);
-  height: calc(var(--foto-ficha-alto) + 2 * 10px);
+  min-height: calc(var(--foto-ficha-alto) + 2 * 10px);
 }
 
 .ficha-foto-relleno {
@@ -211,6 +217,18 @@ form p {
   border-radius: var(--border-radius);
   padding: 10px;
   width: 500px;
+}
+
+.ficha-texto .label {
+  font-weight: bold;
+}
+
+.ficha-texto .entrada {
+  margin-bottom: 0.5em;
+}
+
+.ficha-texto .texto {
+  margin-bottom: 20px;
 }
 
 .galeria-gatos {

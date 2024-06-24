@@ -1,0 +1,16 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<div>
+  <h2>{{ enfermedad.diagnostico }} ({{ enfermedad.fecha_diagnostico }})</h2>
+  {{ enfermedad.observaciones }}
+</div>
+
+<ul>
+  <li><a href="{% url 'enfermedad-update' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Editar Diagnóstico</a></li>
+  <li><a href="{% url 'enfermedad-delete' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Borrar Diagnóstico</a></li>
+</ul>
+
+{% endblock %}

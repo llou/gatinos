@@ -3,8 +3,8 @@
 {% endblock %}
 
 {% block gato_body %}
-<h3>Captura de Gato</h3>
-<form action="{% url 'captura-update' colonia=colonia.slug gato=gato.slug pk=object.id %}" method="POST">
+<h3>Editar Enfermedad</h3>
+<form action="{% url 'enfermedad-update' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
 <input type="submit" value="Actualiza"\>

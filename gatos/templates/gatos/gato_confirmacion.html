@@ -1,0 +1,14 @@
+{% extends 'gatos/gato_base.html' %}
+{% block gato_body %}
+<div id="mensaje-cuerpo">
+  {{ question }}
+</div>
+<div class="buttons">
+<div class="button" id="mensaje-confirmar">
+  <a href="{{ confirmation_uri }}">Ok</a>
+</div>
+<div class="button" id="mensaje-cancelar">
+  <a href="{{ cancel_uri }}">Cancelar</a>
+</div>
+</div>
+{% endblock %}

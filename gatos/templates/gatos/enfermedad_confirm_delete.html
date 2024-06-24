@@ -2,7 +2,7 @@
 {% block body %}
 <h2>¿Borrar {{ enfermedad }}?</h2>
 <form method="POST">
-  <p>Estas seguro de que quieres borrar el evento {{ enfermedad }}</p>
+  <p>Estas seguro de que quieres borrar el diagnostico {{ enfermedad }}</p>
   {% csrf_token %}
   <input type="submit" value="Confirmar"/>
 </form>
