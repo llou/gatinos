@@ -219,6 +219,12 @@ class Captura(UserBound):
     sacrificio = models.BooleanField(default=False)
     observaciones = models.TextField(blank=True, default="")
 
+    class Meta:
+        permissions = [
+                ("capturar_gato", ""),
+                ("liberar_gato", ""),
+                ]
+
     @property
     def capturado(self):
         return self.fecha_liberacion is None
@@ -245,6 +251,11 @@ class Vacunacion(UserBound):
     tipo = models.CharField(max_length=100,
                             choices=vacunas.get_choices())
     efecto = models.DurationField()
+
+    class Meta:
+        permissions = [
+                ("vacunar_gato", ""),
+                ]
 
     @property
     def duracion(self):
