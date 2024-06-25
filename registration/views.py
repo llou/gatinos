@@ -1,10 +1,14 @@
-from django.shortcuts import render
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 
 
 class LoginView(auth_views.LoginView):
     next_page = reverse_lazy("colonias")
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context["is_login"] = True
+        return context
 
 
 class LogoutView(auth_views.LogoutView):
