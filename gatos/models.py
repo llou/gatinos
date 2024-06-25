@@ -269,6 +269,9 @@ class Enfermedad(UserBound):
     fecha_curacion = models.DateField(blank=True, null=True)
     observaciones = models.TextField(blank=True, default="")
 
+    class Meta:
+        verbose_name_plural = "enfermedades"
+
     def __repr__(self):
         class_name = self.__class__.__name__
         name = self.gato.name
