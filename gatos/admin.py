@@ -13,14 +13,14 @@ class ColoniaAdmin(admin.ModelAdmin):
 
 
 class FotoAdmin(admin.ModelAdmin):
-    list_display = ("fecha", "colonia", "lista_de_gatos")
+    list_display = ("fecha", "usuario", "colonia", "lista_de_gatos")
 
     def lista_de_gatos(self, obj):
         return ",".join([x.nombre for x in obj.gatos.all()])
 
 
 class InformeAdmin(admin.ModelAdmin):
-    list_display = ("titulo", "fecha_", "colonia", "lista_de_gatos")
+    list_display = ("titulo", "fecha_", "usuario", "colonia", "lista_de_gatos")
 
     def lista_de_gatos(self, obj):
         return ",".join([x.nombre for x in obj.gatos.all()])

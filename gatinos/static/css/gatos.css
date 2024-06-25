@@ -206,6 +206,10 @@ form p {
   font-size: 2em;
 }
 
+.fea {
+  filter: blur(10px);
+}
+
 .ficha-foto {
   padding: 15px;
   width: var(--foto-ficha-ancho);

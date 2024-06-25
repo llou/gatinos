@@ -164,6 +164,16 @@ class InformeMixin:
     def get_object(self):
         return self.informe
 
+
+class UserBoundMixin:
+    usuario_field = "usuario"
+
+    def form_valid(self, form):
+        result = super().form_valid(form)
+        self.object.usuario = self.request.user
+        self.object.save()
+        return result
+
 # ------------------------------------------------------------------------
 
 class ColoniasList(PRMixin, ListView):
@@ -249,7 +259,7 @@ class GatoDeleteView(PRMixin, GatoMixin, SubColoniaMixin, DeleteView):
 # ------------------------------------------------------------------------
 
 
-class FotoCreateView(PRMixin, SubColoniaMixin, CreateView):
+class FotoCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
     template_name = "gatos/foto_create.html"
     model = Foto
     form_class = ColoniaFotoForm
@@ -293,7 +303,8 @@ class FotosView(PRMixin, SubColoniaMixin, ListView):
         return self.colonia.fotos.all()
 
 
-class FotoUpdateView(PRMixin, SubColoniaMixin, FotoMixin, UpdateView):
+class FotoUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin, FotoMixin,
+                     UpdateView):
     model = Foto
     template_name = "gatos/foto_update.html"
     context_name = "foto"
@@ -333,7 +344,7 @@ class InformeView(BaseInformeView, DetailView):
     template_name = "gatos/informe.html"
 
 
-class InformeCreateView(PRMixin, SubColoniaMixin, CreateView):
+class InformeCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
     template_name = "gatos/informe_create.html"
     model = Informe
     form_class = InformeForm
@@ -356,7 +367,8 @@ class InformeCreateView(PRMixin, SubColoniaMixin, CreateView):
         return form_kwargs
 
 
-class InformeUpdateView(PRMixin, SubColoniaMixin, InformeMixin, UpdateView):
+class InformeUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin,
+                        InformeMixin, UpdateView):
     model = Informe
     template_name = "gatos/informe_update.html"
     context_name = "informe"

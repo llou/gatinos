@@ -198,7 +198,7 @@ class Informe(UserBound):
         return f"<{class_name} gato={name} tipo={tipo}>"
 
     def __str__(self):
-        return f"{self.tipo}"
+        return f"{self.titulo}"
 
 
 class Captura(UserBound):
