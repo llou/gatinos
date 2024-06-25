@@ -30,7 +30,7 @@ class ColoniaFotoForm(forms.ModelForm):
 class GatoForm(forms.ModelForm):
     class Meta:
         model = Gato
-        fields = ["nombre", "sexo", "descripcion", "color", "retrato"]
+        fields = ["nombre", "sexo", "descripcion", "color", "retrato", "feo"]
 
     retrato = forms.ModelChoiceField(required=False, queryset=None)
 

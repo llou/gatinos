@@ -1,4 +1,5 @@
 import uuid
+from functools import reduce
 from pathlib import Path
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -26,6 +27,7 @@ class Gato(models.Model):
                                 null=True)
     sexo = models.CharField(max_length=10, choices=SEXOS)
     esterilizacion = models.DateField(null=True)
+    feo = models.BooleanField(default=False)
 
     @property
     def peso(self):
@@ -148,10 +150,16 @@ class Foto(UserBound):
                                    blank=True)
     fecha = models.DateTimeField(auto_now_add=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    fea = models.BooleanField(default=False)
 
     @property
     def foto_name(self):
         return Path(self.foto.name).name
+
+    def es_fea(self):
+        gatos = [z.feo for z in self.gatos.all()]
+        gatos = reduce(lambda x, y: x or y.feo, gatos)
+        return self.fea or gatos
 
     def get_pil_image(self):
         return Image.open(self.foto.path)

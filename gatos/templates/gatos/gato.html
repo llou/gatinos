@@ -13,7 +13,7 @@
 </div>
 <div class="ficha">
   {% if gato.retrato.foto.url %}
-  <img class="ficha-foto" src="{{ gato.retrato.foto.url }}" />
+    <img class="ficha-foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.foto.url }}" />
   {% else %}
   <div class="ficha-foto-relleno">No hay foto</div>
   {% endif %}
@@ -45,7 +45,7 @@
     <h3>Vacunaciones</h3>
     <ul>
     {% for v in vacunas %}
-      <li>{{ v }}</li>
+      <li>{{ v }}
     {% empty %}
      No hay vacunaciones
     {% endfor %}

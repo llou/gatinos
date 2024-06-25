@@ -3,7 +3,7 @@
   <a class="no-decoration" href="{{ gato.get_absolute_url }}">
     <div class="enlace-gato">
       {% if gato.retrato.miniatura %}
-      <img class="galeria-gatos-miniatura foto" src="{{ gato.retrato.miniatura.url }}">
+      <img class="galeria-gatos-miniatura foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
     {% else %}
       <div class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
