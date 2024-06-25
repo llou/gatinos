@@ -177,16 +177,16 @@ class UserBoundMixin:
 # ------------------------------------------------------------------------
 
 class ColoniasList(PRMixin, ListView):
+    permission_required = "gatos.view_colonia"
     template_name = "gatos/colonias.html"
     queryset = Colonia.objects.all()
     context_object_name = "colonias"
-    permission_required = "gatos.view_colonia"
 
 
 class ColoniaView(PRMixin, ColoniaMixin, DetailView):
+    permission_required = "gatos.view_colonia"
     template_name = "gatos/colonia.html"
     queryset = Colonia.objects.all()
-    permission_required = "gatos.view_colonia"
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -198,45 +198,45 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
 
 
 class ColoniaCreateView(PRMixin, CreateView):
+    permission_required = "gatos.add_colonia"
     template_name = "gatos/colonia_new.html"
     model = Colonia
     fields = ["nombre", "descripcion"]
-    permission_required = "gatos.create_colonia"
 
 
 class ColoniaUpdateView(PRMixin, ColoniaMixin, UpdateView):
+    permission_required = "gatos.change_colonia"
     template_name = "gatos/colonia_update.html"
     model = Colonia
     fields = ["nombre", "descripcion"]
-    permission_required = "gatos.update_colonia"
 
 
 class ColoniaDeleteView(PRMixin, ColoniaMixin, DeleteView):
+    permission_required = "gatos.delete_colonia"
     model = Colonia
     success_url = reverse_lazy("colonias")
-    permission_required = "gatos.delete_colonia"
 
 
 # ------------------------------------------------------------------------
 
 
 class GatosView(PRMixin, SubColoniaMixin, ListView):
+    permission_required = "gatos.view_gato"
     template_name = "gatos/gatos.html"
     queryset = Gato.objects.all()
-    permission_required = "gatos.view_gato"
 
 
 class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
+    permission_required = "gatos.view_gato"
     template_name = "gatos/gato.html"
     queryset = Gato.objects.all()
-    permission_required = "gatos.view_gato"
 
 
 class GatoCreateView(PRMixin, SubColoniaMixin, CreateView):
+    permission_required = "gatos.add_gato"
     template_name = "gatos/gato_new.html"
     model = Gato
     fields = ["nombre", "sexo", "color", "descripcion"]
-    permission_required = "gatos.create_gato"
 
     def form_valid(self, form):
         form.instance.colonia_id = self.colonia.id
@@ -244,26 +244,26 @@ class GatoCreateView(PRMixin, SubColoniaMixin, CreateView):
 
 
 class GatoUpdateView(PRMixin, GatoMixin, SubColoniaMixin, UpdateView):
+    permission_required = "gatos.change_gato"
     model = Gato
     context_object_name = "gato"
     template_name = "gatos/gato_update.html"
     form_class = GatoForm
-    permission_required = "gatos.update_gato"
 
 
 class GatoDeleteView(PRMixin, GatoMixin, SubColoniaMixin, DeleteView):
-    model = Gato
     permission_required = "gatos.delete_gato"
+    model = Gato
 
 
 # ------------------------------------------------------------------------
 
 
 class FotoCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
+    permission_required = "gatos.add_foto"
     template_name = "gatos/foto_create.html"
     model = Foto
     form_class = ColoniaFotoForm
-    permission_required = "gatos.create_foto"
 
     # Relleno previo de los datos del formulario para no tener que rellenar
     # el campo colonia ya que este aparece.
@@ -288,16 +288,16 @@ class FotoCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
 
 
 class FotoView(PRMixin, SubColoniaMixin, FotoMixin, DetailView):
+    permission_required = "gatos.view_foto"
     template_name = "gatos/foto.html"
     queryset = Foto.objects.select_related("colonia").all()
     context_name = "foto"
-    permission_required = "gatos.view_foto"
 
 
 class FotosView(PRMixin, SubColoniaMixin, ListView):
+    permission_required = "gatos.view_foto"
     template_name = "gatos/fotos.html"
     context_name = "fotos"
-    permission_required = "gatos.view_foto"
 
     def get_queryset(self):
         return self.colonia.fotos.all()
@@ -305,11 +305,11 @@ class FotosView(PRMixin, SubColoniaMixin, ListView):
 
 class FotoUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin, FotoMixin,
                      UpdateView):
+    permission_required = "gatos.change_foto"
     model = Foto
     template_name = "gatos/foto_update.html"
     context_name = "foto"
     form_class = ColoniaFotoForm
-    permission_required = "gatos.update_foto"
 
     # Pasa el objeto colonia para poder acceder a los datos de la colonia
     # cuando se genere el queryset de los gatos que aparecen en la foto.
@@ -325,9 +325,9 @@ class FotoUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin, FotoMixin,
 
 
 class FotoDeleteView(PRMixin, SubColoniaMixin, FotoMixin, DeleteView):
+    permission_required = "gatos.delete_foto"
     model = Foto
     context_object_name = "foto"
-    permission_required = "gatos.delete_foto"
 
 # TODO Gato y Colonia Events
 
@@ -340,15 +340,16 @@ class BaseInformeView(SubColoniaMixin):
     context_name = "informe"
 
 
-class InformeView(BaseInformeView, DetailView):
+class InformeView(PRMixin, BaseInformeView, DetailView):
+    permission_required = "gatos.view_informe"
     template_name = "gatos/informe.html"
 
 
 class InformeCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
+    permission_required = "gatos.add_informe"
     template_name = "gatos/informe_create.html"
     model = Informe
     form_class = InformeForm
-    permission_required = "gatos.create_informe"
 
     # Relleno previo de los datos del formulario para no tener que rellenar
     # el campo colonia ya que este aparece.
@@ -369,11 +370,11 @@ class InformeCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
 
 class InformeUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin,
                         InformeMixin, UpdateView):
+    permission_required = "gatos.change_informe"
     model = Informe
     template_name = "gatos/informe_update.html"
     context_name = "informe"
     form_class = InformeForm
-    permission_required = "gatos.update_informe"
 
     # Pasa el objeto colonia para poder acceder a los datos de la colonia
     # cuando se genere el queryset de los gatos que aparecen en la foto.
@@ -383,8 +384,8 @@ class InformeUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin,
         return form_kwargs
 
 
-class InformeDeleteView(BaseInformeView, DeleteView):
-    pass
+class InformeDeleteView(PRMixin, BaseInformeView, DeleteView):
+    permission_required = "gatos.delete_informe"
 
 
 # ------------------------------------------------------------------------
@@ -424,7 +425,9 @@ class GatoConfirmationView(ConfirmationView):
 # TODO Aqui hay un problema con la ultima captura
 
 
-class CapturarGato(GatoConfirmationView):
+class CapturarGato(PRMixin, GatoConfirmationView):
+    permission_required = "gatos.capturar_gato"
+
     def get_question(self):
         return f"¿Seguro que ha capturado al gato '{self.gato}'?"
 
@@ -440,7 +443,9 @@ class CapturarGato(GatoConfirmationView):
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
 
-class LiberarGato(GatoConfirmationView):
+class LiberarGato(PRMixin, GatoConfirmationView):
+    permission_required = "gatos.liberar_gato"
+
     def get_question(self):
         return f"¿Seguro que ha liberado al gato '{self.gato}'?"
 
@@ -455,17 +460,20 @@ class LiberarGato(GatoConfirmationView):
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
 
-class CapturaView(CapturaBaseMixin, DetailView):
+class CapturaView(PRMixin, CapturaBaseMixin, DetailView):
+    permission_required = "gatos.view_captura"
     template_name = "gatos/captura_view.html"
     context_name = "captura"
 
 
-class CapturaUpdateView(CapturaBaseMixin, UpdateView):
+class CapturaUpdateView(PRMixin, CapturaBaseMixin, UpdateView):
+    permission_required = "gatos.change_captura"
     template_name = "gatos/captura_update_view.html"
     form_class = CapturaForm
 
 
-class CapturaDeleteView(CapturaBaseMixin, DeleteView):
+class CapturaDeleteView(PRMixin, CapturaBaseMixin, DeleteView):
+    permission_required = "gatos.delete_captura"
     context_object_name = "captura"
 
 
@@ -477,11 +485,13 @@ class EnfermedadBaseView(SubGatoMixin, SubColoniaMixin):
     context_name = "enfermedad"
 
 
-class EnfermedadView(EnfermedadBaseView, DetailView):
+class EnfermedadView(PRMixin, EnfermedadBaseView, DetailView):
+    permission_required = "gatos.view_enfermedad"
     template_name = "gatos/enfermedad.html"
 
 
-class EnfermedadCreateView(EnfermedadBaseView, CreateView):
+class EnfermedadCreateView(PRMixin, EnfermedadBaseView, CreateView):
+    permission_required = "gatos.add_enfermedad"
     template_name = "gatos/enfermedad_create_view.html"
     form_class = EnfermedadCreateForm
 
@@ -494,19 +504,23 @@ class EnfermedadCreateView(EnfermedadBaseView, CreateView):
         return self.gato.get_absolute_url()
 
 
-class EnfermedadUpdateView(EnfermedadBaseView, UpdateView):
+class EnfermedadUpdateView(PRMixin, EnfermedadBaseView, UpdateView):
+    permission_required = "gatos.change_enfermedad"
     template_name = "gatos/enfermedad_update_view.html"
     form_class = EnfermedadUpdateForm
 
 
-class EnfermedadDeleteView(EnfermedadBaseView, DeleteView):
+class EnfermedadDeleteView(PRMixin, EnfermedadBaseView, DeleteView):
+    permission_required = "gatos.delete_enfermedad"
     template = "gatos/enfermedad_confirm_delete.html"
 
 
 # ------------------------------------------------------------------------
 
 
-class VacunarGato(SubColoniaMixin, SubGatoMixin, SubCapturaMixin, CreateView):
+class VacunarGato(PRMixin, SubColoniaMixin, SubGatoMixin, SubCapturaMixin,
+                  CreateView):
+    permission_required = "gatos.vacunar"
     template_name = "gatos/vacunar_gato.html"
     form_class = VacunarGatoForm
 
