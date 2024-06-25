@@ -138,6 +138,8 @@ GROUPS_PERMISSIONS = {
                      "view_foto",
                      "add_foto",
                      "add_informe",
+                     "view_informe",
+                     "view_enfermedad",
                      ],
         "veterinario": ["view_colonia",
                         "view_gato",
@@ -145,6 +147,10 @@ GROUPS_PERMISSIONS = {
                         "view_foto",
                         "add_foto",
                         "add_gato",
+                        "view_enfermedad",
+                        "add_enfermedad",
+                        "change_enfermedad",
+                        "delete_enfermedad",
                         "vacunar_gato",
                         ],
         "autoridad": ["view_colonia",
@@ -157,10 +163,13 @@ GROUPS_PERMISSIONS = {
                       "change_foto",
                       "capturar_gato",
                       "liberar_gato",
+                      "view_enfermedad",
                       ],
         "visitante": ["view_colonia",
                       "view_gato",
                       "view_foto",
+                      "view_informe",
+                      "view_enfermedad",
                       ]
         }
 
