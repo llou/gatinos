@@ -6,3 +6,4 @@ django-storages==1.14.3
 celery==5.4
 redis==4.3.4
 pyyaml==6.0.1
+matplotlib==3.9
