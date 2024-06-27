@@ -6,10 +6,13 @@ from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views import View
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
+from plottings import PNGPlotView
+from plottings.plots.activity import ActivityMap
 from .models import Gato, Colonia, Foto, Enfermedad, Captura, Informe
 from .forms import (ColoniaFotoForm, GatoForm, CapturaForm, InformeForm,
                     EnfermedadCreateForm, EnfermedadUpdateForm,
                     VacunarGatoForm)
+from .plots import colonia_activity_plot
 from . import tasks
 
 
@@ -531,6 +534,28 @@ class VacunarGato(PRMixin, SubColoniaMixin, SubGatoMixin, SubCapturaMixin,
 
     def get_success_url(self):
         return self.captura.gato.get_absolute_url()
+
+
+class ActivityPlotView(SubColoniaMixin, PNGPlotView):
+    plotter_function = staticmethod(colonia_activity_plot)
+    activity_class = ActivityMap
+    filename = "activity.png"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.map = self.activity_class(date.today())
+        self.map.load_activity(self.colonia.get_actividad())
+
+    def get_plot_kwargs(self):
+        return {"xticks": self.map.get_x_ticks(),
+                "yticks": self.map.get_y_ticks(),
+                }
+
+    def get_kwargs(self):
+        return {"colonia": self.colonia}
+
+    def get_data(self):
+        return self.map.get_data()
 
 
 

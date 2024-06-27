@@ -110,8 +110,8 @@ class Colonia(models.Model):
         if max_fecha is not None:
             informes = informes.filter(fecha__lte=max_fecha)
             fotos = fotos.filter(fecha__lte=max_fecha)
-        result.extend([x.fecha for x in informes])
-        result.extend([x.fecha for x in fotos])
+        result.extend([x.fecha for x in informes.all()])
+        result.extend([x.fecha for x in fotos.all()])
         return result
 
     def save(self, *args, **kwargs):
