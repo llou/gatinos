@@ -1,5 +1,10 @@
-from .base import (BasePlotMixin, ContentMixin, SVGPlotMixin, PNGPlotMixin,
-                   Base64PlotMixin)
+from .base import (
+        BasePlotMixin,
+        ContentMixin,
+        SVGPlotMixin,
+        PNGPlotMixin,
+        Base64PlotMixin
+)
 
 
 class SVGPlot(SVGPlotMixin, ContentMixin, BasePlotMixin):
