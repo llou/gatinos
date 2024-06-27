@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'gatos',
     'registration',
     'utils',
+    'plottings',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
