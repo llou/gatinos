@@ -1,3 +1,4 @@
+from datetime import date
 from django.conf import settings
 
 
@@ -7,3 +8,7 @@ def title(request):
 
 def version(request):
     return {"app_version": settings.VERSION}
+
+
+def year(request):
+    return {"current_year": date.today().year}

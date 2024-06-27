@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'utils.context_processors.version',
                 'utils.context_processors.title',
+                'utils.context_processors.year',
             ],
         },
     },
