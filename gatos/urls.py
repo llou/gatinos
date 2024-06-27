@@ -1,4 +1,5 @@
 from django.urls import path, include
+from plottings import plots
 from . import views, plots
 
 
