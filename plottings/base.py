@@ -7,9 +7,10 @@ from .plots.utils import plotter_function
 class BasePlotMixin:
     plotter_function = plotter_function
     buffer_class = BytesIO
+    file_format = ""
 
     def get_filetype(self):
-        return self.filetype
+        return self.file_format
 
     def get_data(self):
         return {}
@@ -34,11 +35,11 @@ class ContentMixin:
 
 
 class SVGPlotMixin(BasePlotMixin):
-    filetype = "svg"
+    file_format = "svg"
 
 
 class PNGPlotMixin(BasePlotMixin):
-    filetype = "png"
+    file_format = "png"
 
 
 class Base64PlotMixin:

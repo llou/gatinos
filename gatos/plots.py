@@ -5,6 +5,7 @@ import pandas as pd
 from calmap import yearplot
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from plottings.plots.activity import ActivityMap, activity_plot
 from .models import Colonia
 
 

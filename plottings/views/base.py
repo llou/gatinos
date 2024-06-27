@@ -7,6 +7,7 @@ from ..base import BasePlotMixin, SVGPlotMixin, PNGPlotMixin
 class BaseFileView(View):
     buffer_class = BytesIO
     file_format = ""
+    filename = ""
     disposition = ""  # values: inline, attachment
     mimetype = ""
     http_method_names = [
@@ -32,7 +33,10 @@ class BaseFileView(View):
     def get_headers(self):
         name = self.get_filename()
         disposition = self.get_disposition()
-        return {"Content-Disposition": f'{disposition}; filename="{name}"'}
+        if disposition:
+            return {"Content-Disposition": f'{disposition}; filename="{name}"'}
+        else:
+            return {}
 
     def get_buffer(self):
         return self.buffer_class()
@@ -40,13 +44,22 @@ class BaseFileView(View):
     def get(self, request, *args, **kwargs):
         buffer = self.get_buffer()
         response = HttpResponse(buffer, content_type=self.get_mimetype())
-        response.update(self.get_headers())
+        headers = self.get_headers()
+        for key, value in headers.items():
+            response.headers[key] = value
         return response
 
 
-class PNGPlotView(PNGPlotMixin, BasePlotMixin, BaseFileView):
+class ImageView(BasePlotMixin, BaseFileView):
+    diposition = "inline"
+
+    def get_mimetype(self):
+        return f"image/{self.get_filetype()}"
+
+
+class PNGPlotView(PNGPlotMixin, ImageView):
     pass
 
 
-class SVGPlotView(SVGPlotMixin, BasePlotMixin, BaseFileView):
+class SVGPlotView(SVGPlotMixin, ImageView):
     pass

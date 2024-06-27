@@ -14,7 +14,6 @@ class ActivityMap:
         self.base = self.get_base(today, self.num_days)
         self.extra_week = self.get_extra_week(self.today, self.base)
         self.weeks = self.get_weeks(self.num_days, self.extra_week)
-        self.ticks = self.get_ticks()
         self.reset()
 
     def reset(self):
@@ -41,7 +40,7 @@ class ActivityMap:
         week_day = date.weekday()
         self.data[week_day, week] = self.data[week_day, week] + 1
 
-    def get_ticks(self):
+    def get_x_ticks(self):
         result = [""] * self.weeks
         for week in range(self.weeks):
             for weekday in range(7):
@@ -50,9 +49,16 @@ class ActivityMap:
                     result[week] = self.get_month(d.month)
         return result
 
+    def get_y_ticks(self):
+        return self.weekdays
+
     def load_activity(self, activity):
         for d in activity:
             self.inc_date(d)
 
     def get_data(self):
         return self.data
+
+
+def activity_plot(data, **kwargs):
+    return None
