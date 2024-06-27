@@ -100,11 +100,19 @@ class Colonia(models.Model):
     def gatos_activos(self):
         return 0
 
-    def nacimiento(self, nombre, madre, color, sexo=None):
-        pass
-
-    def aparicion(self, nombre, sexo="gato"):
-        pass
+    def get_actividad(self, min_fecha=None, max_fecha=None):
+        result = []
+        informes = self.informes
+        fotos = self.fotos
+        if min_fecha is not None:
+            informes = informes.filter(fecha__gte=min_fecha)
+            fotos = fotos.filter(fecha__gte=min_fecha)
+        if max_fecha is not None:
+            informes = informes.filter(fecha__lte=max_fecha)
+            fotos = fotos.filter(fecha__lte=max_fecha)
+        result.extend([x.fecha for x in informes])
+        result.extend([x.fecha for x in fotos])
+        return result
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nombre)
@@ -148,7 +156,7 @@ class Foto(UserBound):
     descripcion = models.TextField(blank=True)
     gatos = models.ManyToManyField("gatos.Gato", related_name="fotos",
                                    blank=True)
-    fecha = models.DateTimeField(auto_now_add=True)
+    fecha = models.DateField(auto_now_add=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     fea = models.BooleanField(default=False)
 
@@ -194,7 +202,7 @@ class Foto(UserBound):
 class Informe(UserBound):
     colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
                                 related_name="informes")
-    fecha = models.DateTimeField(auto_now=True)
+    fecha = models.DateField(auto_now=True)
     titulo = models.CharField(max_length=250)
     texto = models.TextField(blank=True, default="")
     gatos = models.ManyToManyField("gatos.Gato", related_name="informes")
