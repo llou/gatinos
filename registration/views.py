@@ -5,8 +5,8 @@ from django.urls import reverse_lazy
 class LoginView(auth_views.LoginView):
     next_page = reverse_lazy("colonias")
 
-    def get_context_data(self):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         context["is_login"] = True
         return context
 
