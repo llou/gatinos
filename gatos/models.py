@@ -379,7 +379,7 @@ class PlanificacionComida(models.Model):
                                 on_delete=models.CASCADE)
 
     def str(self):
-        return f"Comida del {self.fecha} por {self.usuario.username}" 
+        return f"Comida del {self.fecha} por {self.usuario.username}"
 
     def __repr__(self):
         cls = self.__class__.__name__
@@ -387,3 +387,21 @@ class PlanificacionComida(models.Model):
         c = self.colonia.nombre
         u = self.usuario.username
         return f"<{cls} colonia='{c}' fecha={f} usuario={u}>"
+
+
+class Avistamiento(models.Model):
+    fecha = models.DateTimeField(auto_now=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE)
+    gato = models.ForeignKey("gatos.Gato", on_delete=models.CASCADE)
+    colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE)
+
+    def str(self):
+        return f"Avistamiento de {self.gato.nombre} el {self.fecha.date}"
+
+    def __repr__(self):
+        cls = self.__class__.__name__
+        u = self.usuario.username
+        g = self.gato.nombre
+        f = self.fecha.date()
+        return f"<{cls} gato={g} usuario={u} fecha={f}>"
