@@ -1,4 +1,5 @@
 import uuid
+from datetime import date, timedelta
 from functools import reduce
 from pathlib import Path
 from PIL import Image
@@ -26,8 +27,13 @@ class Gato(models.Model):
     retrato = models.ForeignKey("gatos.Foto", on_delete=models.SET_NULL,
                                 null=True)
     sexo = models.CharField(max_length=10, choices=SEXOS)
-    esterilizacion = models.DateField(null=True)
+    esterilizacion = models.DateField(null=True, blank=True)
     feo = models.BooleanField(default=False)
+    vecino = models.BooleanField(default=False)
+    nombre_vecino = models.CharField(max_length=200, blank=True)
+    sacrificar = models.BooleanField(default=False)
+    muerto = models.BooleanField(default=False)
+    muerto_fecha = models.DateField(null=True, blank=True)
 
     @property
     def peso(self):
@@ -37,9 +43,15 @@ class Gato(models.Model):
     def capturado(self):
         return self.get_ultima_captura() is not None
 
-    @property
-    def estado(self):
-        return "Vivito"
+    def get_estado(self):
+        if self.muerto:
+            return "Muerto"
+        if self.capturado:
+            return "Capturado"
+        if self not in self.colonia.get_gatos_activos():
+            return "Desaparecido"
+        else:
+            return "Activo"
 
     def get_vacunas(self):
         return Vacunacion.objects.filter(captura__gato=self)
@@ -94,13 +106,14 @@ class Gato(models.Model):
 class Colonia(models.Model):
     slug = models.SlugField(max_length=200, unique=True, default="")
     nombre = models.CharField(max_length=200)
+    periodo_activo = models.DurationField(default=timedelta(120, 0, 0))
     descripcion = models.TextField(blank=True, default="")
 
     @property
     def gatos_activos(self):
         return 0
 
-    def get_actividad(self, min_fecha=None, max_fecha=None):
+    def get_eventos(self, min_fecha=None, max_fecha=None):
         result = []
         informes = self.informes
         fotos = self.fotos
@@ -110,12 +123,40 @@ class Colonia(models.Model):
         if max_fecha is not None:
             informes = informes.filter(fecha__lte=max_fecha)
             fotos = fotos.filter(fecha__lte=max_fecha)
-        result.extend([x.fecha for x in informes.all()])
-        result.extend([x.fecha for x in fotos.all()])
+        informes = list(informes.all())
+        fotos = list(fotos.all())
+        return informes + fotos
+
+    def get_actividad(self, min_fecha=None, max_fecha=None):
+        eventos = self.get_eventos(min_fecha=min_fecha, max_fecha=max_fecha)
+        return [x.fecha for x in eventos]
+
+    def get_gatos_activos_intervalo(self, min_fecha=None, max_fecha=None):
+        result = set()
+        eventos = self.get_eventos(min_fecha=min_fecha, max_fecha=max_fecha)
+        for evento in eventos:
+            for gato in evento.gatos.filter(muerto=False):
+                result.add(gato)
+        return list(result)
+
+    def get_gatos_activos(self):
+        base = date.today() - self.periodo_activo
+        return self.get_gatos_activos_intervalo(min_fecha=base)
+
+    def get_gatos_desaparecidos(self):
+        result = []
+        activos = self.get_gatos_activos()
+        for gato in self.gatos.filter(muerto=False):
+            if gato not in activos:
+                result.append(gato)
         return result
 
+    def get_gatos_muertos(self):
+        return self.gatos.filter(muerto=True)
+
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.nombre)
+        if not self.slug:
+            self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -261,6 +302,7 @@ class Vacunacion(UserBound):
     efecto = models.DurationField()
 
     class Meta:
+        verbose_name_plural = "vacunaciones"
         permissions = [
                 ("vacunar_gato", ""),
                 ]
