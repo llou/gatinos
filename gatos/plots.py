@@ -1,5 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from plottings.plots.activity import ActivityMap
+
+
+class SpanishActivityMap(ActivityMap):
+    weekdays = ["lun", "", "mie", "", "vie", "", "dom"]
+    months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep",
+              "oct", "nov", "dic"]
 
 
 def colonia_activity_plot(data, xticks=None, yticks=None):
