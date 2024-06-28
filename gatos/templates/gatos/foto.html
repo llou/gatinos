@@ -7,8 +7,12 @@
     <h2>Foto del {{ foto.fecha|localize }}</h2>
   </div>
   <div class="actions">
+    {% if perms.gatos.change_foto %}
     <a href="{% url 'foto-update' colonia=foto.colonia.slug foto=foto.uuid %}">Editar Foto</a>
+    {% endif %}
+    {% if perms.gatos.delete_foto %}
     <a href="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.uuid %}">Borrar Foto</a>
+    {% endif %}
   </div>
 </div>
 {% if gatos %}

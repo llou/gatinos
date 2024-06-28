@@ -3,14 +3,22 @@
 {% endblock %}
 
 {% block body %}
-<div>
+<article>
   <h2>{{ informe.titulo }}</h2>
   {{ informe.texto }}
-</div>
+</article>
 
-<ul>
-  <li><a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar Informe</a></li>
-  <li><a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar Informe</a></li>
-</ul>
+<div class="actions">
+   {% if perms.gatos.change_informe %}
+    <a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar</a>
+    {% endif %}
+    {% if perms.gatos.delete_informe %}
+    <a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar</a>
+    {% endif %}
+</div>
+{% if gatos %}
+<h3>Gatos</h3>
+{% include "gatos/gatos-block.html" with gatos=gatos %}
+{% endif %}
 
 {% endblock %}

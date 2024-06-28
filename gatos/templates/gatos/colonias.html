@@ -5,7 +5,9 @@
     <h1>Colonias</h1>
   </div>
   <div class="actions">
+    {% if perms.gatos.add_colonia %}
     <a href="{% url "colonia-add" %}">Añadir Colonia</a>
+  {% endif %}
   </div>
 </div>
 <div id="colonias">

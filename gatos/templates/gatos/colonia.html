@@ -6,8 +6,9 @@
 <h1>{{ object.nombre }}</h1>
   </div>
   <div class="actions">
-<a href="{% url 'colonia-update' colonia=colonia.slug %}">Editar Colonia</a> |
-<a href="{% url 'colonia-delete' colonia=colonia.slug %}">Borrar Colonia</a>
+    {% if perms.gatos.change_colonia %}
+<a href="{% url 'colonia-update' colonia=colonia.slug %}">Editar Colonia</a>
+    {% endif %}
   </div>
 </div>
 <div id="descripcion-colonia">
@@ -24,7 +25,9 @@
     {% include "gatos/gatos-block.html" with gatos=gatos %}
   </div>
   <div class="actions">
+    {% if perms.gatos.add_gato %}
 <a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
+    {% endif %}
    </div>
 </div>
 
@@ -34,7 +37,11 @@
     {% if informes %}
     <ul>
       {% for informe in informes %}
+      {% if perms.gatos.view_informe %}
       <li><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{% if not informe.titulo %}Informe{% else %}{{ informe.titulo }}{% endif %} ({{ informe.fecha }})</a></li>
+    {% else %}
+      <li>{{ informe.titulo }} ({{ informe.fecha }})</li>
+      {% endif %}
       {% endfor %}
     </ul>
   {% else %}
@@ -42,7 +49,9 @@
   {% endif %}
   </div>
   <div class="actions">
+    {% if perms.gatos.add_informe %}
 <a href="{% url 'informe-create' colonia=colonia.slug %}">Crear Informe</a>
+    {% endif %}
    </div>
 </div>
 
@@ -51,8 +60,12 @@
     <h2>Últimas Fotos</h2>
   </div>
   <div class="actions">
-<a href="{% url 'fotos' colonia=colonia.slug %}">Ver Fotos</a> |
+    {% if perms.gatos.view_foto %}
+<a href="{% url 'fotos' colonia=colonia.slug %}">Ver Fotos</a>
+    {% endif %}
+    {% if perms.gatos.add_foto %}
 <a href="{% url 'foto-add' colonia=colonia.slug %}">Añadir foto</a>
+    {% endif %}
   </div>
 </div>
 {% include "gatos/fotos-block.html" with fotos=fotos %}

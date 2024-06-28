@@ -3,11 +3,11 @@
   <a class="no-decoration" href="{{ gato.get_absolute_url }}">
     <div class="enlace-gato">
       {% if gato.retrato.miniatura %}
-      <img class="galeria-gatos-miniatura foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+        <img class="galeria-gatos-miniatura foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
     {% else %}
       <div class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
-      <div class="enlace-gato-nombre">{{ gato.nombre }}</div>
+      <div class="enlace-gato-nombre{% if gato.sacrificar %} sacrificar{% endif %}">{{ gato.nombre }}</div>
     </div>
 </a>
 {% empty %}No hay gatos{% endfor %}

@@ -2,12 +2,6 @@
 {% block body %}
 <div class="main-subheader">
   <div class="subtitle">
-  </div>
-  <div class="actions">
-    <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a> |
-    <a href="{% url 'gato-delete' colonia=colonia.slug gato=gato.slug %}">Borrar</a> |
-  {% if ultima_captura is None %} <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a> {% else %} <a href="{% url 'liberar' colonia=colonia.slug gato=gato.slug %}">Liberar</a> | <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a> | <a href="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=ultima_captura.id %}">Vacunar</a> 
-{% endif %} 
     </div>
 </div>
 </div>
@@ -18,6 +12,7 @@
   <div class="ficha-foto-relleno">No hay foto</div>
   {% endif %}
   <div class="ficha-texto">
+    {% if gato.sacrificar %}<p class="warning">SACRIFICAR<p>{% endif %}
     <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
     <h2>{{ gato.nombre }}</h2>
     <div class="entrada"><span class="label">Color</span>: {{ gato.color }}</div>
@@ -50,9 +45,33 @@
      No hay vacunaciones
     {% endfor %}
     <ul>
-
   </div>
 </div>
+  <div class="button-bar">
+  <div class="actions">
+    {% if perms.gatos.change_gato %}
+    <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a>
+  {% endif %}
+  {% if gato.capturado %}
+    {% if perms.gatos.capturar_gato %}
+       <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a>
+    {% endif %}
+  {% else %}
+    {% if perms.gatos.capturar_gato %}
+        <a href="{% url 'liberar' colonia=colonia.slug gato=gato.slug %}">Liberar</a>
+    {% endif %}
+  {% endif %}
+  {% if perms.gatos.add_enfermedad %}
+    <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a>
+  {% endif %}
+  {% if gato.capturado and perms.gatos.vacunar_gato %}
+    <a href="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=ultima_captura.id %}">Vacunar</a>
+  {% endif %}
+  {% if not gato.sacrificar and perms.gatos.sacrificar_gato %} | <a href="{% url 'sacrificar' colonia=colonia.slug gato=gato.slug %}">Sacrificar</a>
+  {% endif %}
+  </div>
+  </div>
+
 <h2>Fotos</h2>
 {% include "gatos/fotos-block.html" with fotos=gato.fotos.all %}
 {% endblock %}
