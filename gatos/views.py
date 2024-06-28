@@ -7,12 +7,11 @@ from django.views import View
 from django.views.generic import (DetailView, ListView, CreateView,
                                   DeleteView, UpdateView)
 from plottings import PNGPlotView
-from plottings.plots.activity import ActivityMap
 from .models import Gato, Colonia, Foto, Enfermedad, Captura, Informe
 from .forms import (ColoniaFotoForm, GatoForm, CapturaForm, InformeForm,
                     EnfermedadCreateForm, EnfermedadUpdateForm,
                     VacunarGatoForm)
-from .plots import colonia_activity_plot
+from .plots import colonia_activity_plot, SpanishActivityMap
 from . import tasks
 
 
@@ -55,6 +54,24 @@ class ConfirmationView(View):
         else:
             return render(request, self.template, self.get_context())
 
+
+class GatoConfirmationView(ConfirmationView):
+    template = "gatos/gato_confirmacion.html"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
+        self.gato = get_object_or_404(Gato, colonia=self.colonia,
+                                      slug=self.kwargs['gato'])
+
+    def get_context(self):
+        context = super().get_context()
+        context['colonia'] = self.colonia
+        context['gato'] = self.gato
+        context['captura'] = self.gato.get_ultima_captura()
+        return context
+
+# TODO Aqui hay un problema con la ultima captura
 
 class BaseColoniaMixin:
     def setup(self, request, *args, **kwargs):
@@ -194,7 +211,9 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         colonia = self.get_object()
-        data['gatos'] = colonia.gatos.order_by("nombre").all().select_related("retrato")
+        data['gatos'] = colonia.get_gatos_activos()
+        data['desaparecidos'] = colonia.get_gatos_desaparecidos()
+        data['muertos'] = colonia.get_gatos_muertos()
         data['fotos'] = colonia.fotos.order_by("fecha").all()[:20]
         data['informes'] = colonia.informes.order_by("fecha").all()[:20]
         return data
@@ -234,6 +253,11 @@ class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
     template_name = "gatos/gato.html"
     queryset = Gato.objects.all()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['estado'] = self.gato.get_estado()
+        return context
+
 
 class GatoCreateView(PRMixin, SubColoniaMixin, CreateView):
     permission_required = "gatos.add_gato"
@@ -257,6 +281,21 @@ class GatoUpdateView(PRMixin, GatoMixin, SubColoniaMixin, UpdateView):
 class GatoDeleteView(PRMixin, GatoMixin, SubColoniaMixin, DeleteView):
     permission_required = "gatos.delete_gato"
     model = Gato
+
+
+class SacrificarGato(PRMixin, GatoConfirmationView):
+    permission_required = "gatos.sacrificar_gato"
+
+    def get_question(self):
+        return f"¿Seguro que quiere marcar para sacrificar '{self.gato}'?"
+
+    def confirm(self):
+        self.gato.sacrificar = True
+        self.gato.save()
+        return HttpResponseRedirect(self.gato.get_absolute_url())
+
+    def cancel(self):
+        return HttpResponseRedirect(self.gato.get_absolute_url())
 
 
 # ------------------------------------------------------------------------
@@ -343,7 +382,7 @@ class BaseInformeView(SubColoniaMixin):
     context_name = "informe"
 
 
-class InformeView(PRMixin, BaseInformeView, DetailView):
+class InformeView(PRMixin, BaseInformeView, InformeMixin, DetailView):
     permission_required = "gatos.view_informe"
     template_name = "gatos/informe.html"
 
@@ -408,26 +447,6 @@ class CapturaBaseMixin(SubGatoMixin, SubColoniaMixin):
         return self.gato.get_absolute_url()
 
 
-class GatoConfirmationView(ConfirmationView):
-    template = "gatos/gato_confirmacion.html"
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
-        self.gato = get_object_or_404(Gato, colonia=self.colonia,
-                                      slug=self.kwargs['gato'])
-        self.ultima_captura = self.gato.get_ultima_captura()
-
-    def get_context(self):
-        context = super().get_context()
-        context['colonia'] = self.colonia
-        context['gato'] = self.gato
-        context['captura'] = self.ultima_captura
-        return context
-
-# TODO Aqui hay un problema con la ultima captura
-
-
 class CapturarGato(PRMixin, GatoConfirmationView):
     permission_required = "gatos.capturar_gato"
 
@@ -435,7 +454,7 @@ class CapturarGato(PRMixin, GatoConfirmationView):
         return f"¿Seguro que ha capturado al gato '{self.gato}'?"
 
     def confirm(self):
-        if self.ultima_captura is None:
+        if self.gato.get_ultima_captura() is None:
             captura = Captura(gato=self.gato, fecha_captura=date.today())
             captura.save()
         else:
@@ -538,7 +557,7 @@ class VacunarGato(PRMixin, SubColoniaMixin, SubGatoMixin, SubCapturaMixin,
 
 class ActivityPlotView(SubColoniaMixin, PNGPlotView):
     plotter_function = staticmethod(colonia_activity_plot)
-    activity_class = ActivityMap
+    activity_class = SpanishActivityMap
     filename = "activity.png"
 
     def setup(self, request, *args, **kwargs):
