@@ -7,7 +7,11 @@
     {% else %}
       <div class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
+    {% if not gato.vecino %}
       <div class="enlace-gato-nombre{% if gato.sacrificar %} sacrificar{% endif %}">{{ gato.nombre }}</div>
+    {% else %}
+      <div class="enlace-gato-nombre">{{ gato.nombre }} de {{ gato.nombre_vecino }}</div>
+    {% endif %}
     </div>
 </a>
 {% empty %}No hay gatos{% endfor %}

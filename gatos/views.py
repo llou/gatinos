@@ -211,7 +211,8 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         colonia = self.get_object()
-        data['gatos'] = colonia.get_gatos_activos()
+        data['gatos'] = colonia.get_gatos_activos(vecino=False)
+        data['gatos_vecinos'] = colonia.get_gatos_activos(vecino=True)
         data['desaparecidos'] = colonia.get_gatos_desaparecidos()
         data['muertos'] = colonia.get_gatos_muertos()
         data['fotos'] = colonia.fotos.order_by("fecha").all()[:20]
@@ -245,13 +246,13 @@ class ColoniaDeleteView(PRMixin, ColoniaMixin, DeleteView):
 class GatosView(PRMixin, SubColoniaMixin, ListView):
     permission_required = "gatos.view_gato"
     template_name = "gatos/gatos.html"
-    queryset = Gato.objects.all()
+    queryset = Gato.gatos_colonia.all()
 
 
 class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
     permission_required = "gatos.view_gato"
     template_name = "gatos/gato.html"
-    queryset = Gato.objects.all()
+    queryset = Gato.gatos_colonia.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -263,7 +264,8 @@ class GatoCreateView(PRMixin, SubColoniaMixin, CreateView):
     permission_required = "gatos.add_gato"
     template_name = "gatos/gato_new.html"
     model = Gato
-    fields = ["nombre", "sexo", "color", "descripcion"]
+    fields = ["nombre", "sexo", "color", "descripcion", "feo", "vecino",
+              "nombre_vecino"]
 
     def form_valid(self, form):
         form.instance.colonia_id = self.colonia.id

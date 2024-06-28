@@ -1,10 +1,5 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<div class="main-subheader">
-  <div class="subtitle">
-    </div>
-</div>
-</div>
 <div class="ficha">
   {% if gato.retrato.foto.url %}
     <img class="ficha-foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.foto.url }}" />
@@ -15,6 +10,7 @@
     {% if gato.sacrificar %}<p class="warning">SACRIFICAR<p>{% endif %}
     <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
     <h2>{{ gato.nombre }}</h2>
+    {% if not gato.vecino %}
     <div class="entrada"><span class="label">Color</span>: {{ gato.color }}</div>
     <div class="entrada"><span class="label">Peso</span>: {% if peso is not None %}{{ peso }}{% else %}No se ha pesado todavía{% endif %}</div>
     <p><span class="label">Descripcion</span>:</p>
@@ -45,6 +41,9 @@
      No hay vacunaciones
     {% endfor %}
     <ul>
+    {% else %}
+      Gato del vecino: {{ gato.nombre_vecino }}
+    {% endif %}
   </div>
 </div>
   <div class="button-bar">
@@ -52,6 +51,7 @@
     {% if perms.gatos.change_gato %}
     <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a>
   {% endif %}
+  {% if not gato.vecino %}
   {% if gato.capturado %}
     {% if perms.gatos.capturar_gato %}
        <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a>
@@ -67,7 +67,8 @@
   {% if gato.capturado and perms.gatos.vacunar_gato %}
     <a href="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=ultima_captura.id %}">Vacunar</a>
   {% endif %}
-  {% if not gato.sacrificar and perms.gatos.sacrificar_gato %} | <a href="{% url 'sacrificar' colonia=colonia.slug gato=gato.slug %}">Sacrificar</a>
+  {% if not gato.sacrificar and perms.gatos.sacrificar_gato %} <a href="{% url 'sacrificar' colonia=colonia.slug gato=gato.slug %}">Sacrificar</a>
+  {% endif %}
   {% endif %}
   </div>
   </div>

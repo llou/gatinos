@@ -17,6 +17,11 @@ SEXOS = [
 ]
 
 
+class GatosColoniaManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(vecino=False)
+
+
 class Gato(models.Model):
     slug = models.SlugField(max_length=200, unique=True, default="")
     nombre = models.CharField(max_length=200, unique=True)
@@ -32,8 +37,12 @@ class Gato(models.Model):
     vecino = models.BooleanField(default=False)
     nombre_vecino = models.CharField(max_length=200, blank=True)
     sacrificar = models.BooleanField(default=False)
+    fecha_alta = models.DateField(auto_now=True)
     muerto = models.BooleanField(default=False)
     muerto_fecha = models.DateField(null=True, blank=True)
+
+    objects = models.Manager()
+    gatos_colonia = GatosColoniaManager()
 
     @property
     def peso(self):
@@ -109,12 +118,7 @@ class Colonia(models.Model):
     periodo_activo = models.DurationField(default=timedelta(120, 0, 0))
     descripcion = models.TextField(blank=True, default="")
 
-    @property
-    def gatos_activos(self):
-        return 0
-
     def get_eventos(self, min_fecha=None, max_fecha=None):
-        result = []
         informes = self.informes
         fotos = self.fotos
         if min_fecha is not None:
@@ -131,17 +135,29 @@ class Colonia(models.Model):
         eventos = self.get_eventos(min_fecha=min_fecha, max_fecha=max_fecha)
         return [x.fecha for x in eventos]
 
-    def get_gatos_activos_intervalo(self, min_fecha=None, max_fecha=None):
+    def get_gatos_activos_intervalo(self, min_fecha=None, max_fecha=None,
+                                    vecino=None):
         result = set()
         eventos = self.get_eventos(min_fecha=min_fecha, max_fecha=max_fecha)
         for evento in eventos:
             for gato in evento.gatos.filter(muerto=False):
                 result.add(gato)
+        if vecino is not None:
+            result = {x for x in result if x.vecino == vecino}
+            gatos_nuevos = self.gatos.filter(vecino=vecino)
+        else:
+            gatos_nuevos = self.gatos
+        if min_fecha is not None:
+            gatos_nuevos.filter(fecha_alta__gt=min_fecha)
+        if max_fecha is not None:
+            gatos_nuevos.filter(fecha_alta__lt=max_fecha)
+        for gato in gatos_nuevos.all():
+            result.add(gato)
         return list(result)
 
-    def get_gatos_activos(self):
+    def get_gatos_activos(self, vecino=False):
         base = date.today() - self.periodo_activo
-        return self.get_gatos_activos_intervalo(min_fecha=base)
+        return self.get_gatos_activos_intervalo(min_fecha=base, vecino=vecino)
 
     def get_gatos_desaparecidos(self):
         result = []

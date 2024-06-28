@@ -28,8 +28,17 @@
     {% if perms.gatos.add_gato %}
 <a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
     {% endif %}
-   </div>
+ </div>
 </div>
+{% if gatos_vecinos %}
+<div class="main-subheader">
+  <div class="subtitle">
+     <h3>Gatos de los Vecinos</h3>
+     {% include "gatos/gatos-block.html" with gatos=gatos_vecinos %}
+  </div>
+  <div class="actions"></div>
+ </div>
+{% endif %}
 
 <div class="main-subheader">
   <div class="subtitle">
