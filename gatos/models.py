@@ -366,3 +366,24 @@ class Enfermedad(UserBound):
 
     def __str__(self):
         return f"{self.diagnostico} ({self.fecha_diagnostico})"
+
+
+class PlanificacionComida(models.Model):
+    fecha = models.DateField(blank=True, null=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                on_delete=models.SET_NULL,
+                                blank=True,
+                                null=True,
+                                default=None)
+    colonia = models.ForeignKey("gatos.Colonia", related_name="comidas",
+                                on_delete=models.CASCADE)
+
+    def str(self):
+        return f"Comida del {self.fecha} por {self.usuario.username}" 
+
+    def __repr__(self):
+        cls = self.__class__.__name__
+        f = self.fecha
+        c = self.colonia.nombre
+        u = self.usuario.username
+        return f"<{cls} colonia='{c}' fecha={f} usuario={u}>"
