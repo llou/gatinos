@@ -67,8 +67,7 @@
   {% if gato.capturado and perms.gatos.vacunar_gato %}
     <a href="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=ultima_captura.id %}">Vacunar</a>
   {% endif %}
-  {% if not gato.sacrificar and perms.gatos.sacrificar_gato %} <a href="{% url 'sacrificar' colonia=colonia.slug gato=gato.slug %}">Sacrificar</a>
-  {% endif %}
+  {#{% if not gato.sacrificar and perms.gatos.sacrificar_gato %} <a href="{% url 'sacrificar' colonia=colonia.slug gato=gato.slug %}">Sacrificar</a>{% endif %}#}
   {% endif %}
   </div>
   </div>
