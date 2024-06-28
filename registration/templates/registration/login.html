@@ -4,6 +4,9 @@
 {% block content %}
 <div id="registration-container">
   <h1>Identifiquese</h1>
+  {% if form.errors %}
+    <p>Su nombre de usuario o contraseña no son cocrectos. Porfavor inténtelo de nuevo</p>
+  {% endif %}
   <form method="post" action="{% url 'registration:login' %}">
   {% csrf_token %}
   {{ form.as_div }}

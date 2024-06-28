@@ -34,6 +34,14 @@ input[type=text], input[type=password] {
 input[type=submit], button {
   font-size: 1.2em;
   margin: 0 auto;
+  width: 150px;
+  line-height 90px;
+  color: white;
+  background-color: blue;
+}
+
+input[type=submit]:active, button:active {
+  background-color: cyan;
 }
 
 p {
