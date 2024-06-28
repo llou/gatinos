@@ -17,6 +17,8 @@
   --numero-aureo: 1.618033;
   --page-width: 1024px;
   --ratio-a4: 1.414;
+  --button-width: 75px;
+  --button-height: calc(var(--button-width) / 1.8);
   --image-aspect-ratio: var(--ratio-a4);
   --foto-ficha-ancho: 350px;
   --foto-ficha-alto: calc(var(--foto-ficha-ancho) * var(--image-aspect-ratio));
@@ -24,6 +26,9 @@
   --foto-miniatura-alto: calc(var(--foto-miniatura-ancho) * var(--image-aspect-ratio));
   --enlace-gato-ancho: 120px;
   --enlace-gato-alto: calc(var(--foto-enlace-ancho) * var(--image-aspect-ratio) + 45px);
+  --button-active-color: cyan;
+  --button-color: blue;
+  --button-text-color: white;
 }
 
 html {
@@ -143,9 +148,6 @@ form p {
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 5px;
-}
-
-.actions {
 }
 
 .subtitle {
@@ -329,3 +331,93 @@ ul.ErrorList {
   font-weight: bold;
 }
 
+.warning {
+  font-size: 1.5em;
+  color: red;
+  background-color: black;
+  padding: 5px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.sacrificar {
+  border-radius: var(--border-radius);
+  border: 5px solid red
+}
+
+.buttons, .actions {
+  height: 30px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.buttons {
+  justify-content: flex-start;
+}
+
+.actions {
+  justify-content: flex-end;
+}
+
+.buttons a, .actions a {
+  height: var(--button-height);
+  min-width: var(--button-width);
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align: center;
+  line-height: var(--button-height);
+  vertical-align: middle;
+  border: 1px solid black;
+  text-decoration: none;
+  color: var(--button-text-color);
+  background-color: var(--button-color);
+}
+
+.butons a:hover, .actions.a:hover {
+  cursor: pointer;
+}
+
+.butons a:active, .actions.a:hover {
+  cursor: pointer;
+  background-color: var(--button-active-color);
+  color: var(--button-text-color);
+}
+
+input[type=submit], input[type=button], input[type=reset] {
+  height: var(--button-height);
+  width: var(--button-width);
+  border: 1px solid black;
+  text-decoration: none;
+  background-color: var(--button-color);
+  color: var(--button-text-color);
+  margin-top: 20px;
+  margin-left: 150px;
+}
+
+input[type=submit]:active, input[type=button]:active, 
+input[type=reset]:active {
+  background-color: var(--button-active-color);
+  color: var(--button-text-color);
+}
+
+input[type=submit]:hover, input[type=button]:hover, 
+input[type=reset]:hover {
+  cursor: pointer;
+}
+
+#confirmacion-mensaje {
+  width: 100%;
+  margin-bottom: 50px;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+article {
+  min-height: 500px;
+}
+
+.no-resize {
+  resize: none;
+}
