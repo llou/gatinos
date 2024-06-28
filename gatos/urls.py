@@ -6,6 +6,7 @@ from . import views, plots
 gato_urls = [
     path("capturar", views.CapturarGato.as_view(), name="capturar"),
     path("liberar", views.LiberarGato.as_view(), name="liberar"),
+    path("sacrificar", views.SacrificarGato.as_view(), name="sacrificar"),
     path("capturas/c/<int:pk>", views.CapturaView.as_view(),
          name="captura"),
     path("capturas/c/<int:pk>/vacunar", views.VacunarGato.as_view(),
@@ -33,8 +34,6 @@ colonia_urls = [
     path('gatos/g/<slug:gato>', views.GatoView.as_view(), name="gato"),
     path('gatos/g/<slug:gato>/update', views.GatoUpdateView.as_view(),
          name="gato-update"),
-    path('gatos/g/<slug:gato>/delete', views.GatoDeleteView.as_view(),
-         name="gato-delete"),
     path('gatos/g/<slug:gato>/', include(gato_urls)),
     path('fotos/', views.FotosView.as_view(), name="fotos"),
     path('fotos/update-miniaturas', views.update_miniaturas,
@@ -67,7 +66,5 @@ urlpatterns = [
          name="colonia"),
     path('colonia/c/<slug:colonia>/update', views.ColoniaUpdateView.as_view(),
          name="colonia-update"),
-    path('colonia/c/<slug:colonia>/delete', views.ColoniaDeleteView.as_view(),
-         name="colonia-delete"),
     path('colonia/c/<slug:colonia>/', include(colonia_urls)),
     ]
