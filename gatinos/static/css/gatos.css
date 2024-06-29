@@ -16,6 +16,9 @@
   --border-radius: 10px;
   --numero-aureo: 1.618033;
   --page-width: 1024px;
+  --column-width: calc(var(--page-width) / 2 - var(--column-gap) / 2);
+  --column-gap: 24px;
+  --column-min-height: 300px;
   --ratio-a4: 1.414;
   --button-width: 75px;
   --button-height: calc(var(--button-width) / 1.8);
@@ -99,7 +102,6 @@ main {
 main h1 {
   font-size: 2.5em;
   font-weight: bold;
-  margin-bottom: 20px;
 }
 
 main h1 a, main h2 a {
@@ -110,7 +112,6 @@ main h1 a, main h2 a {
 main h2 {
   font-size: 2em;
   font-weight: bold;
-  margin-bottom: 20px;
 }
 
 main h3 {
@@ -155,11 +156,12 @@ form p {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
 }
 
 .subtitle {
   padding-top: 1em;
+  vertical-align: bottom;
 }
 
 #colonias {
@@ -178,7 +180,7 @@ form p {
 
 #mapa-colonia img {
   display: block;
-  margin: 0 auto;
+  margin: 0 auto 20px auto;
 }
 
 #lista-de-gatos ul{
@@ -428,4 +430,42 @@ article {
 
 .no-resize {
   resize: none;
+}
+
+.columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: var(--column-gap);
+  min-height: var(--column-min-height);
+}
+
+.column {
+  width: var(--column-width);
+}
+
+.calendarios {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--column-gap);
+  min-height: var(--column-min-height);
+}
+
+.calendario-mes td {
+  font-size: 1.3em;
+  padding: 3px;
+}
+
+#tabla-informes {
+  margin-top: 30px;
+}
+
+#tabla-informes tr td {
+  border: 1px solid black;
+  padding: 3px;
+}
+
+#tabla-informes .informes-nombre {
+  width: 400px;
 }

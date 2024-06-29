@@ -1,16 +1,27 @@
 from datetime import date
+from htmlcalendar import htmlcalendar
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views import View
-from django.views.generic import (DetailView, ListView, CreateView,
-                                  DeleteView, UpdateView)
+from django.views.generic import (DetailView,
+                                  ListView,
+                                  CreateView,
+                                  DeleteView,
+                                  UpdateView,
+                                  TemplateView,
+                                  )
 from plottings import PNGPlotView
-from .models import Gato, Colonia, Foto, Enfermedad, Captura, Informe
-from .forms import (ColoniaFotoForm, GatoForm, CapturaForm, InformeForm,
-                    EnfermedadCreateForm, EnfermedadUpdateForm,
-                    VacunarGatoForm)
+from .models import Gato, Colonia, Foto, Enfermedad, Captura, Informe, Avistamiento
+from .forms import (ColoniaFotoForm,
+                    GatoForm,
+                    CapturaForm,
+                    InformeForm,
+                    EnfermedadCreateForm,
+                    EnfermedadUpdateForm,
+                    VacunarGatoForm
+                    )
 from .plots import colonia_activity_plot, SpanishActivityMap
 from . import tasks
 
@@ -53,6 +64,15 @@ class ConfirmationView(View):
             return self.cancel()
         else:
             return render(request, self.template, self.get_context())
+
+
+class CommandView(TemplateView):
+    def run_command(self, request, *args, **kwargs):
+        pass
+
+    def get(self, request, *args, **kwargs):
+        self.run_command(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class GatoConfirmationView(ConfirmationView):
@@ -211,12 +231,14 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         colonia = self.get_object()
+        calendar = htmlcalendar(date.today(), months=2, backwards=False)
         data['gatos'] = colonia.get_gatos_activos(vecino=False)
         data['gatos_vecinos'] = colonia.get_gatos_activos(vecino=True)
         data['desaparecidos'] = colonia.get_gatos_desaparecidos()
         data['muertos'] = colonia.get_gatos_muertos()
         data['fotos'] = colonia.fotos.order_by("fecha").all()[:20]
         data['informes'] = colonia.informes.order_by("fecha").all()[:20]
+        data['calendarios'] = calendar
         return data
 
 
@@ -579,6 +601,52 @@ class ActivityPlotView(SubColoniaMixin, PNGPlotView):
         return self.map.get_data()
 
 
+# ------------------------------------------------------------------------
+
+class Avistamientos(SubColoniaMixin, CommandView):
+    template_name = "gatos/avistamientos.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vistos, no_vistos = self.colonia.get_avistamientos(date.today())
+        context['vistos'] = vistos
+        context['no_vistos'] = no_vistos
+        return context
+
+    def run_command(self, request, *args, **kwargs):
+        if 'gato' in request.GET:
+            colonia = get_object_or_404(Colonia, slug=kwargs['colonia'])
+            gato = colonia.gatos.get(slug=request.GET["gato"])
+            avistamientos = Avistamiento.objects.filter(gato=gato,
+                                                        fecha=date.today())
+            if avistamientos:
+                for av in avistamientos:
+                    print(av)
+                    av.delete()
+            else:
+                av = Avistamiento(colonia=colonia, gato=gato,
+                                  usuario=request.user, fecha=date.today())
+                av.save()
+
+
+class CalendarioComidas(SubColoniaMixin, CommandView):
+    template_name = "gatos/comidas.html"
+    css_class_comida_otro = "comida-otro"
+    css_class_comida_usuario = "comida-usuario"
+    css_class_comida_none = "comida-none"
+
+    def get_calendars(self, colonia):
+        return htmlcalendar(date.today(), months=2, backwards=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(self, **kwargs)
+        context['calendars'] = self.get_calendars(self.colonia)
+        return context
+
+    def run_command(self, request, *args, **kwargs):
+        colonia = get_object_or_404(colonia, slug=kwargs['colonia'])
+        fecha = date(slug=request.GET["fecha"])
+        colonia.toggle_comida(fecha)
 
 # ------------------------------------------------------------------------
 #                Acciones Provisionales

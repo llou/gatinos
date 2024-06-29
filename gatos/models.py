@@ -83,10 +83,7 @@ class Gato(models.Model):
     def sexuacion(self, sexo):
         self.sexo = sexo
         self.save()
-
-    def pesada(self, peso):
-        pass
-
+        
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
@@ -167,8 +164,21 @@ class Colonia(models.Model):
                 result.append(gato)
         return result
 
+    def get_avistamientos(self, date):
+        vistos_set = {av.gato for av in self.avistamientos.filter(fecha=date)}
+        gatos = self.get_gatos_activos()
+        vistos = [x for x in gatos if x in vistos_set]
+        no_vistos = [x for x in gatos if x not in vistos_set]
+        return vistos, no_vistos
+
     def get_gatos_muertos(self):
         return self.gatos.filter(muerto=True)
+
+    def get_calendarios(self):
+        return ""
+
+    def toggle_comida(self, fecha):
+        pass
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -378,6 +388,12 @@ class PlanificacionComida(models.Model):
     colonia = models.ForeignKey("gatos.Colonia", related_name="comidas",
                                 on_delete=models.CASCADE)
 
+    class Meta:
+        permissions = [
+                ("alimentar_colonia", ""),
+                ]
+
+
     def str(self):
         return f"Comida del {self.fecha} por {self.usuario.username}"
 
@@ -390,11 +406,18 @@ class PlanificacionComida(models.Model):
 
 
 class Avistamiento(models.Model):
-    fecha = models.DateTimeField(auto_now=True)
+    fecha = models.DateField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE)
-    gato = models.ForeignKey("gatos.Gato", on_delete=models.CASCADE)
-    colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE)
+    gato = models.ForeignKey("gatos.Gato", on_delete=models.CASCADE,
+                             related_name="avistamientos")
+    colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
+                                related_name="avistamientos")
+
+    class Meta:
+        permissions = [
+                ("avistar_gato", ""),
+                ]
 
     def str(self):
         return f"Avistamiento de {self.gato.nombre} el {self.fecha.date}"
@@ -403,5 +426,24 @@ class Avistamiento(models.Model):
         cls = self.__class__.__name__
         u = self.usuario.username
         g = self.gato.nombre
-        f = self.fecha.date()
+        f = self.fecha
         return f"<{cls} gato={g} usuario={u} fecha={f}>"
+
+
+class AsignacionComida(models.Model):
+    fecha = models.DateField(auto_now=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE)
+    colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
+                                related_name="asignaciones")
+
+    def str(self):
+        f = self.fecha
+        u = self.usuario.username
+        return f"Asignacion de dar comida el {f} a {u}"
+
+    def __repr__(self):
+        cls = self.__class__.__name__
+        u = self.usuario.username
+        f = self.fecha.date()
+        return f"<{cls} usuario={u} fecha={f}>"

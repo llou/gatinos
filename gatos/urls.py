@@ -29,6 +29,8 @@ gato_urls = [
 
 colonia_urls = [
     path('activity.png', views.ActivityPlotView.as_view(), name="activity"),
+    path('comidas', views.CalendarioComidas.as_view(), name="comidas"),
+    path('avistamientos', views.Avistamientos.as_view(), name="avistamiento"),
     path('gatos/', views.GatosView.as_view(), name="gatos"),
     path('gato-add', views.GatoCreateView.as_view(), name="gato-add"),
     path('gatos/g/<slug:gato>', views.GatoView.as_view(), name="gato"),

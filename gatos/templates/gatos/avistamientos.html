@@ -1,0 +1,68 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block base_body %}
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Avistamientos de Hoy</h2>
+  </div>
+  <div class="actions">
+  </div>
+</div>
+
+
+<div class="main-subheader">
+  <div class="subtitle">
+    <h3>Pendientes</h2>
+  </div>
+  <div class="actions">
+  </div>
+</div>
+
+<div class="galeria-gatos">
+{% for gato in no_vistos %}
+<a class="no-decoration" href="{% url 'avistamiento' colonia=colonia.slug %}?gato={{ gato.slug }}">
+    <div class="enlace-gato">
+      {% if gato.retrato.miniatura %}
+        <img class="galeria-gatos-miniatura foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+    {% else %}
+      <div class="galeria-gatos-no-miniatura">No hay foto</div>
+    {% endif %}
+    {% if not gato.vecino %}
+      <div class="enlace-gato-nombre">{{ gato.nombre }}</div>
+    {% else %}
+      <div class="enlace-gato-nombre">{{ gato.nombre }} de {{ gato.nombre_vecino }}</div>
+    {% endif %}
+    </div>
+</a>
+{% empty %}Se vieron todos los gatos{% endfor %}
+</div>
+
+
+<div class="main-subheader">
+</div>
+  <div class="subtitle">
+    <h3>Vistos</h2>
+  </div>
+  <div class="actions">
+  </div>
+</div>
+
+<div class="galeria-gatos">
+{% for gato in vistos %}
+  <a class="no-decoration" href="{% url 'avistamiento' colonia=colonia.slug %}?gato={{ gato.slug }}">
+    <div class="enlace-gato">
+      {% if gato.retrato.miniatura %}
+        <img class="galeria-gatos-miniatura foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+    {% else %}
+      <div class="galeria-gatos-no-miniatura">No hay foto</div>
+    {% endif %}
+    {% if not gato.vecino %}
+      <div class="enlace-gato-nombre">{{ gato.nombre }}</div>
+    {% else %}
+      <div class="enlace-gato-nombre">{{ gato.nombre }} de {{ gato.nombre_vecino }}</div>
+    {% endif %}
+    </div>
+</a>
+{% empty %}No hay gatos vistos hoy{% endfor %}
+</div>
+
+{% endblock %}
