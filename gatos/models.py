@@ -4,7 +4,6 @@ from functools import reduce
 from pathlib import Path
 from PIL import Image
 from PIL.ExifTags import TAGS
-from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.urls import reverse
 from django.db import models
@@ -55,7 +54,6 @@ class Gato(models.Model):
     feo = models.BooleanField(default=False)
     vecino = models.BooleanField(default=False)
     nombre_vecino = models.CharField(max_length=200, blank=True)
-    sacrificar = models.BooleanField(default=False)
     fecha_alta = models.DateField(auto_now=True)
     muerto = models.BooleanField(default=False)
     muerto_fecha = models.DateField(null=True, blank=True)
@@ -300,7 +298,7 @@ class Foto(UserBound):
             pil = self.get_pil_image()
         exif = pil._getexif()
         if exif is not None:
-            self.exif = {TAGS.get(tag, tag): value for tag, value in exif.items()}
+            self.exif = {TAGS.get(t, t): v for t, v in exif.items()}
         self.save()
 
     def get_absolute_url(self):
@@ -319,7 +317,7 @@ class Informe(UserBound):
                                 related_name="informes")
     fecha = models.DateField(auto_now=True)
     titulo = models.CharField(max_length=250)
-    texto = models.TextField(blank=True, default="")
+    texto = models.TextField(blank=True, null=True)
     gatos = models.ManyToManyField("gatos.Gato", related_name="informes")
 
     def __repr__(self):
@@ -339,7 +337,6 @@ class Captura(UserBound):
     fecha_liberacion = models.DateField(null=True, default=None)
     peso = models.DecimalField(max_digits=6, decimal_places=2, null=True)
     esterilizacion = models.BooleanField(default=False)
-    sacrificio = models.BooleanField(default=False)
     observaciones = models.TextField(blank=True, default="")
 
     class Meta:

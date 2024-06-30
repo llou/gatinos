@@ -1,11 +1,20 @@
 {% extends 'gatos/colonia_base.html' %}
+{% load markdown %}
 {% block head %}
 {% endblock %}
 
 {% block body %}
+<div class="main-subheader">
+  <div class="subtitle">
+    <p>Informe:</p>
+    <h2>{{ informe.titulo }}</h2>
+  </div>
+  <div class="actions">
+    <a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar</a>
+  </div>
+</div>
 <article>
-  <h2>{{ informe.titulo }}</h2>
-  {{ informe.texto }}
+  {{ informe.texto|render_markdown }}
 </article>
 
 <div class="actions">

@@ -1,5 +1,6 @@
 from datetime import date
 from htmlcalendar import htmlcalendar
+import markdown
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy, reverse
@@ -13,7 +14,13 @@ from django.views.generic import (DetailView,
                                   TemplateView,
                                   )
 from plottings import PNGPlotView
-from .models import Gato, Colonia, Foto, Enfermedad, Captura, Informe, Avistamiento
+from .models import (Gato,
+                     Colonia,
+                     Foto,
+                     Enfermedad,
+                     Captura,
+                     Informe,
+                     )
 from .forms import (ColoniaFotoForm,
                     GatoForm,
                     CapturaForm,
@@ -93,6 +100,7 @@ class GatoConfirmationView(ConfirmationView):
 
 # TODO Aqui hay un problema con la ultima captura
 
+
 class BaseColoniaMixin:
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
@@ -123,7 +131,8 @@ class BaseGatoMixin:
         self.ultima_captura = self.gato.get_ultima_captura()
         self.peso = self.gato.get_peso()
         self.enfermedades = self.gato.enfermedades.all()
-        self.capturas = self.gato.capturas.order_by("-fecha_captura").select_related("gato__colonia").all()[:5]
+        capturas = self.gato.capturas.order_by("-fecha_captura")
+        self.capturas = capturas.select_related("gato__colonia").all()[:5]
         self.vacunas = self.gato.get_vacunas()
 
     def get_context_data(self, **kwargs):
@@ -214,6 +223,7 @@ class UserBoundMixin:
         return result
 
 # ------------------------------------------------------------------------
+
 
 class ColoniasList(PRMixin, ListView):
     permission_required = "gatos.view_colonia"
@@ -638,8 +648,8 @@ class GatoActivityPlotView(SubGatoMixin, PNGPlotView):
         return self.map.get_data()
 
 
-
 # ------------------------------------------------------------------------
+
 
 class Avistamientos(SubColoniaMixin, CommandView):
     template_name = "gatos/avistamientos.html"
@@ -675,7 +685,7 @@ class CalendarioComidas(SubColoniaMixin, CommandView):
             return url + query_string
 
         def classes(f):
-            if not f in comidas:
+            if f not in comidas:
                 return ["comidas-none"]
             elif comidas[f].usuario == self.request.user:
                 return ["comidas-usuario"]

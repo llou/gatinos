@@ -7,6 +7,6 @@
 <form action="{% url 'informe-update' colonia=colonia.slug pk=informe.pk %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
-<input type="submit" value="Nueva"\>
+<input type="submit" value="Actualiza"\>
 </form>
 {% endblock %}
