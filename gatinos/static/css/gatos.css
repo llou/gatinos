@@ -469,3 +469,45 @@ article {
 #tabla-informes .informes-nombre {
   width: 400px;
 }
+
+#comidas-mes {
+  width: 800px;
+  padding: 20px;
+  margin: 20px auto 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 24px;
+}
+
+#comidas-mes {
+}
+
+#comidas-mes td {
+  font-size: 2.5em;
+  padding: 5px;
+  text-align: right;
+}
+
+#comidas-mes th {
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 5px;
+}
+
+#comidas-mes td a {
+  text-decoration: none;
+}
+
+.comidas-otro {
+  background-color: yellow;
+}
+
+
+.comidas-usuario {
+  background-color: red;
+}
+
+.comidas-none {
+  background-color: none;
+}

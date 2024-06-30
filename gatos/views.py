@@ -2,7 +2,7 @@ from datetime import date
 from htmlcalendar import htmlcalendar
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views import View
 from django.views.generic import (DetailView,
@@ -162,7 +162,6 @@ class BaseCapturaMixin:
 class SubCapturaMixin(BaseCapturaMixin):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        print(data)
         data['captura'] = self.captura
         return data
 
@@ -227,18 +226,34 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
     permission_required = "gatos.view_colonia"
     template_name = "gatos/colonia.html"
     queryset = Colonia.objects.all()
+    class_otro = "comidas-otro"
+    class_usuario = "comidas-usuario"
+    class_none = "comidas-none"
+
+    def get_calendars(self):
+        comidas = {c.fecha: c for c in self.colonia.comidas.all()}
+
+        def classes(f):
+            if f not in comidas:
+                return ["comidas-none"]
+            elif comidas[f].usuario == self.request.user:
+                return ["comidas-usuario"]
+            else:
+                return ["comidas-otro"]
+
+        return htmlcalendar(date.today(), months=2, backwards=False,
+                            classes=classes, header="h2", th_classes=[])
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         colonia = self.get_object()
-        calendar = htmlcalendar(date.today(), months=2, backwards=False)
         data['gatos'] = colonia.get_gatos_activos(vecino=False)
         data['gatos_vecinos'] = colonia.get_gatos_activos(vecino=True)
         data['desaparecidos'] = colonia.get_gatos_desaparecidos()
         data['muertos'] = colonia.get_gatos_muertos()
         data['fotos'] = colonia.fotos.order_by("fecha").all()[:20]
         data['informes'] = colonia.informes.order_by("fecha").all()[:20]
-        data['calendarios'] = calendar
+        data['calendarios'] = self.get_calendars()
         return data
 
 
@@ -617,36 +632,51 @@ class Avistamientos(SubColoniaMixin, CommandView):
         if 'gato' in request.GET:
             colonia = get_object_or_404(Colonia, slug=kwargs['colonia'])
             gato = colonia.gatos.get(slug=request.GET["gato"])
-            avistamientos = Avistamiento.objects.filter(gato=gato,
-                                                        fecha=date.today())
-            if avistamientos:
-                for av in avistamientos:
-                    print(av)
-                    av.delete()
-            else:
-                av = Avistamiento(colonia=colonia, gato=gato,
-                                  usuario=request.user, fecha=date.today())
-                av.save()
+            gato.toggle_avistamiento(date.today(), request.user)
 
 
 class CalendarioComidas(SubColoniaMixin, CommandView):
     template_name = "gatos/comidas.html"
-    css_class_comida_otro = "comida-otro"
-    css_class_comida_usuario = "comida-usuario"
-    css_class_comida_none = "comida-none"
+    class_otro = "comidas-otro"
+    class_usuario = "comidas-usuario"
+    class_none = "comidas-none"
 
-    def get_calendars(self, colonia):
-        return htmlcalendar(date.today(), months=2, backwards=False)
+    def get_calendars(self):
+        comidas = {c.fecha: c for c in self.colonia.comidas.all()}
+
+        def links(f):
+            if f < date.today():
+                return None
+            query_string = f"?day={f.day}&month={f.month}&year={f.year}"
+            url = reverse("comidas", kwargs={"colonia": self.colonia.slug})
+            return url + query_string
+
+        def classes(f):
+            if not f in comidas:
+                return ["comidas-none"]
+            elif comidas[f].usuario == self.request.user:
+                return ["comidas-usuario"]
+            else:
+                return ["comidas-otro"]
+
+        return htmlcalendar(date.today(), months=2, backwards=False,
+                            links=links, classes=classes, header="h2",
+                            th_classes=[])
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(self, **kwargs)
-        context['calendars'] = self.get_calendars(self.colonia)
+        context = super().get_context_data(**kwargs)
+        context['calendars'] = self.get_calendars()
         return context
 
     def run_command(self, request, *args, **kwargs):
-        colonia = get_object_or_404(colonia, slug=kwargs['colonia'])
-        fecha = date(slug=request.GET["fecha"])
-        colonia.toggle_comida(fecha)
+        colonia = get_object_or_404(Colonia, slug=kwargs['colonia'])
+        qs = request.GET
+        if "day" in qs and "month" in qs and "year" in qs:
+            dia = int(qs["day"])
+            mes = int(qs["month"])
+            ano = int(qs["year"])
+            fecha = date(ano, mes, dia)
+            colonia.toggle_comida(fecha, request.user)
 
 # ------------------------------------------------------------------------
 #                Acciones Provisionales

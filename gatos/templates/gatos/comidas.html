@@ -1,0 +1,10 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block body %}
+<div id="comidas-mes">
+{% for calendar in calendars %}
+<div class="calendario-comidas">
+{{ calendar|safe }}
+</div>
+{% endfor %}
+</div>
+{% endblock %}
