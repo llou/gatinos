@@ -4,6 +4,8 @@ from . import views, plots
 
 
 gato_urls = [
+    path('activity.png', views.GatoActivityPlotView.as_view(),
+         name="gato-activity"),
     path("capturar", views.CapturarGato.as_view(), name="capturar"),
     path("liberar", views.LiberarGato.as_view(), name="liberar"),
     path("sacrificar", views.SacrificarGato.as_view(), name="sacrificar"),
@@ -28,7 +30,8 @@ gato_urls = [
 
 
 colonia_urls = [
-    path('activity.png', views.ActivityPlotView.as_view(), name="activity"),
+    path('activity.png', views.ColoniaActivityPlotView.as_view(),
+         name="colonia-activity"),
     path('comidas', views.CalendarioComidas.as_view(), name="comidas"),
     path('avistamientos', views.Avistamientos.as_view(), name="avistamiento"),
     path('gatos/', views.GatosView.as_view(), name="gatos"),

@@ -22,7 +22,7 @@ from .forms import (ColoniaFotoForm,
                     EnfermedadUpdateForm,
                     VacunarGatoForm
                     )
-from .plots import colonia_activity_plot, SpanishActivityMap
+from .plots import activity_plot, SpanishActivityMap
 from . import tasks
 
 
@@ -246,13 +246,13 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        colonia = self.get_object()
-        data['gatos'] = colonia.get_gatos_activos(vecino=False)
-        data['gatos_vecinos'] = colonia.get_gatos_activos(vecino=True)
-        data['desaparecidos'] = colonia.get_gatos_desaparecidos()
-        data['muertos'] = colonia.get_gatos_muertos()
-        data['fotos'] = colonia.fotos.order_by("fecha").all()[:20]
-        data['informes'] = colonia.informes.order_by("fecha").all()[:20]
+        gatos = self.colonia.get_gatos_activos()
+        gatos_colonia = [x for x in gatos if not x.vecino]
+        gatos_vecinos = [x for x in gatos if x.vecino]
+        data['gatos'] = gatos_colonia
+        data['gatos_vecinos'] = gatos_vecinos
+        data['fotos'] = self.colonia.fotos.order_by("fecha").all()[:20]
+        data['informes'] = self.colonia.informes.order_by("fecha").all()[:20]
         data['calendarios'] = self.get_calendars()
         return data
 
@@ -594,8 +594,8 @@ class VacunarGato(PRMixin, SubColoniaMixin, SubGatoMixin, SubCapturaMixin,
         return self.captura.gato.get_absolute_url()
 
 
-class ActivityPlotView(SubColoniaMixin, PNGPlotView):
-    plotter_function = staticmethod(colonia_activity_plot)
+class ColoniaActivityPlotView(SubColoniaMixin, PNGPlotView):
+    plotter_function = staticmethod(activity_plot)
     activity_class = SpanishActivityMap
     filename = "activity.png"
 
@@ -614,6 +614,29 @@ class ActivityPlotView(SubColoniaMixin, PNGPlotView):
 
     def get_data(self):
         return self.map.get_data()
+
+
+class GatoActivityPlotView(SubGatoMixin, PNGPlotView):
+    plotter_function = staticmethod(activity_plot)
+    activity_class = SpanishActivityMap
+    filename = "activity.png"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.map = self.activity_class(date.today())
+        self.map.load_activity(self.gato.get_actividad())
+
+    def get_plot_kwargs(self):
+        return {"xticks": self.map.get_x_ticks(),
+                "yticks": self.map.get_y_ticks(),
+                }
+
+    def get_kwargs(self):
+        return {"colonia": self.colonia}
+
+    def get_data(self):
+        return self.map.get_data()
+
 
 
 # ------------------------------------------------------------------------

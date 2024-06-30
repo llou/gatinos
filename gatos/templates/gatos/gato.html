@@ -1,5 +1,8 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
+<div id="mapa-colonia">
+  <img src="{% url 'gato-activity' colonia=colonia.slug gato=gato.slug %}">
+</div>
 <div class="ficha">
   {% if gato.retrato.foto.url %}
     <img class="ficha-foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.foto.url }}" />

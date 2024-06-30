@@ -9,7 +9,7 @@ class SpanishActivityMap(ActivityMap):
               "oct", "nov", "dic"]
 
 
-def colonia_activity_plot(data, xticks=None, yticks=None):
+def activity_plot(data, xticks=None, yticks=None):
     fig, ax = plt.subplots(figsize=(8, 1.5))
     ax.pcolormesh(data, vmin=0, vmax=5, cmap="Blues", edgecolors="white")
     ax.set_xticks(np.arange(len(xticks)), labels=xticks)
