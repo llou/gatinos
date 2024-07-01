@@ -41,15 +41,18 @@
      </div>
   </div>
   {% if informes %}
-  <table id="tabla-informes">
-    {% for informe in informes|atleast:8 %}
+  <table class="minitabla-informes">
+    {% for informe in informes|atleast:7 %}
     {% if informe and perms.gatos.view_informe %}
-    <tr><td class="informes-nombre"><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{% if not informe.titulo %}Informe{% else %}{{ informe.titulo }}{% endif %}</a></td><td>{{ informe.fecha|date:"SHORT_DATE_FORMAT" }}</td></tr>
+    <tr><td class="nombre"><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{% if not informe.titulo %}Informe{% else %}{{ informe.titulo }}{% endif %}</a></td><td>{{ informe.fecha|date:"SHORT_DATE_FORMAT" }}</td></tr>
   {% else %}
-    <tr><td class="informes-nombre">{{ informe.titulo }}</td><td>{{ informe.fecha }}</td></tr>
+    <tr><td class="titulo">{{ informe.titulo }}</td><td>{{ informe.fecha }}</td></tr>
     {% endif %}
     {% endfor %}
   </table>
+  <div class="underlink">
+    <a href="{% url 'informes' colonia=colonia.slug %}">Ver informes</a>
+  </div>
   {% else %}
       <p>No hay informes</p>
     {% endif %}

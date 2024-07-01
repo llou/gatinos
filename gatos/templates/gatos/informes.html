@@ -1,0 +1,30 @@
+{% extends 'gatos/colonia_base.html' %}
+{% block body %}
+
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Informes</h2>
+  </div>
+  <div class="actions">
+    {% if perms.gatos.add_informe %}
+<a href="{% url 'informe-create' colonia=colonia.slug %}">Crear Informe</a>
+    {% endif %}
+   </div>
+</div>
+
+{% if informes %}
+<table class="tabla-informes">
+  <tr><th>Nombre</th><th>Autor</th><th>Fecha</th><th>Acciones</th></tr>
+{% for informe in informes %}
+  <tr>
+    <td class="titulo"><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{{ informe.titulo }}</a></td>
+    <td class="autor">{{ informe.usuario|default_if_none:"<sin nombre>" }}</td>
+    <td class="fecha">{{ informe.fecha|date:'d/m/Y' }}</td>
+    <td class="acciones"><a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar</a> | <a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar</a></td>
+  </tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No hay informes</p>
+{% endif %}
+{% endblock %}

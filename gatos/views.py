@@ -384,7 +384,7 @@ class FotoView(PRMixin, SubColoniaMixin, FotoMixin, DetailView):
 class FotosView(PRMixin, SubColoniaMixin, ListView):
     permission_required = "gatos.view_foto"
     template_name = "gatos/fotos.html"
-    context_name = "fotos"
+    context_object_name = "fotos"
 
     def get_queryset(self):
         return self.colonia.fotos.all()
@@ -425,6 +425,15 @@ class FotoDeleteView(PRMixin, SubColoniaMixin, FotoMixin, DeleteView):
 class BaseInformeView(SubColoniaMixin):
     model = Informe
     context_name = "informe"
+
+
+class InformesView(PRMixin, SubColoniaMixin, ListView):
+    permission_required = "gatos.view_informe"
+    template_name = "gatos/informes.html"
+    context_object_name = "informes"
+
+    def get_queryset(self):
+        return self.colonia.informes.all().order_by("-fecha")
 
 
 class InformeView(PRMixin, BaseInformeView, InformeMixin, DetailView):

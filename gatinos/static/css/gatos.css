@@ -459,21 +459,60 @@ article {
   padding: 3px;
 }
 
-#tabla-informes {
+table.minitabla-informes {
   margin-top: 30px;
 }
 
-#tabla-informes tr td {
+table.minitabla-informes tr td {
   padding: 5px;
   height: 1em;
 }
 
-#tabla-informes tr:nth-child(odd) {
+table.minitabla-informes tr:nth-child(odd) {
   background-color: Whitesmoke;
 }
 
-#tabla-informes .informes-nombre {
+table.minitabla-informes .titulo {
   width: 400px;
+}
+
+.underlink {
+  width: 100%;
+  padding-top: 5px;
+  text-align: right;
+}
+
+table.tabla-informes {
+  width: 800px;
+  margin: 30px auto 0 auto;
+}
+
+table.tabla-informes tr th {
+  font-weight: bold;
+}
+
+table.tabla-informes tr td {
+  padding: 5px;
+  height: 1em;
+  text-align: center;
+}
+
+table.tabla-informes tr:nth-child(odd) {
+  background-color: Whitesmoke;
+}
+
+table.tabla-informes .titulo {
+  width: 400px;
+  text-align: left;
+}
+
+table.tabla-informes .autor {
+}
+
+table.tabla-informes .fecha {
+}
+
+table.tabla-informes .acciones {
 }
 
 article {

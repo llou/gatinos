@@ -52,6 +52,8 @@ colonia_urls = [
          name="foto-update"),
     path('fotos/f/<uuid:foto>/delete', views.FotoDeleteView.as_view(),
          name="foto-delete"),
+    path("informes", views.InformesView.as_view(),
+         name="informes"),
     path("informes/create", views.InformeCreateView.as_view(),
          name="informe-create"),
     path("informes/i/<int:pk>", views.InformeView.as_view(),

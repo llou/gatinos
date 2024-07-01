@@ -324,10 +324,11 @@ class Informe(UserBound):
     gatos = models.ManyToManyField("gatos.Gato", related_name="informes")
 
     def __repr__(self):
-        class_name = self.__class__.__name__
-        name = self.gato.name
-        tipo = self.tipo
-        return f"<{class_name} gato={name} tipo={tipo}>"
+        c = self.__class__.__name__
+        t = self.titulo
+        f = self.fecha
+        n = self.nombre_usuario
+        return f"<{c} titulo='{t}' fecha={f} autor='{n}'>"
 
     def __str__(self):
         return f"{self.titulo}"

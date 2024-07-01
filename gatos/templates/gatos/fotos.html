@@ -1,5 +1,14 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h2>Fotos</h2>
-{% include "gatos/fotos-block.html" with fotos=object_list %}
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Fotos</h2>
+  </div>
+  <div class="actions">
+    {% if perms.gatos.add_foto %}
+<a href="{% url 'foto-add' colonia=colonia.slug %}">Subir Foto</a>
+    {% endif %}
+   </div>
+</div>
+{% include "gatos/fotos-block.html" with fotos=fotos %}
 {% endblock %}
