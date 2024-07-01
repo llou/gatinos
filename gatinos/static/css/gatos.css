@@ -18,12 +18,12 @@
   --page-width: 1024px;
   --column-width: calc(var(--page-width) / 2 - var(--column-gap) / 2);
   --column-gap: 24px;
-  --column-min-height: 300px;
+  --column-min-height: 180px;
   --ratio-a4: 1.414;
   --button-width: 75px;
   --button-height: calc(var(--button-width) / 1.8);
   --doc-width: 800px;
-  --doc-min-height: calc(var(--doc-width) * var(--ratio-a4));
+  --doc-min-height: 300px;
   --image-aspect-ratio: var(--ratio-a4);
   --foto-ficha-ancho: 350px;
   --foto-ficha-alto: calc(var(--foto-ficha-ancho) * var(--image-aspect-ratio));
@@ -464,8 +464,12 @@ article {
 }
 
 #tabla-informes tr td {
-  border: 1px solid black;
-  padding: 3px;
+  padding: 5px;
+  height: 1em;
+}
+
+#tabla-informes tr:nth-child(odd) {
+  background-color: Whitesmoke;
 }
 
 #tabla-informes .informes-nombre {

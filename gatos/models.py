@@ -65,14 +65,10 @@ class Gato(models.Model):
     def peso(self):
         return self.get_ultima_captura().peso
 
-    @property
-    def capturado(self):
-        return self.get_ultima_captura() is not None
-
     def get_estado(self):
         if self.muerto:
             return "Muerto"
-        if self.capturado:
+        if self.get_capturado():
             return "Capturado"
         if self not in self.colonia.get_gatos_activos():
             return "Desaparecido"
@@ -88,6 +84,13 @@ class Gato(models.Model):
         if capturas:
             return capturas[0]
         return None
+
+    def get_capturado(self):
+        captura = self.get_ultima_captura()
+        if captura is None:
+            return False
+        else:
+            return captura.fecha_liberacion is None
 
     def get_peso(self):
         capturas = self.capturas.exclude(peso=None).order_by("-fecha_captura")

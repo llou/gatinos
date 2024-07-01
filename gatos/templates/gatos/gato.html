@@ -54,15 +54,13 @@
     {% if perms.gatos.change_gato %}
     <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a>
   {% endif %}
+  {% if perms.gatos.capturar_gato %}
   {% if not gato.vecino %}
-  {% if gato.capturado %}
-    {% if perms.gatos.capturar_gato %}
-       <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a>
-    {% endif %}
-  {% else %}
-    {% if perms.gatos.capturar_gato %}
+  {% if capturado %}
         <a href="{% url 'liberar' colonia=colonia.slug gato=gato.slug %}">Liberar</a>
-    {% endif %}
+  {% else %}
+       <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a>
+  {% endif %}
   {% endif %}
   {% if perms.gatos.add_enfermedad %}
     <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a>

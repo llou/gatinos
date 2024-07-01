@@ -1,6 +1,5 @@
 from datetime import date
 from htmlcalendar import htmlcalendar
-import markdown
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy, reverse
@@ -256,11 +255,7 @@ class ColoniaView(PRMixin, ColoniaMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        gatos = self.colonia.get_gatos_activos()
-        gatos_colonia = [x for x in gatos if not x.vecino]
-        gatos_vecinos = [x for x in gatos if x.vecino]
-        data['gatos'] = gatos_colonia
-        data['gatos_vecinos'] = gatos_vecinos
+        data['gatos'] = self.colonia.get_gatos_activos()
         data['fotos'] = self.colonia.fotos.order_by("fecha").all()[:20]
         data['informes'] = self.colonia.informes.order_by("fecha").all()[:20]
         data['calendarios'] = self.get_calendars()
@@ -304,6 +299,7 @@ class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['estado'] = self.gato.get_estado()
+        context['capturado'] = self.gato.get_capturado()
         return context
 
 
@@ -458,6 +454,10 @@ class InformeCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
         form_kwargs["colonia"] = self.colonia
         return form_kwargs
 
+    def get_success_url(self):
+        return reverse("informe", kwargs={"colonia": self.colonia.slug,
+                                          "pk": self.object.id})
+
 
 class InformeUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin,
                         InformeMixin, UpdateView):
@@ -473,6 +473,10 @@ class InformeUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin,
         form_kwargs = super().get_form_kwargs()
         form_kwargs["colonia"] = self.colonia
         return form_kwargs
+
+    def get_success_url(self):
+        return reverse("informe", kwargs={"colonia": self.colonia.slug,
+                                          "pk": self.object.id})
 
 
 class InformeDeleteView(PRMixin, BaseInformeView, DeleteView):

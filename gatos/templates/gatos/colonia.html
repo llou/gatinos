@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load atleast %}
 {% block base_body %}
   
 
@@ -41,8 +42,8 @@
   </div>
   {% if informes %}
   <table id="tabla-informes">
-    {% for informe in informes|slice:":10" %}
-    {% if perms.gatos.view_informe %}
+    {% for informe in informes|atleast:8 %}
+    {% if informe and perms.gatos.view_informe %}
     <tr><td class="informes-nombre"><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{% if not informe.titulo %}Informe{% else %}{{ informe.titulo }}{% endif %}</a></td><td>{{ informe.fecha|date:"SHORT_DATE_FORMAT" }}</td></tr>
   {% else %}
     <tr><td class="informes-nombre">{{ informe.titulo }}</td><td>{{ informe.fecha }}</td></tr>
@@ -85,15 +86,6 @@
  </div>
 </div>
     {% include "gatos/gatos-block.html" with gatos=gatos %}
-{% if gatos_vecinos %}
-<div class="main-subheader">
-  <div class="subtitle">
-     <h3>Gatos de los Vecinos</h3>
-  </div>
-  <div class="actions"></div>
- </div>
- {% include "gatos/gatos-block.html" with gatos=gatos_vecinos %}
-{% endif %}
 
 
 <div class="main-subheader">
