@@ -80,11 +80,12 @@
 
 <div class="main-subheader">
   <div class="subtitle">
-    <h2>Gatos</h2>
+    <h2>Gatos Activos</h2>
   </div>
   <div class="actions">
     {% if perms.gatos.add_gato %}
-<a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir gato</a>
+<a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir Gato</a>
+<a href="{% url 'gatos' colonia=colonia.slug %}">Ver Gatos</a>
     {% endif %}
  </div>
 </div>

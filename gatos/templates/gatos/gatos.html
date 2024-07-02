@@ -1,18 +1,29 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h2>Gatos</h2>
-{% for gato in object_list %}
-  <a href="{{ gato.get_absolute_url }}">
-    <div class="enlace-gato">
-      <div class="enlace-gato-foto">
-        <img src="{{ gato.foto.url }}"/>
-      </div>
-      <div class="enlace-gato-nombre">
-      {{ gato.nombre }}</a>
-      </div>
-    </div>
-  </a>
-{% empty %}
-<p>No hay gatos</p>
-{% endfor %}
+<div class="main-subheader">
+  <div class="subtitle">
+    {% if estado == 'activos' %}
+    <h2>Listado de Gatos</h2>
+  {% elif estado == 'desaparecidos' %}
+    <h2>Listado de Gatos DESAPARECIDOS</h2>
+  {% elif estado == 'muertos' %}
+    <h2>Listado de Gatos MUERTOS</h2>
+  {% endif %}
+ </div>
+ <div class="actions">
+   {% if estado == 'activos' %}
+     <a href="{% url 'gatos' colonia=colonia.slug %}?estado=desaparecidos">Ver Desaparecidos</a>
+     <a href="{% url 'gatos' colonia=colonia.slug %}?estado=muertos">Ver Muertos</a>
+
+  {% elif estado == 'desaparecidos' %}
+     <a href="{% url 'gatos' colonia=colonia.slug %}">Ver Activos</a>
+     <a href="{% url 'gatos' colonia=colonia.slug %}?estado=muertos">Ver Muertos</a>
+  {% elif estado == 'muertos' %}
+     <a href="{% url 'gatos' colonia=colonia.slug %}">Ver Activos</a>
+     <a href="{% url 'gatos' colonia=colonia.slug %}?estado=desaparecidos">Ver Desaparecidos</a>
+  {% endif %}
+ </div>
+ </div>
+
+{% include "gatos/gatos-block.html" with gatos=gatos %}
 {% endblock %}

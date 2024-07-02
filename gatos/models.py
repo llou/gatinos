@@ -448,7 +448,10 @@ class Enfermedad(UserBound):
         return f"<{class_name} gato={name} nombre={nombre} fecha={fecha}>"
 
     def __str__(self):
-        return f"enfermedad {self.diagnostico} del gato {self.gato.nombre} el {self.fecha_diagnostico}"
+        d = self.diagnostico
+        g = self.gato.nombre
+        f = self.fecha_diagnostico
+        return f"enfermedad {d} del gato {g} el {f}"
 
 
 class Avistamiento(UserBound):

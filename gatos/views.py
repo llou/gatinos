@@ -276,19 +276,33 @@ class ColoniaUpdateView(PRMixin, ColoniaMixin, UpdateView):
     fields = ["nombre", "descripcion"]
 
 
-class ColoniaDeleteView(PRMixin, ColoniaMixin, DeleteView):
-    permission_required = "gatos.delete_colonia"
-    model = Colonia
-    success_url = reverse_lazy("colonias")
-
-
 # ------------------------------------------------------------------------
 
 
 class GatosView(PRMixin, SubColoniaMixin, ListView):
     permission_required = "gatos.view_gato"
     template_name = "gatos/gatos.html"
-    queryset = Gato.gatos_colonia.all()
+    context_object_name = "gatos"
+    valid_estados = ["activos", "desaparecidos", "muertos"]
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.estado = self.request.GET.get("estado", "activos")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['estado'] = self.estado
+        return context
+
+    def get_queryset(self):
+        if self.estado == "activos":
+            return self.colonia.get_gatos_activos()
+        elif self.estado == "desaparecidos":
+            return self.colonia.get_gatos_desaparecidos()
+        elif self.estado == "muertos":
+            return self.colonia.gatos.filter(muerto=True)
+        else:
+            return self.colonia.get_gatos_activos()
 
 
 class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
