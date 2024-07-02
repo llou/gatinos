@@ -1,7 +1,20 @@
 {% extends 'gatos/gato_base.html' %}
+{% load markdown %}
 {% block gato_head %}
 {% endblock %}
 
 {% block gato_body %}
-Eo
+  <div class="main-subheader">
+    <div class="subtitle">
+    <p>Captura:</p>
+    <h3>Fecha: {{ captura.fecha_captura }} Peso: {{ captura.peso }}</h3>
+        </div>
+        <div class="actions">
+          {% if perms.gatos.change_captura and captura.capturado %}<a href="{% url 'captura-update' colonia=colonia.slug gato=gato.slug pk=captura.id %}">Editar</a> {% endif %} {% if perms.gatos.delete_captura %}<a href="{% url 'captura-delete' colonia=colonia.slug gato=gato.slug pk=captura.id %}">Borrar</a>{% endif %}
+        </div>
+  </div>
+
+  <article>
+  {{ captura.observaciones|render_markdown }}
+  </article>
 {% endblock %}

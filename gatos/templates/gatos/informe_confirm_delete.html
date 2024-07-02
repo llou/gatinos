@@ -1,9 +1,12 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h2>¿Borrar "{{ informe.titulo }}"?</h2>
+  <div id="confirmacion-mensaje">
+  Estas seguro de que quieres borrar el informe "{{ informe.titulo }}"</p>
+  </div>
 <form method="POST">
-  <p>Estas seguro de que quieres borrar el informe "{{ informe.titulo }}"</p>
   {% csrf_token %}
-  <input type="submit" value="Confirmar"/>
+  <div class="confirmations">
+    <input type="submit" value="Confirmar"/>
+  </div>
 </form>
 {% endblock %}

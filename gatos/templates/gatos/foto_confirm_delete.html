@@ -1,10 +1,14 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h2>Borrar Foto</h2>
-<img src="{{ foto.foto.url }}"/>
+
+<div id="confirmacion-mensaje">
+  ¿Está seguro de querer borrar la foto?
+</div>
 <form action="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.uuid %}" method="POST">
-  <p>¿Estas seguro de que quieres borrar la foto?</p>
   {% csrf_token %}
-  <input type="submit" value="Confirmar"/>
+  <img id="delete-foto" src="{{ foto.miniatura.url }}">
+  <div class="confirmations">
+    <input type="submit" value="Confirmar"/>
+  </div>
 </form>
 {% endblock %}

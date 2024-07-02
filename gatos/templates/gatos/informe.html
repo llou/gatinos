@@ -9,20 +9,18 @@
     <p>Informe:</p>
     <h2>{{ informe.titulo }}</h2>
   </div>
-  <div class="actions">
-    <a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar</a>
-  </div>
-</div>
-<article>
-  {{ informe.texto|render_markdown }}
-</article>
-
 <div class="actions">
    {% if perms.gatos.change_informe %}
     <a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar</a>
     {% endif %}
     {% if perms.gatos.delete_informe %}
     <a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar</a>
+  </div>
+</div>
+<article>
+  {{ informe.texto|render_markdown }}
+</article>
+
     {% endif %}
 </div>
 {% if gatos %}

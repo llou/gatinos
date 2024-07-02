@@ -8,7 +8,6 @@ gato_urls = [
          name="gato-activity"),
     path("capturar", views.CapturarGato.as_view(), name="capturar"),
     path("liberar", views.LiberarGato.as_view(), name="liberar"),
-    path("sacrificar", views.SacrificarGato.as_view(), name="sacrificar"),
     path("capturas/c/<int:pk>", views.CapturaView.as_view(),
          name="captura"),
     path("capturas/c/<int:pk>/vacunar", views.VacunarGato.as_view(),

@@ -282,7 +282,7 @@ class Foto(UserBound):
 
     def es_fea(self):
         gatos = [z.feo for z in self.gatos.all()]
-        gatos = reduce(lambda x, y: x or y.feo, gatos)
+        gatos = reduce(lambda x, y: x or y, gatos, False)
         return self.fea or gatos
 
     def get_pil_image(self):
@@ -323,6 +323,10 @@ class Informe(UserBound):
     texto = models.TextField(blank=True, null=True)
     gatos = models.ManyToManyField("gatos.Gato", related_name="informes")
 
+    def get_absolute_url(self):
+        return reverse('informe', kwargs={"colonia": self.colonia.slug,
+                                          "pk": self.id})
+
     def __repr__(self):
         c = self.__class__.__name__
         t = self.titulo
@@ -353,6 +357,10 @@ class Captura(UserBound):
     def capturado(self):
         return self.fecha_liberacion is None
 
+    @property
+    def liberado(self):
+        return self.fecha_liberacion is not None
+
     def get_absolute_url(self):
         view = "captura-update" if self.capturado else "captura"
         return reverse(view, kwargs={"colonia": self.gato.colonia.slug,
@@ -366,7 +374,7 @@ class Captura(UserBound):
         return f"<{class_name} gato={name} fecha={fecha}>"
 
     def __str__(self):
-        return "Capturado" if self.capturado else f"{self.fecha_captura}"
+        return f"captura del gato {self.gato.nombre} el {self.fecha_captura}"
 
 
 class Vacunacion(UserBound):
@@ -383,8 +391,20 @@ class Vacunacion(UserBound):
                 ]
 
     @property
+    def vacuna(self):
+        return vacunas[self.tipo]
+
+    @property
+    def nombre(self):
+        return self.vacuna['nombre']
+
+    @property
     def duracion(self):
-        return vacunas[self.tipo]["duracion"]
+        return self.vacuna["efecto"]
+
+    @property
+    def vacunacion(self):
+        return self.fecha + self.duracion
 
     @property
     def fecha(self):
@@ -416,6 +436,10 @@ class Enfermedad(UserBound):
     class Meta:
         verbose_name_plural = "enfermedades"
 
+    @property
+    def curado(self):
+        return self.fecha_curacion is None
+
     def __repr__(self):
         class_name = self.__class__.__name__
         name = self.gato.name
@@ -424,13 +448,11 @@ class Enfermedad(UserBound):
         return f"<{class_name} gato={name} nombre={nombre} fecha={fecha}>"
 
     def __str__(self):
-        return f"{self.diagnostico} ({self.fecha_diagnostico})"
+        return f"enfermedad {self.diagnostico} del gato {self.gato.nombre} el {self.fecha_diagnostico}"
 
 
-class Avistamiento(models.Model):
+class Avistamiento(UserBound):
     fecha = models.DateField(auto_now=True)
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE)
     gato = models.ForeignKey("gatos.Gato", on_delete=models.CASCADE,
                              related_name="avistamientos")
     colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
@@ -442,7 +464,10 @@ class Avistamiento(models.Model):
                 ]
 
     def str(self):
-        return f"Avistamiento de {self.gato.nombre} el {self.fecha.date}"
+        g = self.gato.nombre
+        f = self.fecha.date
+        u = self.usuario
+        return f"Avistamiento de {g} el {f} por {u}."
 
     def __repr__(self):
         cls = self.__class__.__name__

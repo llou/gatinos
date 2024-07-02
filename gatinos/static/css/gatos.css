@@ -6,7 +6,7 @@
   --link-color: blue;
   --disabled-color: grey;
   --visited-color: blue;
-  --ficha-color: rgb(255, 255, 204);
+  --ficha-color: Whitesmoke;
   --body-margin: 40px;
   --header-height: 40px;
   --footer-height: 40px;
@@ -23,9 +23,9 @@
   --button-width: 75px;
   --button-height: calc(var(--button-width) / 1.8);
   --doc-width: 800px;
-  --doc-min-height: 300px;
+  --doc-min-height: 800px;
   --image-aspect-ratio: var(--ratio-a4);
-  --foto-ficha-ancho: 350px;
+  --foto-ficha-ancho: 120px;
   --foto-ficha-alto: calc(var(--foto-ficha-ancho) * var(--image-aspect-ratio));
   --foto-miniatura-ancho: 120px;
   --foto-miniatura-alto: calc(var(--foto-miniatura-ancho) * var(--image-aspect-ratio));
@@ -201,7 +201,8 @@ form p {
   border-radius: var(--border-radius);
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
+  align-items: stretch;
   background-color: var(--ficha-color);
   min-height: calc(var(--foto-ficha-alto) + 2 * 10px);
 }
@@ -217,11 +218,7 @@ form p {
   line-height: var(--foto-ficha-alto);
   vertical-align: middle;
   color: var(--disabled-color);
-  font-size: 2em;
-}
-
-.fea {
-  filter: blur(10px);
+  font-size: 1em;
 }
 
 .ficha-foto {
@@ -248,6 +245,74 @@ form p {
 .ficha-texto .texto {
   margin-bottom: 20px;
 }
+
+.ficha-stickers {
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.sticker {
+  height: 28px;
+  width: 200px;
+  font-size: 1em;
+  line-height: 2em;
+  vertical-align: middle;
+  font-weight: light;
+  color: white;
+  background-color: #404040;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.activo-sticker {
+  font-weight: bold;
+  color: green;
+}
+
+.capturado-sticker {
+  font-weight: bold;
+  color: yellow;
+}
+
+.capturado-sticker {
+  font-weight: bold;
+  color: orangej;
+}
+
+.olvidado-sticker {
+  font-weight: bold;
+  color: cyan;
+}
+
+.muerto-sticker {
+  font-weight: bold;
+  color: red;
+}
+
+.empty {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  content: "Vacio";
+}
+
+.button-bar {
+  margin-bottom: 20px;
+}
+
+.fea {
+  filter: blur(10px);
+}
+
+.fea:hover {
+  filter: none;
+}
+
 
 .galeria-gatos {
   display: flex;
@@ -357,7 +422,7 @@ ul.ErrorList {
   border: 5px solid red
 }
 
-.buttons, .actions {
+.buttons, .actions, .confirmations {
   height: 30px;
   min-width: 200px;
   display: flex;
@@ -373,7 +438,12 @@ ul.ErrorList {
   justify-content: flex-end;
 }
 
-.buttons a, .actions a {
+.confirmations {
+  justify-content: center;
+}
+
+.buttons a, .actions a, .buttons button, .actions button,
+.confirmations a, .confirmations button {
   height: var(--button-height);
   min-width: var(--button-width);
   padding-left: 5px;
@@ -387,25 +457,26 @@ ul.ErrorList {
   background-color: var(--button-color);
 }
 
-.butons a:hover, .actions.a:hover {
+.butons a:hover, .actions.a:hover .confirmations.a:hover{
   cursor: pointer;
 }
 
-.butons a:active, .actions.a:hover {
+.butons a:active, .actions.a:active, .confirmations.a:active {
   cursor: pointer;
   background-color: var(--button-active-color);
   color: var(--button-text-color);
 }
 
-input[type=submit], input[type=button], input[type=reset] {
+input[type=submit], input[type=button], input[type=reset], button {
   height: var(--button-height);
-  width: var(--button-width);
+  min-width: var(--button-width);
   border: 1px solid black;
   text-decoration: none;
   background-color: var(--button-color);
+  padding-left: 5px;
+  padding-right: 5px;
   color: var(--button-text-color);
-  margin-top: 20px;
-  margin-left: 150px;
+  font-size: 1em;
 }
 
 input[type=submit]:active, input[type=button]:active, 
@@ -424,10 +495,7 @@ input[type=reset]:hover {
   margin-bottom: 50px;
   font-size: 1.5em;
   text-align: center;
-}
-
-article {
-  min-height: 500px;
+  margin-top: 50px;
 }
 
 .no-resize {
@@ -460,7 +528,7 @@ article {
 }
 
 table.minitabla-informes {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 table.minitabla-informes tr td {
@@ -506,13 +574,109 @@ table.tabla-informes .titulo {
   text-align: left;
 }
 
-table.tabla-informes .autor {
+table.tabla-informes .autor
 }
 
 table.tabla-informes .fecha {
 }
 
 table.tabla-informes .acciones {
+}
+
+table.tabla-capturas tr:nth-child(odd) {
+  background-color: Whitesmoke;
+}
+
+table.tabla-capturas th {
+  font-weight: bold;
+  padding: 5px;
+  height: 1em;
+}
+
+table.tabla-capturas th {
+  font-weight: bold;
+  padding: 5px;
+  height: 1em;
+}
+
+table.tabla-capturas tr td {
+  padding: 5px;
+  height: 1em;
+  text-align: center;
+}
+
+table.tabla-capturas .vista {
+  width: 200px;
+}
+
+table.tabla-capturas .peso {
+  width: 100px;
+  text-align: center;
+}
+
+table.tabla-capturas .acciones {
+  width: 200px;
+  text-align: center;
+}
+
+table.tabla-enfermedades tr:nth-child(odd) {
+  background-color: Whitesmoke;
+}
+
+table.tabla-enfermedades th {
+  font-weight: bold;
+  padding: 5px;
+  height: 1em;
+}
+
+table.tabla-enfermedades tr td {
+  padding: 5px;
+  height: 1em;
+  text-align: center;
+}
+
+table.tabla-enfermedades .vista {
+  width: 200px;
+}
+
+table.tabla-enfermedades .peso {
+  width: 100px;
+  text-align: center;
+}
+
+table.tabla-enfermedades .acciones {
+  width: 200px;
+  text-align: center;
+}
+
+table.minitabla-vacunas tr:nth-child(odd) {
+  background-color: Whitesmoke;
+}
+
+table.minitabla-vacunas th {
+  font-weight: bold;
+  padding: 5px;
+  height: 1em;
+}
+
+table.minitabla-vacunas tr td {
+  padding: 5px;
+  height: 1em;
+  text-align: center;
+}
+
+table.minitabla-vacunas .nombre {
+  width: 200px;
+}
+
+table.minitabla-vacunas .fecha {
+  width: 100px;
+  text-align: center;
+}
+
+table.minitabla-vacunas .efecto {
+  width: 200px;
+  text-align: center;
 }
 
 article {
@@ -608,4 +772,9 @@ article em {
 
 .comidas-none {
   background-color: none;
+}
+
+#delete-foto {
+  display: block;
+  margin: 40px auto;
 }

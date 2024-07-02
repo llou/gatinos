@@ -27,7 +27,7 @@ class ActivityMap:
         return year_ago - timedelta(year_ago.weekday())
 
     def get_extra_week(self, today, base):
-        return 2 if today.weekday() + base.weekday() > 6 else 1
+        return 3 if today.weekday() + base.weekday() > 6 else 2
 
     def get_weeks(self, num_days, extra_week):
         return num_days // 7 + extra_week

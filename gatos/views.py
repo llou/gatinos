@@ -300,6 +300,7 @@ class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['estado'] = self.gato.get_estado()
         context['capturado'] = self.gato.get_capturado()
+        context['informes'] = self.gato.informes.all()
         return context
 
 
@@ -321,26 +322,6 @@ class GatoUpdateView(PRMixin, GatoMixin, SubColoniaMixin, UpdateView):
     context_object_name = "gato"
     template_name = "gatos/gato_update.html"
     form_class = GatoForm
-
-
-class GatoDeleteView(PRMixin, GatoMixin, SubColoniaMixin, DeleteView):
-    permission_required = "gatos.delete_gato"
-    model = Gato
-
-
-class SacrificarGato(PRMixin, GatoConfirmationView):
-    permission_required = "gatos.sacrificar_gato"
-
-    def get_question(self):
-        return f"¿Seguro que quiere marcar para sacrificar '{self.gato}'?"
-
-    def confirm(self):
-        self.gato.sacrificar = True
-        self.gato.save()
-        return HttpResponseRedirect(self.gato.get_absolute_url())
-
-    def cancel(self):
-        return HttpResponseRedirect(self.gato.get_absolute_url())
 
 
 # ------------------------------------------------------------------------
@@ -502,8 +483,10 @@ class CapturaBaseMixin(SubGatoMixin, SubColoniaMixin):
         super().setup(request, *args, **kwargs)
         self.captura = get_object_or_404(Captura, id=kwargs['pk'])
 
-    def get_object(self):
-        return self.captura
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['captura'] = self.captura
+        return context
 
     def get_success_url(self):
         return self.gato.get_absolute_url()
@@ -534,7 +517,8 @@ class LiberarGato(PRMixin, GatoConfirmationView):
         return f"¿Seguro que ha liberado al gato '{self.gato}'?"
 
     def confirm(self):
-        if self.gato.capturado:
+        capturado = self.gato.get_capturado()
+        if capturado:
             captura = self.gato.get_ultima_captura()
             captura.fecha_liberacion = date.today()
             captura.save()
@@ -544,10 +528,11 @@ class LiberarGato(PRMixin, GatoConfirmationView):
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
 
-class CapturaView(PRMixin, CapturaBaseMixin, DetailView):
+class CapturaView(PRMixin, SubColoniaMixin, SubGatoMixin, DetailView):
+    model = Captura
     permission_required = "gatos.view_captura"
     template_name = "gatos/captura_view.html"
-    context_name = "captura"
+    context_object_name = "captura"
 
 
 class CapturaUpdateView(PRMixin, CapturaBaseMixin, UpdateView):

@@ -1,55 +1,42 @@
 {% extends 'gatos/colonia_base.html' %}
+{% load atleast %}
 {% block body %}
-<div id="mapa-colonia">
-  <img src="{% url 'gato-activity' colonia=colonia.slug gato=gato.slug %}">
-</div>
 <div class="ficha">
   {% if gato.retrato.foto.url %}
     <img class="ficha-foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.foto.url }}" />
   {% else %}
   <div class="ficha-foto-relleno">No hay foto</div>
   {% endif %}
+
   <div class="ficha-texto">
     {% if gato.sacrificar %}<p class="warning">SACRIFICAR<p>{% endif %}
     <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
     <h2>{{ gato.nombre }}</h2>
     {% if not gato.vecino %}
     <div class="entrada"><span class="label">Color</span>: {{ gato.color }}</div>
-    <div class="entrada"><span class="label">Peso</span>: {% if peso is not None %}{{ peso }}{% else %}No se ha pesado todavía{% endif %}</div>
+    <div class="entrada"><span class="label">Peso</span>: {% if peso is not None %}{{ peso }}Kg{% else %}No se ha pesado todavía{% endif %}</div>
     <p><span class="label">Descripcion</span>:</p>
     <div class="texto">{{ gato.descripcion }}</div>
-    <h3>Capturas</h3>
-    <ul>
-    {% for captura in capturas %}
-      <li><a href="{{ captura.get_absolute_url }}">{{ captura }}</a> (<a href="{% url 'captura-delete' colonia=colonia.slug gato=gato.slug pk=captura.id %}">Borrar</a>)</li>
-    {% empty %}
-      No hay capturas
-    {% endfor %}
-    </ul>
-    <h3>Enfermedades</h3>
-    <ul>
-    {% for e in enfermedades %}
-      <li><a href="{% url "enfermedad" colonia=colonia.slug gato=gato.slug pk=e.id %}">{{ e.diagnostico }}</a> (
-          <a href="{% url "enfermedad-update" colonia=colonia.slug gato=gato.slug pk=e.id %}">Editar</a>, 
-          <a href="{% url "enfermedad-delete" colonia=colonia.slug gato=gato.slug pk=e.id %}">Borrar</a> )</li>
-    {% empty %}
-     No hay enfermedades
-    {% endfor %}
-    </ul>
-    <h3>Vacunaciones</h3>
-    <ul>
-    {% for v in vacunas %}
-      <li>{{ v }}
-    {% empty %}
-     No hay vacunaciones
-    {% endfor %}
-    <ul>
-    {% else %}
-      Gato del vecino: {{ gato.nombre_vecino }}
+  {% endif %}
+  </div>
+
+  <div class="ficha-stickers">
+    {% if estado == "Muerto" %}
+      <div class="sticker">Estado: <span class="muerto-sticker">Muerto</span></div>
+    {% elif estado == "Olvidado" %}
+      <div class="sticker">Estado: <span class="olvidado-sticker">Olvidado</span></div>
+    {% elif estado == "Desaparecido" %}
+      <div class="sticker">Estado: <span class="sticker desaparecido-sticker">Desaparecido</span></div>
+    {% elif estado == "Capturado" %}
+      <div class="sticker">Estado: <span class="sticker capturado-sticker">Capturado</span></div>
+    {% elif estado == "Activo" %}
+      <div class="sticker">Estado: <span class="sticker activo-sticker">Activo</span></div>
     {% endif %}
   </div>
-</div>
-  <div class="button-bar">
+ </div>
+
+
+<div class="button-bar">
   <div class="actions">
     {% if perms.gatos.change_gato %}
     <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a>
@@ -62,17 +49,150 @@
        <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a>
   {% endif %}
   {% endif %}
-  {% if perms.gatos.add_enfermedad %}
+  {% if capturado and perms.gatos.add_enfermedad %}
     <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a>
   {% endif %}
-  {% if gato.capturado and perms.gatos.vacunar_gato %}
+  {% if capturado and perms.gatos.vacunar_gato %}
     <a href="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=ultima_captura.id %}">Vacunar</a>
   {% endif %}
-  {#{% if not gato.sacrificar and perms.gatos.sacrificar_gato %} <a href="{% url 'sacrificar' colonia=colonia.slug gato=gato.slug %}">Sacrificar</a>{% endif %}#}
   {% endif %}
   </div>
+</div>
+
+
+{% if not gato.vecino %}
+
+
+<div id="mapa-colonia">
+  <img src="{% url 'gato-activity' colonia=colonia.slug gato=gato.slug %}">
+</div>
+
+
+<div class="columns">
+  <div class="column">
+  <div class="main-subheader">
+    <div class="subtitle">
+      <h3>Capturas</h3>
+    </div>
+    <div class="actions">
+     </div>
+  </div>
+    {% if capturas %}
+    <table class="tabla-capturas">
+      <tr><th>Fecha</th><th>Peso(Kg)</th><th>Acciones</th></tr>
+    {% for captura in capturas|atleast:7 %}
+    {% if captura %}
+      <tr><td class="vista"><a href="{{ captura.get_absolute_url }}">{{ captura.fecha_captura }}</a></td>
+          <td class="peso">{{ captura.peso|default_if_none:"-" }}</td>
+          <td class="acciones">
+              {% if perms.gatos.change_captura and captura.capturado %}<a href="{% url 'captura-update' colonia=colonia.slug gato=gato.slug pk=captura.id %}">Editar</a> |{% endif %} {% if perms.gatos.delete_captura %}<a href="{% url 'captura-delete' colonia=colonia.slug gato=gato.slug pk=captura.id %}">Borrar</a>{% endif %}
+    {% else %}
+      <tr><td></td><td></td><td></td></tr>
+    {% endif %}
+    {% endfor %}
+    </table>
+   {% else %}
+    <p>No hay Capturas</p>
+    {% endif %}
   </div>
 
-<h2>Fotos</h2>
+  <div class="column">
+  <div class="main-subheader">
+    <div class="subtitle">
+      <h3>Enfermedades</h3>
+    </div>
+    <div class="actions">
+     </div>
+  </div>
+  {% if enfermedades %}
+    <table class="tabla-enfermedades">
+      <tr><th>Diagnostico</th><th>Fecha</th><th>Acciones</th></tr>
+    {% for enfermedad in enfermedades|atleast:7 %}
+    {% if enfermedad %}
+      <tr><td class="vista"><a href="{{ enfermedad.get_absolute_url }}">{{ enfermedad.diagnostico }}</a></td>
+          <td class="fecha">{{ enfermedad.fecha_diagnostico|date:"SHORT_DATE_FORMAT"}}</td>
+          <td class="acciones">
+              {% if perms.gatos.change_enfermedad and not enfermedad.curado %}<a href="{% url 'enfermedad-update' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Editar</a> |{% endif %} {% if perms.gatos.delete_enfermedad %}<a href="{% url 'enfermedad-delete' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Borrar</a>{% endif %}
+    {% else %}
+      <tr><td></td><td></td><td></td></tr>
+    {% endif %}
+    {% endfor %}
+    </table>
+   {% else %}
+    <p>No hay Capturas</p>
+    {% endif %}
+  </div>
+</div>
+
+
+<div class="columns">
+  <div class="column">
+  <div class="main-subheader">
+    <div class="subtitle">
+      <h3>Vacunaciones</h3>
+    </div>
+    <div class="actions">
+      {% if perms.gatos.add_vacuna %}
+      {% endif %}
+     </div>
+  </div>
+  {% if vacunas %}
+  <table class="minitabla-vacunas">
+    <tr><th class="nombre">Nombre</th><th class="fecha">Fecha</th><th class="efecto">Hasta</th></tr>
+    {% for vacuna in vacunas|atleast:7 %}
+    <tr><td class="nombre">{{ vacuna.nombre }}</td><td class="fecha">{{ vacuna.fecha|date:"SHORT_DATE_FORMAT" }}</td><td class="efecto">{{ vacuna.vacunacion|date:"SHORT_DATE_FORMAT" }}</td></tr>
+    {% endfor %}
+  </table>
+  <div class="underlink">
+  </div>
+  {% else %}
+      <p>No hay vacunaciones</p>
+  {% endif %}
+  </div>
+
+  <div class="column">
+  <div class="main-subheader">
+    <div class="subtitle">
+      <h3>Últimos Informes</h3>
+    </div>
+    <div class="actions">
+      {% if perms.gatos.add_informe %}
+      {% endif %}
+     </div>
+  </div>
+  {% if informes %}
+  <table class="minitabla-informes">
+    {% for informe in informes|atleast:7 %}
+    {% if informe and perms.gatos.view_informe %}
+    <tr><td class="nombre"><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{% if not informe.titulo %}Informe{% else %}{{ informe.titulo }}{% endif %}</a></td><td>{{ informe.fecha|date:"SHORT_DATE_FORMAT" }}</td></tr>
+  {% else %}
+    <tr><td class="titulo">{{ informe.titulo }}</td><td>{{ informe.fecha }}</td></tr>
+    {% endif %}
+    {% endfor %}
+  </table>
+  <div class="underlink">
+    <a href="{% url 'informes' colonia=colonia.slug %}">Ver informes</a>
+  </div>
+  {% else %}
+      <p>No hay informes</p>
+    {% endif %}
+  </div>
+</div>
+
+
+{% else %}
+  <p>
+    Gato del vecino: {{ gato.nombre_vecino }}
+  </p>
+{% endif %}
+
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Fotos</h2>
+  </div>
+  <div class="actions">
+   </div>
+</div>
 {% include "gatos/fotos-block.html" with fotos=gato.fotos.all %}
+
 {% endblock %}
