@@ -4,6 +4,8 @@
 <form class="flex-form" action="{% url 'colonia-update' colonia=colonia.slug %}" method="POST">
 {{ form.as_div }}
 {% csrf_token %}
+<div class="buttons">
 <input type="submit" value="Actualiza">
+</div>
 </form>
 {% endblock %}

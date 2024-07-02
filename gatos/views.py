@@ -273,7 +273,7 @@ class ColoniaUpdateView(PRMixin, ColoniaMixin, UpdateView):
     permission_required = "gatos.change_colonia"
     template_name = "gatos/colonia_update.html"
     model = Colonia
-    fields = ["nombre", "descripcion"]
+    fields = ["nombre", "periodo_activo", "descripcion"]
 
 
 # ------------------------------------------------------------------------

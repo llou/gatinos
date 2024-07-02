@@ -104,5 +104,6 @@ class VacunarGatoForm(forms.ModelForm):
             raise Exception("No se puede vacunar a un gato no capturado")
         self.instance.captura = self.captura
         tipo = self.instance.tipo
-        self.instance.efecto = vacunas[tipo]["efecto"]
+        vacuna = vacunas[tipo]
+        self.instance.efecto = vacuna.efecto
         super().save(commit=commit)

@@ -396,11 +396,11 @@ class Vacunacion(UserBound):
 
     @property
     def nombre(self):
-        return self.vacuna['nombre']
+        return self.vacuna.nombre
 
     @property
     def duracion(self):
-        return self.vacuna["efecto"]
+        return self.vacuna.efecto
 
     @property
     def vacunacion(self):
