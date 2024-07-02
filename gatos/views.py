@@ -1,8 +1,9 @@
 from datetime import date
 from htmlcalendar import htmlcalendar
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views import View
 from django.views.generic import (DetailView,
@@ -19,6 +20,8 @@ from .models import (Gato,
                      Enfermedad,
                      Captura,
                      Informe,
+                     Vacunacion,
+                     Avistamiento,
                      )
 from .forms import (ColoniaFotoForm,
                     GatoForm,
@@ -660,6 +663,35 @@ class GatoActivityPlotView(SubGatoMixin, PNGPlotView):
         return self.map.get_data()
 
 
+class UserMixin:
+    def __setup__(self, request, *args, **kwargs):
+        super().__setup__(request, *args, **kwargs)
+        self.user = get_object_or_404(settings.AUTH_USER_MODEL,
+                                      username=kwargs['username'])
+
+
+class UserActivityPlotView(UserMixin, PNGPlotView):
+    plotter_function = staticmethod(activity_plot)
+    activity_class = SpanishActivityMap
+    filename = "activity.png"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.map = self.activity_class(date.today())
+        self.map.load_activity(get_actividad_usuario(self.user))
+
+    def get_plot_kwargs(self):
+        return {"xticks": self.map.get_x_ticks(),
+                "yticks": self.map.get_y_ticks(),
+                }
+
+    def get_kwargs(self):
+        return {"colonia": self.colonia}
+
+    def get_data(self):
+        return self.map.get_data()
+
+
 # ------------------------------------------------------------------------
 
 
@@ -737,3 +769,108 @@ def update_exifs(request, colonia="ponte"):
     c = get_object_or_404(Colonia, slug=colonia)
     tasks.update_exifs.delay(c.slug)
     return HttpResponse("Ok, Updating Exifs")
+
+
+def get_actividad_usuario(usuario, min_fecha=None, max_fecha=None):
+    fotos = Foto.objects.filter(usuario=usuario)
+    informes = Informe.objects.filter(usuario=usuario)
+    capturas = Captura.objects.filter(usuario=usuario)
+    vacunas = Vacunacion.objects.filter(usuario=usuario)
+    diag = Enfermedad.objects.filter(usuario=usuario)
+    avist = Avistamiento.objects.filter(usuario=usuario)
+    if min_fecha is not None:
+        fotos = fotos.filter(fecha__gte=min_fecha)
+        informes = informes.filter(fecha__gte=min_fecha)
+        capturas = capturas.filter(fecha_captura__gte=min_fecha)
+        vacunas = vacunas.filter(captura__fecha_captura__gte=min_fecha)
+        diag = diag.filter(fecha_diagnostico__gte=min_fecha)
+        avist = avist.filter(fecha__gte=min_fecha)
+    if max_fecha is not None:
+        fotos = fotos.filter(fecha__lte=max_fecha)
+        informes = informes.filter(fecha__lte=max_fecha)
+        capturas = capturas.filter(fecha_captura__lte=max_fecha)
+        vacunas = vacunas.filter(captura__fecha_captura__lte=max_fecha)
+        diag = diag.filter(fecha_diagnostico__lte=max_fecha)
+        avist = avist.filter(fecha__lte=max_fecha)
+    fotos = list(fotos.all())
+    informes = list(informes.all())
+    capturas = list(capturas.all())
+    vacunas = list(vacunas.all())
+    diag = list(diag.all())
+    avist = list(avist.all())
+    activs = fotos + informes + capturas + vacunas + diag + avist
+    return activs
+
+
+class ActivityGrouper:
+    @classmethod
+    def build_from_user(cls, usuario, min_fecha=None, max_fecha=None):
+        activs = get_actividad_usuario(usuario, min_fecha=min_fecha,
+                                       max_fecha=max_fecha)
+        return cls(activs)
+
+    @classmethod
+    def build_from_colonia(cls, colonia, min_fecha=None, max_fecha=None):
+        activs = colonia.get_eventos(min_fecha=min_fecha,
+                                     max_fecha=max_fecha)
+        return cls(activs)
+
+    @classmethod
+    def build_from_gato(cls, gato, min_fecha=None, max_fecha=None):
+        activs = gato.get_eventos(min_fecha=min_fecha, max_fecha=max_fecha)
+        return cls(activs)
+
+    @staticmethod
+    def agrupador(actividades):
+        result = {}
+        for item in actividades:
+            fecha = item.fecha
+            if fecha in result:
+                result[fecha].append(item)
+            else:
+                result[fecha] = [item]
+        return result
+
+    def __init__(self, actividades):
+        self.actividades = actividades
+        self.grupos = self.agrupador(self.actividades)
+
+    def iter_grupos(self):
+        fechas = sorted(self.grupos.keys(), reverse=True)
+        for f in fechas:
+            yield f, self.grupos[f]
+
+    @property
+    def lista_de_actividades(self):
+        return [x.fecha for x in self.actividades]
+
+
+class ActividadesColonia(SubColoniaMixin, TemplateView):
+    template_name = "gatos/actividad_colonia.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        agrupador = ActivityGrouper.build_from_colonia(self.colonia)
+        context['agrupador'] = agrupador
+        return context
+
+
+class ActividadesGato(SubColoniaMixin, SubGatoMixin, TemplateView):
+    template_name = "gatos/actividad_gato.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        agrupador = ActivityGrouper.build_from_gato(self.gato)
+        context['agrupador'] = agrupador
+        return context
+
+
+class UserActivity(TemplateView):
+    template_name = "gatos/user_profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.request.user
+        agrupador = ActivityGrouper.build_from_user(self.request.user)
+        context["agrupador"] = agrupador
+        return context

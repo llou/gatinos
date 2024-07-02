@@ -123,7 +123,7 @@ main h3 {
 }
 
 main ul {
-  list-style-type: circle;
+  list-style-type: disc;
   list-style-position: inside;
   padding-bottom: 20px;
 }
@@ -777,4 +777,17 @@ article em {
 #delete-foto {
   display: block;
   margin: 40px auto;
+}
+
+.actividades {
+  margin: 0 50px 0 50px;
+}
+
+.fecha-actividad {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+ul.actividades-list {
+  
 }

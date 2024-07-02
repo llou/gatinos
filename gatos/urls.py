@@ -1,10 +1,11 @@
 from django.urls import path, include
-from plottings import plots
-from . import views, plots
+from . import views
 
 
 gato_urls = [
     path('activity.png', views.GatoActivityPlotView.as_view(),
+         name="gato-activity-graph"),
+    path('actividades', views.ActividadesGato.as_view(),
          name="gato-activity"),
     path("capturar", views.CapturarGato.as_view(), name="capturar"),
     path("liberar", views.LiberarGato.as_view(), name="liberar"),
@@ -30,12 +31,16 @@ gato_urls = [
 
 colonia_urls = [
     path('activity.png', views.ColoniaActivityPlotView.as_view(),
+         name="colonia-activity-graph"),
+    path('actividades', views.ActividadesColonia.as_view(),
          name="colonia-activity"),
     path('comidas', views.CalendarioComidas.as_view(), name="comidas"),
     path('avistamientos', views.Avistamientos.as_view(), name="avistamiento"),
     path('gatos/', views.GatosView.as_view(), name="gatos"),
     path('gato-add', views.GatoCreateView.as_view(), name="gato-add"),
     path('gatos/g/<slug:gato>', views.GatoView.as_view(), name="gato"),
+    path('gatos/g/<slug:gato>/update', views.GatoUpdateView.as_view(),
+         name="gato-update"),
     path('gatos/g/<slug:gato>/update', views.GatoUpdateView.as_view(),
          name="gato-update"),
     path('gatos/g/<slug:gato>/', include(gato_urls)),
@@ -64,6 +69,9 @@ colonia_urls = [
          name="informe-delete"),
     ]
 
+user_urls = [
+    path("activity.png", views.UserActivityPlotView.as_view()),
+    ]
 
 urlpatterns = [
     path("", views.ColoniasList.as_view(), name="colonias"),
@@ -73,4 +81,6 @@ urlpatterns = [
     path('colonia/c/<slug:colonia>/update', views.ColoniaUpdateView.as_view(),
          name="colonia-update"),
     path('colonia/c/<slug:colonia>/', include(colonia_urls)),
+    path('user/u/<str:username>/activity', views.UserActivity.as_view(),
+         name="user-activity"),
     ]

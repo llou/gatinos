@@ -64,7 +64,7 @@
 
 
 <div id="mapa-colonia">
-  <img src="{% url 'gato-activity' colonia=colonia.slug gato=gato.slug %}">
+  <a href="{% url 'gato-activity' colonia=colonia.slug gato=gato.slug %}"><img src="{% url 'gato-activity-graph' colonia=colonia.slug gato=gato.slug %}"></a>
 </div>
 
 

@@ -101,15 +101,32 @@ class Gato(models.Model):
     def get_eventos(self, min_fecha=None, max_fecha=None):
         informes = self.informes
         fotos = self.fotos
+        capturas = Captura.objects.filter(gato=self)
+        vacunas = Vacunacion.objects.filter(captura__gato=self)
+        diag = self.enfermedades
+        avtos = self.avistamientos
         if min_fecha is not None:
             informes = informes.filter(fecha__gte=min_fecha)
             fotos = fotos.filter(fecha__gte=min_fecha)
+            avtos = avtos.filter(fecha__gte=min_fecha)
+            capturas = capturas.filter(fecha_captura__gte=min_fecha)
+            vacunas = vacunas.filter(captura__fecha_captura__gte=min_fecha)
+            diag = diag.filter(fecha_diagnostico__gte=min_fecha)
         if max_fecha is not None:
             informes = informes.filter(fecha__lte=max_fecha)
             fotos = fotos.filter(fecha__lte=max_fecha)
+            avtos = avtos.filter(fecha__lte=max_fecha)
+            capturas = capturas.filter(fecha_captura__lte=max_fecha)
+            vacunas = vacunas.filter(captura__fecha_captura__lte=max_fecha)
+            diag = diag.filter(fecha_diagnostico__lte=max_fecha)
         informes = list(informes.all())
         fotos = list(fotos.all())
-        return informes + fotos + [Alta(self)]
+        avtos = list(avtos.all())
+        capturas = list(capturas.all())
+        vacunas = list(vacunas.all())
+        diag = list(diag.all())
+        alta = [Alta(self)]
+        return informes + fotos + alta + avtos + capturas + vacunas + diag
 
     def get_actividad(self, min_fecha=None, max_fecha=None):
         eventos = self.get_eventos(min_fecha=min_fecha, max_fecha=max_fecha)
@@ -165,19 +182,23 @@ class Colonia(models.Model):
     def get_eventos(self, min_fecha=None, max_fecha=None):
         informes = self.informes
         fotos = self.fotos
-        avtos = self.gatos
+        altas = self.gatos
+        avtos = self.avistamientos
         if min_fecha is not None:
             informes = informes.filter(fecha__gte=min_fecha)
             fotos = fotos.filter(fecha__gte=min_fecha)
-            avtos = avtos.filter(fecha_alta__gte=min_fecha)
+            avtos = avtos.filter(fecha__gte=min_fecha)
+            altas = altas.filter(fecha_alta__gte=min_fecha)
         if max_fecha is not None:
             informes = informes.filter(fecha__lte=max_fecha)
             fotos = fotos.filter(fecha__lte=max_fecha)
-            avtos = avtos.filter(fecha_alta__lte=max_fecha)
+            avtos = avtos.filter(fecha__lte=max_fecha)
+            altas = altas.filter(fecha_alta__lte=max_fecha)
         informes = list(informes.all())
         fotos = list(fotos.all())
-        avtos = [Alta(x) for x in avtos.all()]
-        return informes + fotos + avtos
+        avtos = list(avtos.all())
+        altas = [Alta(x) for x in altas.all()]
+        return informes + fotos + avtos + altas
 
     def get_actividad(self, min_fecha=None, max_fecha=None):
         eventos = self.get_eventos(min_fecha=min_fecha, max_fecha=max_fecha)
@@ -309,7 +330,9 @@ class Foto(UserBound):
                                        "foto": self.uuid})
 
     def __str__(self):
-        return str(self.uuid)
+        usuario = self.usuario.username
+        gatos = ", ".join([x.nombre for x in self.gatos.all()])
+        return f"Foto por {usuario} de {gatos}"
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id}>"
@@ -335,7 +358,7 @@ class Informe(UserBound):
         return f"<{c} titulo='{t}' fecha={f} autor='{n}'>"
 
     def __str__(self):
-        return f"{self.titulo}"
+        return f"Informe '{self.titulo}' por {self.usuario.username}"
 
 
 class Captura(UserBound):
@@ -352,6 +375,10 @@ class Captura(UserBound):
                 ("capturar_gato", ""),
                 ("liberar_gato", ""),
                 ]
+
+    @property
+    def fecha(self):
+        return self.fecha_captura
 
     @property
     def capturado(self):
@@ -374,7 +401,12 @@ class Captura(UserBound):
         return f"<{class_name} gato={name} fecha={fecha}>"
 
     def __str__(self):
-        return f"captura del gato {self.gato.nombre} el {self.fecha_captura}"
+        nombre = self.gato.nombre
+        if self.usuario is not None:
+            usuario = self.usuario.username
+            return f"Captura del gato {nombre} por {usuario}"
+        else:
+            return f"Captura del gato {nombre}"
 
 
 class Vacunacion(UserBound):
@@ -422,7 +454,7 @@ class Vacunacion(UserBound):
         return f"<{cls} nombre={vcn} gato={gato} fecha={fecha}>"
 
     def __str__(self):
-        return self.get_tipo_display()
+        return f"Vacunacion de {self.gato.nombre} para {self.tipo}"
 
 
 class Enfermedad(UserBound):
@@ -435,6 +467,10 @@ class Enfermedad(UserBound):
 
     class Meta:
         verbose_name_plural = "enfermedades"
+
+    @property
+    def fecha(self):
+        return self.fecha_diagnostico
 
     @property
     def curado(self):
@@ -450,8 +486,7 @@ class Enfermedad(UserBound):
     def __str__(self):
         d = self.diagnostico
         g = self.gato.nombre
-        f = self.fecha_diagnostico
-        return f"enfermedad {d} del gato {g} el {f}"
+        return f"Diagnostico {d} del gato {g}"
 
 
 class Avistamiento(UserBound):
@@ -466,11 +501,10 @@ class Avistamiento(UserBound):
                 ("avistar_gato", ""),
                 ]
 
-    def str(self):
+    def __str__(self):
         g = self.gato.nombre
-        f = self.fecha.date
         u = self.usuario
-        return f"Avistamiento de {g} el {f} por {u}."
+        return f"Avistamiento de {g} por {u}."
 
     def __repr__(self):
         cls = self.__class__.__name__

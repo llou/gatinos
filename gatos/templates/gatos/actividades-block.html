@@ -1,0 +1,10 @@
+<div class="actividades">
+{% for fecha, grupo in agrupador.iter_grupos %}
+<div class="fecha-actividad">{{ fecha }}</div>
+<ul class="actividades-list">
+  {% for actividad in grupo %}
+  <li>{{ actividad }}</li>
+  {% endfor %}
+</ul>
+{% endfor %}
+</div>
