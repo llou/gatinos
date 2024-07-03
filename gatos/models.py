@@ -35,6 +35,15 @@ class Alta:
         return f"<{self.__class__.__name__} gato={self.gato.nombre}>"
 
 
+class EstadoGato(models.TextChoices):
+    LIBRE = 'LIBRE', 'Libre'
+    MARCADO = 'MARCADO', 'Marcado'
+    CAPTURADO = 'CAPTURADO', 'Capturado'
+    DESAPARECIDO = 'DESAPARECIDO', 'Desaparecido'
+    OLVIDADO = 'OLVIDADO', 'Olvidado'
+    MUERTO = 'MUERTO', 'Muerto'
+
+
 class GatosColoniaManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(vecino=False)
@@ -57,6 +66,7 @@ class Gato(models.Model):
     fecha_alta = models.DateField(auto_now=True)
     muerto = models.BooleanField(default=False)
     muerto_fecha = models.DateField(null=True, blank=True)
+    estado = models.CharField(max_length=200, default=EstadoGato.choices)
 
     objects = models.Manager()
     gatos_colonia = GatosColoniaManager()
