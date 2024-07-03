@@ -614,3 +614,16 @@ class AsignacionComida(models.Model):
         f = self.fecha
         c = self.colonia.nombre
         return f"<{cls} usuario={u} fecha={f} colonia={c}>"
+
+
+class Anuncio(models.Model):
+    class NivelesDeAviso(models.TextChoices):
+        BAJO = "BAJO", "Bajo"
+        MEDIO = "MEDIO", "Medio"
+        ALTO = "ALTO", "Alto"
+
+    mensaje = models.TextField()
+    hora_inicio = models.DateTimeField(null=True, blank=True)
+    hora_fin = models.DateTimeField(null=True, blank=True)
+    urgencia = models.CharField(max_length=20, choices=NivelesDeAviso.choices,
+                                default=NivelesDeAviso.MEDIO)

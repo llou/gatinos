@@ -1,7 +1,7 @@
 from django.contrib import admin
 from gatinos.admin import admin_site
 from .models import (Gato, Colonia, Foto, Informe, Enfermedad, Vacunacion,
-                     Captura)
+                     Captura, Anuncio)
 
 
 class GatoAdmin(admin.ModelAdmin):
@@ -71,6 +71,13 @@ class CapturaAdmin(admin.ModelAdmin):
         return obj.gato.colonia
 
 
+class AnuncioAdmin(admin.ModelAdmin):
+    list_display = ("mensaje", "hora_inicio", "hora_fin", "urgencia")
+
+    def mensaje(self, obj):
+        return obj.mensaje[:50]
+
+
 admin_site.register(Gato, GatoAdmin)
 admin_site.register(Colonia, ColoniaAdmin)
 admin_site.register(Foto, FotoAdmin)
@@ -78,3 +85,4 @@ admin_site.register(Informe, InformeAdmin)
 admin_site.register(Enfermedad, EnfermedadAdmin)
 admin_site.register(Vacunacion, VacunacionAdmin)
 admin_site.register(Captura, CapturaAdmin)
+admin_site.register(Anuncio, AnuncioAdmin)

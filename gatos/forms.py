@@ -1,7 +1,13 @@
 from datetime import date
 from django import forms
 from .data import vacunas
-from .models import Foto, Gato, Captura, Enfermedad, Informe, Vacunacion
+from .models import (Foto,
+                     Gato,
+                     Captura,
+                     Enfermedad,
+                     Informe,
+                     Vacunacion,
+                     )
 
 
 class ColoniaFotoForm(forms.ModelForm):

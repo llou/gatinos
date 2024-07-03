@@ -38,6 +38,10 @@
   </div>
 
   </header>
+  {% for anuncio in anuncios %}
+  <div class="anuncio anuncio-{{ anuncio.get_urgencia_display|lower }}">{{ anuncio.mensaje }}</div>
+  {% endfor %}
+
   <main>
 {% block base_body %}
 {% endblock %}
