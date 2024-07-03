@@ -21,11 +21,13 @@
 {% for gato in no_vistos %}
 <a class="no-decoration" href="{% url 'avistamiento' colonia=colonia.slug %}?gato={{ gato.slug }}">
     <div class="enlace-gato">
+      <div class="marco-foto">
       {% if gato.retrato.miniatura %}
-        <img class="galeria-gatos-miniatura foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+        <img class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
     {% else %}
       <div class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
+      </div>
     {% if not gato.vecino %}
       <div class="enlace-gato-nombre">{{ gato.nombre }}</div>
     {% else %}
@@ -50,11 +52,13 @@
 {% for gato in vistos %}
   <a class="no-decoration" href="{% url 'avistamiento' colonia=colonia.slug %}?gato={{ gato.slug }}">
     <div class="enlace-gato">
+      <div class="marco-foto">
       {% if gato.retrato.miniatura %}
-        <img class="galeria-gatos-miniatura foto{% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+        <img class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
     {% else %}
       <div class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
+      </div>
     {% if not gato.vecino %}
       <div class="enlace-gato-nombre">{{ gato.nombre }}</div>
     {% else %}

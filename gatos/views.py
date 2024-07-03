@@ -181,11 +181,11 @@ class SubCapturaMixin(BaseCapturaMixin):
 
 
 class FotoMixin:
-    foto_uuid = "foto"
+    foto_id = "foto"
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.foto = get_object_or_404(Foto, uuid=self.kwargs[self.foto_uuid])
+        self.foto = get_object_or_404(Foto, id=self.kwargs[self.foto_id])
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -368,7 +368,7 @@ class FotoCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        tasks.process_image.delay(form.instance.uuid)
+        tasks.process_image.delay(form.instance.id)
         return response
 
 
@@ -405,7 +405,7 @@ class FotoUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin, FotoMixin,
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        tasks.process_image.delay(form.instance.uuid)
+        tasks.process_image.delay(form.instance.id)
         return response
 
 

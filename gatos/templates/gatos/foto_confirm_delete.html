@@ -4,7 +4,7 @@
 <div id="confirmacion-mensaje">
   ¿Está seguro de querer borrar la foto?
 </div>
-<form action="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.uuid %}" method="POST">
+<form action="{% url 'foto-delete' colonia=foto.colonia.slug foto=foto.id %}" method="POST">
   {% csrf_token %}
   <img id="delete-foto" src="{{ foto.miniatura.url }}">
   <div class="confirmations">

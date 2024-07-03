@@ -1,9 +1,15 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
-<h2>Añadir Gato</h2>
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Añadir Gato</h2>
+  </div>
+  <div class="actions"></div>
+</div>
+
   <form action="{% url 'gato-add' colonia=colonia.slug %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
-<input type="submit" value="Crea"\>
+<input type="submit" value="Guardar"\>
 </form>
 {% endblock %}

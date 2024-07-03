@@ -1,15 +1,15 @@
-import uuid
 from datetime import date, timedelta
 from functools import reduce
 from pathlib import Path
 from PIL import Image
 from PIL.ExifTags import TAGS
+from viewflow.fsm import State
 from django.conf import settings
 from django.urls import reverse
 from django.db import models
 from django.utils.text import slugify
 from .data import vacunas
-from .utils import pil_to_django_file
+from .utils import pil_to_django_file, random_choice
 
 SEXOS = [
           ("M", "Macho"),
@@ -44,6 +44,56 @@ class EstadoGato(models.TextChoices):
     MUERTO = 'MUERTO', 'Muerto'
 
 
+# Ver https://docs.viewflow.io/fsm/models.html
+
+
+class GatoFlow:
+    estado = State(EstadoGato, default=EstadoGato.LIBRE)
+
+    def __init__(self, gato):
+        self.gato = gato
+
+    @estado.setter()
+    def _set_gato_estado(self, value):
+        self.gato.estado = value
+
+    @estado.getter()
+    def _get_gato_estado(self):
+        return self.gato.estado
+
+    @estado.on_success()
+    def _on_transittion_success(self, descriptor, source, target):
+        self.report.save()
+
+    @estado.transition(source=EstadoGato.LIBRE, target=EstadoGato.MARCADO)
+    def marcar(self):
+        pass
+
+    @estado.transition(source=EstadoGato.MARCADO, target=EstadoGato.LIBRE)
+    def desmarcar(self):
+        pass
+
+    @estado.transition(source=EstadoGato.MARCADO, target=EstadoGato.CAPTURADO)
+    def capturar(self):
+        pass
+
+    @estado.transition(source=EstadoGato.CAPTURADO, target=EstadoGato.LIBRE)
+    def liberar(self):
+        pass
+
+    @estado.transition(EstadoGato.LIBRE, target=EstadoGato.DESAPARECIDO)
+    def desaparecer(self):
+        pass
+
+    @estado.transition(EstadoGato.DESAPARECIDO, target=EstadoGato.OLVIDADO)
+    def olvidar(self):
+        pass
+
+    @estado.transition(State.ANY, target=EstadoGato.MUERTO)
+    def morir(self):
+        pass
+
+
 class GatosColoniaManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(vecino=False)
@@ -66,7 +116,7 @@ class Gato(models.Model):
     fecha_alta = models.DateField(auto_now=True)
     muerto = models.BooleanField(default=False)
     muerto_fecha = models.DateField(null=True, blank=True)
-    estado = models.CharField(max_length=200, default=EstadoGato.choices)
+    estado = models.CharField(max_length=200, default="LIBRE")
 
     objects = models.Manager()
     gatos_colonia = GatosColoniaManager()
@@ -162,16 +212,37 @@ class Gato(models.Model):
         self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        return reverse("gato", kwargs={"colonia": self.colonia.slug,
-                                       "gato": self.slug})
-
     @property
     def foto(self):
         if self.retrato:
             return self.retrato.foto.url
         else:
             return settings.RELLENO_FOTO_URL
+
+    @property
+    def flow(self):
+        return GatoFlow(self)
+
+    @property
+    def color_estado(self):
+        if self.estado == "LIBRE":
+            return "yellow"
+        elif self.estado == "MARCADO":
+            return "green"
+        elif self.estado == "CAPTURADO":
+            return "orange"
+        elif self.estado == "DESAPARECIDO":
+            return "lightgray"
+        elif self.estado == "OLVIDADO":
+            return "gray"
+        elif self.estado == "MUERTO":
+            return "bLACK"
+        else:
+            return "pink"
+
+    def get_absolute_url(self):
+        return reverse("gato", kwargs={"colonia": self.colonia.slug,
+                                       "gato": self.slug})
 
     def __str__(self):
         return self.nombre
@@ -295,6 +366,8 @@ class UserBound(models.Model):
 class Foto(UserBound):
     MINIATURA_SIZE = (170, 120)
 
+    id = models.CharField(max_length=20, primary_key=True,
+                          default=random_choice, editable=False)
     colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
                                 related_name="fotos")
     foto = models.ImageField(upload_to="fotos/%Y/%m/%d")
@@ -304,7 +377,6 @@ class Foto(UserBound):
     gatos = models.ManyToManyField("gatos.Gato", related_name="fotos",
                                    blank=True)
     fecha = models.DateField(auto_now_add=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     fea = models.BooleanField(default=False)
 
     @property
@@ -337,7 +409,7 @@ class Foto(UserBound):
 
     def get_absolute_url(self):
         return reverse("foto", kwargs={"colonia": self.colonia.slug,
-                                       "foto": self.uuid})
+                                       "foto": self.id})
 
     def __str__(self):
         usuario = self.usuario.username

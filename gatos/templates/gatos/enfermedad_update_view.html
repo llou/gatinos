@@ -1,9 +1,13 @@
 {% extends 'gatos/gato_base.html' %}
-{% block gato_head %}
-{% endblock %}
-
 {% block gato_body %}
-<h3>Editar Enfermedad</h3>
+
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Editar Enfermedad</h2>
+  </div>
+  <div class="actions"></div>
+</div>
+
 <form action="{% url 'enfermedad-update' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}

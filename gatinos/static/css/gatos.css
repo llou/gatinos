@@ -135,6 +135,22 @@ footer {
   text-align: center;
 }
 
+form {
+  font-size: 1em;
+}
+
+label, input, textarea, select, option {
+  font-size: 1.2em;
+}
+
+input[type=checkbox] {
+  transform: scale(1.5);
+}
+
+textarea {
+  font-family: monospace;
+}
+
 form.flex-form{
   display: flex;
   flex-direction: column;

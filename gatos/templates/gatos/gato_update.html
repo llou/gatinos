@@ -1,9 +1,12 @@
 {% extends 'gatos/colonia_base.html' %}
 {% block body %}
 <div class="main-subheader">
-<h2>Editar Gato</h2>
+  <div class="subtitle">
+	<h2>Editar Gato</h2>
+  </div>
+  <div class="actions"></div>
 </div>
-  <form action="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}" method="POST">
+<form action="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
 <input type="submit" value="Actualiza"\>

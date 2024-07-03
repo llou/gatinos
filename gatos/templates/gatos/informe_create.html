@@ -1,12 +1,15 @@
 {% extends 'gatos/colonia_base.html' %}
-{% block head %}
-{% endblock %}
-
 {% block body %}
-<h3>Informe</h3>
+<div class="main-subheader">
+  <div class="subtitle">
+    <h2>Crear Informe</h2>
+  </div>
+  <div class="actions"></div>
+</div>
+
 <form action="{% url 'informe-create' colonia=colonia.slug %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
-<input type="submit" value="Nueva"\>
+<input type="submit" value="Guardar"\>
 </form>
 {% endblock %}

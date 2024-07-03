@@ -1,9 +1,17 @@
 {% extends 'base.html' %}
 {% block base_body %}
-<h2>Crear Colonia</h2>
+<div class="main-subheader">
+  <div class="subtitle">
+     <h2>Crear Colonia</h2>
+  </div>
+  <div class="actions"></div>
+</div>
+
 <form class="flex-form" action="{% url 'colonia-add' %}" method="POST">
 {{ form.as_div }}
 {% csrf_token %}
-<input type="submit" value="Crea">
+<div class="buttons">
+<input type="submit" value="Guardar">
+</div>
 </form>
 {% endblock %}
