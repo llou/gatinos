@@ -21,17 +21,7 @@
   </div>
 
   <div class="ficha-stickers">
-    {% if estado == "Muerto" %}
-      <div class="sticker">Estado: <span class="muerto-sticker">Muerto</span></div>
-    {% elif estado == "Olvidado" %}
-      <div class="sticker">Estado: <span class="olvidado-sticker">Olvidado</span></div>
-    {% elif estado == "Desaparecido" %}
-      <div class="sticker">Estado: <span class="sticker desaparecido-sticker">Desaparecido</span></div>
-    {% elif estado == "Capturado" %}
-      <div class="sticker">Estado: <span class="sticker capturado-sticker">Capturado</span></div>
-    {% elif estado == "Activo" %}
-      <div class="sticker">Estado: <span class="sticker activo-sticker">Activo</span></div>
-    {% endif %}
+    <div class="sticker">Estado: <span class="sticker-badge color-{{ gato.color_estado }}">{{ gato.estado }}</span></div>
   </div>
  </div>
 
