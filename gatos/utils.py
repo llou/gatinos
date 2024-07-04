@@ -16,7 +16,7 @@ def pil_to_django_file(pil_image, format="JPEG"):
 
 
 def random_choice():
-    return ''.join(secrets.choice(alphabet) for _ in range(8))
+    return ''.join(secrets.choice(alphabet) for _ in range(16))
 
 
 class Agrupador:
