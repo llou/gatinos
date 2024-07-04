@@ -69,11 +69,7 @@ class GatoFlow:
     def marcar(self):
         pass
 
-    @estado.transition(source=EstadoGato.MARCADO, target=EstadoGato.LIBRE)
-    def desmarcar(self):
-        pass
-
-    @estado.transition(source=EstadoGato.MARCADO, target=EstadoGato.CAPTURADO)
+    @estado.transition(source=EstadoGato.LIBRE, target=EstadoGato.CAPTURADO)
     def capturar(self):
         pass
 
