@@ -1,16 +1,24 @@
-{% extends 'gatos/colonia_base.html' %}
-{% block head %}
-{% endblock %}
-
-{% block body %}
-<div>
-  <h2>{{ enfermedad.diagnostico }} ({{ enfermedad.fecha_diagnostico }})</h2>
-  {{ enfermedad.observaciones }}
+{% extends 'gatos/gato_base.html' %}
+{% load markdown %}
+{% block gato_body %}
+<div class="main-subheader">
+  <div class="subtitle">
+    <p>Diagnostico:</p>
+    <h3>{{ enfermedad.diagnostico }}</h3>
+  </div>
+<div class="actions">
+   {% if perms.gatos.change_enfermedad %}
+    <a href="{% url 'enfermedad-update' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Editar</a>
+    {% endif %}
+    {% if perms.gatos.delete_enfermedad %}
+    <a href="{% url 'enfermedad-delete' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Borrar</a>
+  </div>
 </div>
+<article>
+  {{ enfermedad.observaciones|render_markdown }}
+</article>
 
-<ul>
-  <li><a href="{% url 'enfermedad-update' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Editar Diagnóstico</a></li>
-  <li><a href="{% url 'enfermedad-delete' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}">Borrar Diagnóstico</a></li>
-</ul>
+    {% endif %}
+</div>
 
 {% endblock %}

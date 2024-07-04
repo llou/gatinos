@@ -11,6 +11,6 @@
 <form action="{% url 'enfermedad-update' colonia=colonia.slug gato=gato.slug pk=enfermedad.id %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
-<input type="submit" value="Actualiza"\>
+<input type="submit" value="Guardar"\>
 </form>
 {% endblock %}

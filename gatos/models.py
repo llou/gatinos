@@ -363,6 +363,12 @@ class UserBound(models.Model):
         abstract = True
 
 
+def foto_upload_to(instance, filename):
+    path = Path(filename)
+    ext = path.suffix
+    return f"fotos/{instance.id}{ext}"
+
+
 class Foto(UserBound):
     MINIATURA_SIZE = (170, 120)
 
@@ -370,7 +376,7 @@ class Foto(UserBound):
                           default=random_choice, editable=False)
     colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
                                 related_name="fotos")
-    foto = models.ImageField(upload_to="fotos/%Y/%m/%d")
+    foto = models.ImageField(upload_to=foto_upload_to)
     miniatura = models.ImageField(upload_to="miniaturas/%Y/%m/%d", default="")
     exif = models.JSONField(default=dict)
     descripcion = models.TextField(blank=True)
@@ -557,6 +563,11 @@ class Enfermedad(UserBound):
     @property
     def curado(self):
         return self.fecha_curacion is None
+
+    def get_absolute_url(self):
+        return reverse("enfermedad", kwargs={"colonia": self.gato.colonia.slug,
+                                             "gato": self.gato.slug,
+                                             "pk": self.id})
 
     def __repr__(self):
         class_name = self.__class__.__name__
