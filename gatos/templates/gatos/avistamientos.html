@@ -14,6 +14,9 @@
     <h3>Pendientes</h2>
   </div>
   <div class="actions">
+    {% if perms.gatos.add_gato %}
+      <a href="{% url 'gato-add' colonia=colonia.slug %}">Añadir Gato</a>
+    {% endif %}
   </div>
 </div>
 
