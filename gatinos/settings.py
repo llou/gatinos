@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = 'Europe/Madrid'
+TIME_ZONE = os.environ.get("TIME_ZONE", default="Europe/Madrid")
 
 USE_I18N = True
 
