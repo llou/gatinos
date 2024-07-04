@@ -32,7 +32,6 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="localhost 127.0.
 # Application definition
 
 APPLICATION_TITLE = "Aplicacion para la Gestión de Colonias de Gatos"
-VERSION = "alfa"
 
 INSTALLED_APPS = [
     'gatos',

@@ -32,6 +32,7 @@ from .forms import (ColoniaFotoForm,
                     VacunarGatoForm
                     )
 from .plots import activity_plot, SpanishActivityMap
+from .utils import Agrupador
 from . import tasks
 
 
@@ -425,13 +426,22 @@ class BaseInformeView(SubColoniaMixin):
     context_name = "informe"
 
 
-class InformesView(PRMixin, SubColoniaMixin, ListView):
+class AgrupadorDeInformes(Agrupador):
+
+    @staticmethod
+    def get_value(item):
+        return date(item.fecha.year, item.fecha.month, 1)
+
+
+class InformesView(PRMixin, SubColoniaMixin, TemplateView):
     permission_required = "gatos.view_informe"
     template_name = "gatos/informes.html"
-    context_object_name = "informes"
 
-    def get_queryset(self):
-        return self.colonia.informes.all().order_by("-fecha")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        informes = self.colonia.informes.all().order_by("-fecha")
+        context['agrupador'] = AgrupadorDeInformes(informes)
+        return context
 
 
 class InformeView(PRMixin, BaseInformeView, InformeMixin, DetailView):
@@ -802,7 +812,7 @@ def get_actividad_usuario(usuario, min_fecha=None, max_fecha=None):
     return activs
 
 
-class ActivityGrouper:
+class AgrupadorDeActividades(Agrupador):
     @classmethod
     def build_from_user(cls, usuario, min_fecha=None, max_fecha=None):
         activs = get_actividad_usuario(usuario, min_fecha=min_fecha,
@@ -821,28 +831,12 @@ class ActivityGrouper:
         return cls(activs)
 
     @staticmethod
-    def agrupador(actividades):
-        result = {}
-        for item in actividades:
-            fecha = item.fecha
-            if fecha in result:
-                result[fecha].append(item)
-            else:
-                result[fecha] = [item]
-        return result
-
-    def __init__(self, actividades):
-        self.actividades = actividades
-        self.grupos = self.agrupador(self.actividades)
-
-    def iter_grupos(self):
-        fechas = sorted(self.grupos.keys(), reverse=True)
-        for f in fechas:
-            yield f, self.grupos[f]
+    def get_value(x):
+        return x.fecha
 
     @property
     def lista_de_actividades(self):
-        return [x.fecha for x in self.actividades]
+        return [x.fecha for x in self.items]
 
 
 class ActividadesColonia(SubColoniaMixin, TemplateView):
@@ -850,7 +844,7 @@ class ActividadesColonia(SubColoniaMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        agrupador = ActivityGrouper.build_from_colonia(self.colonia)
+        agrupador = AgrupadorDeActividades.build_from_colonia(self.colonia)
         context['agrupador'] = agrupador
         return context
 
@@ -860,7 +854,7 @@ class ActividadesGato(SubColoniaMixin, SubGatoMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        agrupador = ActivityGrouper.build_from_gato(self.gato)
+        agrupador = AgrupadorDeActividades.build_from_gato(self.gato)
         context['agrupador'] = agrupador
         return context
 
@@ -871,6 +865,6 @@ class UserActivity(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
-        agrupador = ActivityGrouper.build_from_user(self.request.user)
+        agrupador = AgrupadorDeActividades.build_from_user(self.request.user)
         context["agrupador"] = agrupador
         return context

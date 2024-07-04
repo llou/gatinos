@@ -1,12 +1,13 @@
 from datetime import date, datetime, timezone
 from zoneinfo import ZoneInfo
 from django.conf import settings
+from gatinos import __version__
 from gatos.models import Anuncio
 
 
 def metadata(request):
     return {"app_title": settings.APPLICATION_TITLE,
-            "app_version": settings.VERSION,
+            "app_version": __version__,
             "current_year": date.today().year}
 
 

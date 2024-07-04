@@ -1,4 +1,5 @@
 {% extends 'gatos/colonia_base.html' %}
+{% load atleast %}
 {% block body %}
 
 <div class="main-subheader">
@@ -12,19 +13,22 @@
    </div>
 </div>
 
-{% if informes %}
+{% for mes, informes in agrupador %}
+  <h3>{{ mes|date:"F Y"}}</h3>
 <table class="tabla-informes">
   <tr><th>Nombre</th><th>Autor</th><th>Fecha</th><th>Acciones</th></tr>
-{% for informe in informes %}
+{% for informe in informes|atleast:6 %}
+{% if informe %}
   <tr>
     <td class="titulo"><a href="{% url 'informe' colonia=colonia.slug pk=informe.id %}">{{ informe.titulo }}</a></td>
     <td class="autor">{{ informe.usuario|default_if_none:"<sin nombre>" }}</td>
     <td class="fecha">{{ informe.fecha|date:'d/m/Y' }}</td>
     <td class="acciones"><a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar</a> | <a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar</a></td>
   </tr>
+{% else %}
+  <tr><td></td><td></td><td></td><td></td></tr>
+{% endif %}
 {% endfor %}
 </table>
-{% else %}
-<p>No hay informes</p>
-{% endif %}
+{% endfor %}
 {% endblock %}
