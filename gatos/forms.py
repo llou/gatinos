@@ -34,13 +34,14 @@ class FotoBaseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["colonia"].initial = colonia
         self.fields["colonia"].widget.attrs['readonly'] = True
+        self.fields["colonia"].widget.attrs['class'] = "galeria-fotos"
         self.fields["gatos"].queryset = colonia.gatos
 
 
 class FotoCreateForm(FotoBaseForm):
     class Meta:
         model = Foto
-        fields = ["gatos", "colonia"]
+        fields = ["foto", "gatos", "colonia"]
         slug_field = "colonia"
         widgets = {
                 'colonia': forms.HiddenInput()
@@ -79,7 +80,7 @@ class InformeForm(forms.ModelForm):
                 }
 
     gatos = forms.ModelMultipleChoiceField(
-                widget=forms.CheckboxSelectMultiple,
+                widget=CustomCheckboxSelectMultiple,
                 queryset=None,
                 required=False
                 )
@@ -89,7 +90,7 @@ class InformeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["colonia"].initial = colonia
         self.fields["colonia"].widget.attrs['readonly'] = True
-        self.fields["gatos"].queryset = colonia.gatos.all()
+        self.fields["gatos"].queryset = colonia.gatos
 
 
 class CapturaForm(forms.ModelForm):
