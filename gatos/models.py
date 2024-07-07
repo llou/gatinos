@@ -37,7 +37,6 @@ class Alta:
 
 class EstadoGato(models.TextChoices):
     LIBRE = 'LIBRE', 'Libre'
-    MARCADO = 'MARCADO', 'Marcado'
     CAPTURADO = 'CAPTURADO', 'Capturado'
     DESAPARECIDO = 'DESAPARECIDO', 'Desaparecido'
     OLVIDADO = 'OLVIDADO', 'Olvidado'
@@ -63,29 +62,27 @@ class GatoFlow:
 
     @estado.on_success()
     def _on_transittion_success(self, descriptor, source, target):
-        self.report.save()
+        self.gato.save()
 
     @estado.transition(source=EstadoGato.LIBRE, target=EstadoGato.CAPTURADO)
     def capturar(self):
-        pass
-
-    @estado.transition(source=EstadoGato.CAPTURADO, target=EstadoGato.MARCADO)
-    def marcar(self):
         pass
 
     @estado.transition(source=EstadoGato.CAPTURADO, target=EstadoGato.LIBRE)
     def liberar(self):
         pass
 
-    @estado.transition(EstadoGato.LIBRE, target=EstadoGato.DESAPARECIDO)
+    @estado.transition(source=EstadoGato.LIBRE,
+                       target=EstadoGato.DESAPARECIDO)
     def desaparecer(self):
         pass
 
-    @estado.transition(EstadoGato.DESAPARECIDO, target=EstadoGato.OLVIDADO)
+    @estado.transition(source=EstadoGato.DESAPARECIDO,
+                       target=EstadoGato.OLVIDADO)
     def olvidar(self):
         pass
 
-    @estado.transition(State.ANY, target=EstadoGato.MUERTO)
+    @estado.transition(source=State.ANY, target=EstadoGato.MUERTO)
     def morir(self):
         pass
 
@@ -113,6 +110,7 @@ class Gato(models.Model):
     muerto = models.BooleanField(default=False)
     muerto_fecha = models.DateField(null=True, blank=True)
     estado = models.CharField(max_length=200, default="LIBRE")
+    marcado = models.BooleanField(default=False)
 
     objects = models.Manager()
     gatos_colonia = GatosColoniaManager()
@@ -232,7 +230,7 @@ class Gato(models.Model):
         elif self.estado == "OLVIDADO":
             return "gray"
         elif self.estado == "MUERTO":
-            return "bLACK"
+            return "black"
         else:
             return "pink"
 
@@ -418,7 +416,7 @@ class Foto(UserBound):
     def __str__(self):
         usuario = self.usuario.username
         gatos = ", ".join([x.nombre for x in self.gatos.all()])
-        return f"Foto por {usuario} de {gatos}"
+        return f"Foto '{self.id}' de {gatos} por {usuario}"
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id}>"
