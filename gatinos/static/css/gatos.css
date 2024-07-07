@@ -280,6 +280,7 @@ textarea {
 }
 
 .sticker {
+  user-select: none;
   height: 28px;
   width: 200px;
   font-size: 1em;
@@ -564,6 +565,7 @@ input[type=reset]:hover {
 }
 
 .calendarios {
+  user-select: none;
   display: flex;
   flex-direction: row;
   justify-content: center;
