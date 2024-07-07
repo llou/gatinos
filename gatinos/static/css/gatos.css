@@ -65,10 +65,10 @@ a:visited {
 }
 
 label {
-  text-align: right;
   display: inline-block;
-  font-weight: bold;
   width: 150px;
+  text-align: right;
+  font-weight: bold;
 }
 
 header {
@@ -387,6 +387,15 @@ textarea {
 .foto {
   max-width: calc(var(--page-width) - 2 * 40px);
   object-fit: contain;
+}
+
+label.foto-label {
+  display: block;
+  width: auto;
+  text-align: center;
+  font-weight: normal;
+  font-size: 1em;
+}
 }
 
 #id_gatos {

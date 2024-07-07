@@ -1,13 +1,18 @@
 {# templates/custom_checkbox_select.html #}
-<ul class="{{ widget.attrs.class }}">
     {% for group, options, index in widget.optgroups %}
+    <div class="{{ widget.attrs.class }}">
         {% for option in options %}
-            <li>
-                <label for="{{ widget.attrs.id }}_{{ index }}">
-                    <input type="checkbox" name="{{ widget.name }}" value="{{ option.value }}" id="{{ widget.attrs.id }}_{{ index }}" {% if option.selected %}checked{% endif %}>
-                    <img src="{{ option.value.instance.retrato.miniatura.url }}" alt="{{ option.label }}">
-                </label>
-            </li>
+        <label class="foto-label" for="{{ widget.attrs.id }}_{{ index }}">
+        <div class="marco-foto">
+          {% if option.value.instance.retrato.miniatura %}
+          <img class="galeria-fotos-miniatura{% if option.value.instance.feo %} fea{% endif %}" src="{{ option.value.instance.retrato.miniatura.url }}" alt="{{ option.label }}">
+            {% else %}
+            <div class="galeria-fotos-no-miniatura">No hay miniatura</div>
+            {% endif %}
+        </div>
+        <input type="checkbox" name="{{ widget.name }}" value="{{ option.value }}" id="{{ widget.attrs.id }}_{{ index }}" {% if option.selected %}checked{% endif %}>{{ option.value.instance.nombre }}
+
+        </label>
         {% endfor %}
     {% endfor %}
 </ul>
