@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'registration',
     'utils',
     'plottings',
+    'modernrpc',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -213,3 +214,5 @@ RELLENO_FOTO_URL = "fotos/relleno.svg"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MODERNRPC_METHODS_MODULES = ["gatos.rpc"]

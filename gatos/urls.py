@@ -1,4 +1,5 @@
 from django.urls import path, include
+from modernrpc.views import RPCEntryPoint
 from . import views
 
 
@@ -75,6 +76,7 @@ user_urls = [
 
 urlpatterns = [
     path("", views.ColoniasList.as_view(), name="colonias"),
+    path("rpc/", RPCEntryPoint.as_view(enable_doc=True), name="RPC"),
     path('colonia-add', views.ColoniaCreateView.as_view(), name="colonia-add"),
     path('colonia/c/<slug:colonia>', views.ColoniaView.as_view(),
          name="colonia"),

@@ -23,7 +23,8 @@ from .models import (Gato,
                      Vacunacion,
                      Avistamiento,
                      )
-from .forms import (ColoniaFotoForm,
+from .forms import (FotoCreateForm,
+                    FotoEditForm,
                     GatoForm,
                     CapturaForm,
                     InformeForm,
@@ -349,7 +350,7 @@ class FotoCreateView(PRMixin, UserBoundMixin, SubColoniaMixin, CreateView):
     permission_required = "gatos.add_foto"
     template_name = "gatos/foto_create.html"
     model = Foto
-    form_class = ColoniaFotoForm
+    form_class = FotoCreateForm
 
     # Relleno previo de los datos del formulario para no tener que rellenar
     # el campo colonia ya que este aparece.
@@ -395,7 +396,7 @@ class FotoUpdateView(PRMixin, UserBoundMixin, SubColoniaMixin, FotoMixin,
     model = Foto
     template_name = "gatos/foto_update.html"
     context_name = "foto"
-    form_class = ColoniaFotoForm
+    form_class = FotoEditForm
 
     # Pasa el objeto colonia para poder acceder a los datos de la colonia
     # cuando se genere el queryset de los gatos que aparecen en la foto.
@@ -727,28 +728,34 @@ class CalendarioComidas(SubColoniaMixin, CommandView):
     class_otro = "comidas-otro"
     class_usuario = "comidas-usuario"
     class_none = "comidas-none"
+    metodo = "alternar_comida_usuario"
 
     def get_calendars(self):
+        today = date.today()
         comidas = {c.fecha: c for c in self.colonia.comidas.all()}
 
-        def links(f):
-            if f < date.today():
-                return None
-            query_string = f"?day={f.day}&month={f.month}&year={f.year}"
-            url = reverse("comidas", kwargs={"colonia": self.colonia.slug})
-            return url + query_string
-
         def classes(f):
-            if f not in comidas:
-                return ["comidas-none"]
-            elif comidas[f].usuario == self.request.user:
-                return ["comidas-usuario"]
+            if f > today:
+                if f not in comidas:
+                    return ["comidas-calendario", "comidas-none"]
+                elif comidas[f].usuario == self.request.user:
+                    return ["comidas-calendario", "comidas-usuario"]
+                else:
+                    return ["comidas-calendario", "comidas-otro"]
             else:
-                return ["comidas-otro"]
+                return []
+
+        def attrs(f):
+            if f > today:
+                date = f"{f.year}, {f.month}, {f.day}"
+                colonia = self.colonia.slug
+                return {"onclick": f"{self.metodo}('{colonia}', {date})"}
+            else:
+                return {}
 
         return htmlcalendar(date.today(), months=2, backwards=False,
-                            links=links, classes=classes, header="h2",
-                            th_classes=[])
+                            classes=classes, header="h2", attrs=attrs,
+                            th_classes=[], safe=True, locale="es_ES.UTF-8")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

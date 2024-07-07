@@ -10,7 +10,7 @@ from .models import (Foto,
                      )
 
 
-class ColoniaFotoForm(forms.ModelForm):
+class ColoniaFotoBaseForm(forms.ModelForm):
     class Meta:
         model = Foto
         fields = ["foto", "gatos", "colonia"]
@@ -31,6 +31,26 @@ class ColoniaFotoForm(forms.ModelForm):
         self.fields["colonia"].initial = colonia
         self.fields["colonia"].widget.attrs['readonly'] = True
         self.fields["gatos"].queryset = colonia.gatos.all()
+
+
+class FotoCreateForm(ColoniaFotoBaseForm):
+    class Meta:
+        model = Foto
+        fields = ["gatos", "colonia"]
+        slug_field = "colonia"
+        widgets = {
+                'colonia': forms.HiddenInput()
+                }
+
+
+class FotoEditForm(ColoniaFotoBaseForm):
+    class Meta:
+        model = Foto
+        fields = ["gatos", "colonia"]
+        slug_field = "colonia"
+        widgets = {
+                'colonia': forms.HiddenInput()
+                }
 
 
 class GatoForm(forms.ModelForm):

@@ -65,12 +65,12 @@ class GatoFlow:
     def _on_transittion_success(self, descriptor, source, target):
         self.report.save()
 
-    @estado.transition(source=EstadoGato.LIBRE, target=EstadoGato.MARCADO)
-    def marcar(self):
-        pass
-
     @estado.transition(source=EstadoGato.LIBRE, target=EstadoGato.CAPTURADO)
     def capturar(self):
+        pass
+
+    @estado.transition(source=EstadoGato.CAPTURADO, target=EstadoGato.MARCADO)
+    def marcar(self):
         pass
 
     @estado.transition(source=EstadoGato.CAPTURADO, target=EstadoGato.LIBRE)
@@ -316,6 +316,8 @@ class Colonia(models.Model):
         return ""
 
     def toggle_comida(self, fecha, user):
+        if not fecha > date.today():
+            return
         comidas = self.comidas.filter(fecha=fecha).order_by('id')
         if not comidas:
             comida = AsignacionComida(fecha=fecha, usuario=user, colonia=self)
@@ -609,6 +611,11 @@ class AsignacionComida(models.Model):
                                 on_delete=models.CASCADE)
     colonia = models.ForeignKey("gatos.Colonia", on_delete=models.CASCADE,
                                 related_name="comidas")
+
+    class Meta:
+        permissions = [
+                ("alimentar_colonia", ""),
+                ]
 
     def str(self):
         f = self.fecha

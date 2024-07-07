@@ -8,9 +8,11 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
 """
 
 import os
+import locale
 
 from django.core.wsgi import get_wsgi_application
 
+locale.setlocale(locale.LC_ALL, '')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gatinos.settings')
 
 application = get_wsgi_application()
