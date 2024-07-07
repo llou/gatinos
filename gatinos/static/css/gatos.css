@@ -155,8 +155,13 @@ form.gatos-form div {
   margin-bottom: 10px;
 }
 
-label, input, textarea, select, option {
+label, legend, input, textarea, select, option {
   font-size: 1.2em;
+}
+
+legend {
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
 input[type=checkbox] {

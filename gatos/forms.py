@@ -10,7 +10,11 @@ from .models import (Foto,
                      )
 
 
-class ColoniaFotoBaseForm(forms.ModelForm):
+class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    template_name = 'gatos/custom_checkbox_select.html'
+
+
+class FotoBaseForm(forms.ModelForm):
     class Meta:
         model = Foto
         fields = ["foto", "gatos", "colonia"]
@@ -20,7 +24,7 @@ class ColoniaFotoBaseForm(forms.ModelForm):
                 }
 
     gatos = forms.ModelMultipleChoiceField(
-                widget=forms.CheckboxSelectMultiple,
+                widget=CustomCheckboxSelectMultiple,
                 queryset=None,
                 required=False
                 )
@@ -30,10 +34,10 @@ class ColoniaFotoBaseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["colonia"].initial = colonia
         self.fields["colonia"].widget.attrs['readonly'] = True
-        self.fields["gatos"].queryset = colonia.gatos.all()
+        self.fields["gatos"].queryset = colonia.gatos
 
 
-class FotoCreateForm(ColoniaFotoBaseForm):
+class FotoCreateForm(FotoBaseForm):
     class Meta:
         model = Foto
         fields = ["gatos", "colonia"]
@@ -43,7 +47,7 @@ class FotoCreateForm(ColoniaFotoBaseForm):
                 }
 
 
-class FotoEditForm(ColoniaFotoBaseForm):
+class FotoEditForm(FotoBaseForm):
     class Meta:
         model = Foto
         fields = ["gatos", "colonia"]
