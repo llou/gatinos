@@ -66,11 +66,16 @@ class GatoFlow:
 
     @estado.transition(source=EstadoGato.LIBRE, target=EstadoGato.CAPTURADO)
     def capturar(self):
-        pass
+        captura = Captura(gato=self.gato, fecha_captura=date.today())
+        captura.save()
 
     @estado.transition(source=EstadoGato.CAPTURADO, target=EstadoGato.LIBRE)
     def liberar(self):
-        pass
+        capturas = self.gato.capturas.filter(fecha_liberacion=None)
+        capturas = capturas.order_by("-fecha_captura")
+        captura = capturas[0]
+        captura.fecha_liberacion = date.today()
+        captura.save()
 
     @estado.transition(source=EstadoGato.LIBRE,
                        target=EstadoGato.DESAPARECIDO)
@@ -84,7 +89,8 @@ class GatoFlow:
 
     @estado.transition(source=State.ANY, target=EstadoGato.MUERTO)
     def morir(self):
-        pass
+        self.muerto = True
+        self.muerto_fecha = date.today()
 
 
 class GatosColoniaManager(models.Manager):
@@ -115,36 +121,17 @@ class Gato(models.Model):
     objects = models.Manager()
     gatos_colonia = GatosColoniaManager()
 
+    class Meta:
+        permissions = [
+            ("morir_gato", ""),
+            ]
+
     @property
     def peso(self):
         return self.get_ultima_captura().peso
 
-    def get_estado(self):
-        if self.muerto:
-            return "Muerto"
-        if self.get_capturado():
-            return "Capturado"
-        if self not in self.colonia.get_gatos_activos():
-            return "Desaparecido"
-        else:
-            return "Activo"
-
     def get_vacunas(self):
         return Vacunacion.objects.filter(captura__gato=self)
-
-    def get_ultima_captura(self):
-        capturas = self.capturas.filter(fecha_liberacion=None)
-        capturas = capturas.order_by("-fecha_captura")
-        if capturas:
-            return capturas[0]
-        return None
-
-    def get_capturado(self):
-        captura = self.get_ultima_captura()
-        if captura is None:
-            return False
-        else:
-            return captura.fecha_liberacion is None
 
     def get_peso(self):
         capturas = self.capturas.exclude(peso=None).order_by("-fecha_captura")
@@ -195,23 +182,9 @@ class Gato(models.Model):
                               usuario=user, fecha=date.today())
             av.save()
 
-    def devolucion(self):
-        pass
-
-    def sexuacion(self, sexo):
-        self.sexo = sexo
-        self.save()
-
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
-
-    @property
-    def foto(self):
-        if self.retrato:
-            return self.retrato.foto.url
-        else:
-            return settings.RELLENO_FOTO_URL
 
     @property
     def flow(self):
@@ -220,8 +193,6 @@ class Gato(models.Model):
     @property
     def color_estado(self):
         if self.estado == "LIBRE":
-            return "yellow"
-        elif self.estado == "MARCADO":
             return "green"
         elif self.estado == "CAPTURADO":
             return "orange"

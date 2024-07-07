@@ -127,11 +127,12 @@ class VacunarGatoForm(forms.ModelForm):
         fields = ['tipo']
 
     def __init__(self, *args, **kwargs):
+        self.gato = kwargs.pop('gato')
         self.captura = kwargs.pop('captura')
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        if not self.captura.capturado:
+        if not self.gato.estado == 'CAPTURADO':
             raise Exception("No se puede vacunar a un gato no capturado")
         self.instance.captura = self.captura
         tipo = self.instance.tipo

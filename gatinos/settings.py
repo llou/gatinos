@@ -171,6 +171,7 @@ GROUPS_PERMISSIONS = {
                       "capturar_gato",
                       "liberar_gato",
                       "view_enfermedad",
+                      "morir_gato",
                       ],
         "visitante": ["view_colonia",
                       "view_gato",

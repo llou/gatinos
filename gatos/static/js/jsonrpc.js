@@ -39,7 +39,6 @@ function fabrica_de_estados(nombre) {
 }
 
 const capturar = fabrica_de_estados("capturar");
-const marcar = fabrica_de_estados("marcar");
 const liberar = fabrica_de_estados("liberar");
 const desaparecer = fabrica_de_estados("desaparecer");
 const olvidar = fabrica_de_estados("olvidar");

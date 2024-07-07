@@ -99,7 +99,8 @@ class GatoConfirmationView(ConfirmationView):
         context = super().get_context()
         context['colonia'] = self.colonia
         context['gato'] = self.gato
-        context['captura'] = self.gato.get_ultima_captura()
+        capturas = self.gato.capturas.order_by("-fecha_captura")
+        context['captura'] = capturas[0] if capturas else None
         return context
 
 # TODO Aqui hay un problema con la ultima captura
@@ -132,7 +133,8 @@ class BaseGatoMixin:
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.gato = get_object_or_404(Gato, slug=self.kwargs[self.gato_slug])
-        self.ultima_captura = self.gato.get_ultima_captura()
+        self.capturas = self.gato.capturas.order_by('fecha_captura')
+        self.ultima_captura = self.capturas[0] if self.capturas else None
         self.peso = self.gato.get_peso()
         self.enfermedades = self.gato.enfermedades.all()
         capturas = self.gato.capturas.order_by("-fecha_captura")
@@ -313,12 +315,11 @@ class GatosView(PRMixin, SubColoniaMixin, ListView):
 class GatoView(PRMixin, SubColoniaMixin, GatoMixin, DetailView):
     permission_required = "gatos.view_gato"
     template_name = "gatos/gato.html"
-    queryset = Gato.gatos_colonia.all()
+    queryset = Gato.gatos_colonia
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['estado'] = self.gato.get_estado()
-        context['capturado'] = self.gato.get_capturado()
+        context['estado'] = self.gato.estado
         context['informes'] = self.gato.informes.all()
         return context
 
@@ -527,11 +528,7 @@ class CapturarGato(PRMixin, GatoConfirmationView):
         return f"¿Seguro que ha capturado al gato '{self.gato}'?"
 
     def confirm(self):
-        if self.gato.get_ultima_captura() is None:
-            captura = Captura(gato=self.gato, fecha_captura=date.today())
-            captura.save()
-        else:
-            raise RuntimeError("No puede ser esto")
+        self.gato.flow.capturar()
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
     def cancel(self):
@@ -545,11 +542,21 @@ class LiberarGato(PRMixin, GatoConfirmationView):
         return f"¿Seguro que ha liberado al gato '{self.gato}'?"
 
     def confirm(self):
-        capturado = self.gato.get_capturado()
-        if capturado:
-            captura = self.gato.get_ultima_captura()
-            captura.fecha_liberacion = date.today()
-            captura.save()
+        self.gato.flow.liberar()
+        return HttpResponseRedirect(self.gato.get_absolute_url())
+
+    def cancel(self):
+        return HttpResponseRedirect(self.gato.get_absolute_url())
+
+
+class MorirGato(PRMixin, GatoConfirmationView):
+    permission_required = "gatos.liberar_gato"
+
+    def get_question(self):
+        return f"¿Seguro que quiere declarar muerto a '{self.gato}'?"
+
+    def confirm(self):
+        self.gato.flow.morir()
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
     def cancel(self):
@@ -623,6 +630,7 @@ class VacunarGato(PRMixin, SubColoniaMixin, SubGatoMixin, SubCapturaMixin,
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
+        form_kwargs["gato"] = self.gato
         form_kwargs["captura"] = self.captura
         return form_kwargs
 

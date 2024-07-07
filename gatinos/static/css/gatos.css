@@ -155,7 +155,7 @@ form.gatos-form div {
   margin-bottom: 10px;
 }
 
-label, legend, input, textarea, select, option {
+label, legend, input, textarea, select {
   font-size: 1.2em;
 }
 
@@ -290,6 +290,34 @@ textarea {
   background-color: #404040;
   text-align: center;
   border-radius: 5px;
+}
+
+.sticker-badge {
+  font-weight: bold;
+}
+
+.color-yellow {
+  color: yellow;
+}
+
+.color-green {
+  color: green;
+}
+
+.color-orange {
+  color: orange;
+}
+
+.color-lightgray {
+  color: lightgray;
+}
+
+.color-gray {
+  color: gray;
+}
+
+.color-black {
+  color: black;
 }
 
 .empty {

@@ -9,7 +9,6 @@
   {% endif %}
 
   <div class="ficha-texto">
-    {% if gato.sacrificar %}<p class="warning">SACRIFICAR<p>{% endif %}
     <p>{% if gato.sexo == "M" %}Gato:{% else %}Gata:{% endif %}</p>
     <h2>{{ gato.nombre }}</h2>
     {% if not gato.vecino %}
@@ -28,22 +27,27 @@
 
 <div class="button-bar">
   <div class="actions">
+    {% if gato.estado != 'MUERTO' %}
     {% if perms.gatos.change_gato %}
     <a href="{% url 'gato-update' colonia=colonia.slug gato=gato.slug %}">Editar</a>
   {% endif %}
   {% if perms.gatos.capturar_gato %}
   {% if not gato.vecino %}
-  {% if capturado %}
+    {% if perms.gatos.morir_gato %}
+     <a href="{% url 'morir' colonia=colonia.slug gato=gato.slug %}">Muerto</a>
+   {% endif %}
+  {% if gato.estado == 'CAPTURADO' %}
         <a href="{% url 'liberar' colonia=colonia.slug gato=gato.slug %}">Liberar</a>
   {% else %}
        <a href="{% url 'capturar' colonia=colonia.slug gato=gato.slug %}">Capturar</a>
   {% endif %}
   {% endif %}
-  {% if capturado and perms.gatos.add_enfermedad %}
+  {% if gato.estado == 'CAPTURADO' and perms.gatos.add_enfermedad %}
     <a href="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}">Diagnosticar</a>
   {% endif %}
-  {% if capturado and perms.gatos.vacunar_gato %}
+  {% if gato.estado == 'CAPTURADO' and perms.gatos.vacunar_gato %}
     <a href="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=ultima_captura.id %}">Vacunar</a>
+  {% endif %}
   {% endif %}
   {% endif %}
   </div>
