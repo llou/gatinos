@@ -8,9 +8,11 @@
   <div class="actions"></div>
 </div>
 
-<form action="{% url 'informe-update' colonia=colonia.slug pk=informe.pk %}" method="POST">
-{{ form.as_p }}
+<form class="gatos-form" action="{% url 'informe-update' colonia=colonia.slug pk=informe.pk %}" method="POST">
+{{ form.as_div }}
 {% csrf_token %}
+<div>
 <input type="submit" value="Guardar"\>
+</div>
 </form>
 {% endblock %}

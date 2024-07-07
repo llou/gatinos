@@ -4,9 +4,11 @@
 
 {% block gato_body %}
 <h3>Diagnosticar Enfermedad</h3>
-<form action="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}" method="POST">
-{{ form.as_p }}
+<form class="gatos-form" action="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}" method="POST">
+{{ form.as_div }}
 {% csrf_token %}
+<div class="buttons">
 <input type="submit" value="Guardar"\>
+</div>
 </form>
 {% endblock %}

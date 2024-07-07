@@ -7,7 +7,7 @@
   <div class="actions"></div>
 </div>
 
-<form class="flex-form" action="{% url 'colonia-update' colonia=colonia.slug %}" method="POST">
+<form class="gatos-form" action="{% url 'colonia-update' colonia=colonia.slug %}" method="POST">
 {{ form.as_div }}
 {% csrf_token %}
 <div class="buttons">

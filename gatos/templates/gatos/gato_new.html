@@ -7,9 +7,11 @@
   <div class="actions"></div>
 </div>
 
-  <form action="{% url 'gato-add' colonia=colonia.slug %}" method="POST">
-{{ form.as_p }}
+  <form class="gatos-form" action="{% url 'gato-add' colonia=colonia.slug %}" method="POST">
+{{ form.as_div }}
 {% csrf_token %}
-<input type="submit" value="Guardar"\>
+<div>
+  <div></div> <input type="submit" value="Guardar"\>
+</div>
 </form>
 {% endblock %}

@@ -139,6 +139,22 @@ form {
   font-size: 1em;
 }
 
+form.gatos-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+form.gatos-form div {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 label, input, textarea, select, option {
   font-size: 1.2em;
 }
@@ -149,18 +165,6 @@ input[type=checkbox] {
 
 textarea {
   font-family: monospace;
-}
-
-form.flex-form{
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 20px;
-}
-
-form p {
-  margin-bottom: 1em;
-  vertical-align: top;
 }
 
 .main-header {
@@ -745,7 +749,8 @@ article em {
   gap: 80px;
 }
 
-#comidas-mes {
+#comidas-mes:hover {
+  cursor: default;
 }
 
 #comidas-mes td {
@@ -775,6 +780,10 @@ article em {
 
 .comidas-none {
   background-color: none;
+}
+
+.comidas-calendario:hover {
+  cursor: pointer;
 }
 
 #delete-foto {

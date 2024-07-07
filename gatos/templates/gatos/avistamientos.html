@@ -1,4 +1,10 @@
 {% extends 'gatos/colonia_base.html' %}
+{% load static %}
+
+{% block head %}
+  <script src="{% static 'js/jsonrpc.js' %}" charset="utf-8"></script>
+{% endblock %}
+
 {% block body %}
 <div class="main-subheader">
   <div class="subtitle">
@@ -7,7 +13,6 @@
   <div class="actions">
   </div>
 </div>
-
 
 <div class="main-subheader">
   <div class="subtitle">
@@ -20,15 +25,15 @@
   </div>
 </div>
 
+
 <div class="galeria-gatos">
 {% for gato in no_vistos %}
-<a class="no-decoration" href="{% url 'avistamiento' colonia=colonia.slug %}?gato={{ gato.slug }}">
     <div class="enlace-gato">
       <div class="marco-foto">
       {% if gato.retrato.miniatura %}
-        <img class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+        <img onclick="avistar_gato('{{ colonia.slug }}', '{{ gato.slug }}')" class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
     {% else %}
-      <div class="galeria-gatos-no-miniatura">No hay foto</div>
+      <div onclick="avistar_gato('{{ colonia.slug }}', '{{ gato.slug }}')" class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
       </div>
     {% if not gato.vecino %}
@@ -37,7 +42,6 @@
       <div class="enlace-gato-nombre">{{ gato.nombre }} de {{ gato.nombre_vecino }}</div>
     {% endif %}
     </div>
-</a>
 {% empty %}Se vieron todos los gatos{% endfor %}
 </div>
 
@@ -53,13 +57,12 @@
 
 <div class="galeria-gatos">
 {% for gato in vistos %}
-  <a class="no-decoration" href="{% url 'avistamiento' colonia=colonia.slug %}?gato={{ gato.slug }}">
     <div class="enlace-gato">
       <div class="marco-foto">
       {% if gato.retrato.miniatura %}
-        <img class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+        <img onclick="avistar_gato('{{ colonia.slug }}', '{{ gato.slug }}')" class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
     {% else %}
-      <div class="galeria-gatos-no-miniatura">No hay foto</div>
+      <div onclick="avistar_gato('{{ colonia.slug }}', '{{ gato.slug }}')" class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
       </div>
     {% if not gato.vecino %}
@@ -68,8 +71,11 @@
       <div class="enlace-gato-nombre">{{ gato.nombre }} de {{ gato.nombre_vecino }}</div>
     {% endif %}
     </div>
-</a>
 {% empty %}No hay gatos vistos hoy{% endfor %}
 </div>
+<script charset="utf-8">
 
+  const API_URL = "{% url 'RPC' %}";
+
+</script>
 {% endblock %}

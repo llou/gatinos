@@ -4,9 +4,11 @@
 
 {% block gato_body %}
 <h3>Vacunar</h3>
-<form action="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=captura.id %}" method="POST">
-{{ form.as_p }}
+<form class="gatos-form" action="{% url 'vacunar' colonia=colonia.slug gato=gato.slug pk=captura.id %}" method="POST">
+{{ form.as_div }}
 {% csrf_token %}
+<div>
 <input type="submit" value="Vacunar"\>
+</div>
 </form>
 {% endblock %}

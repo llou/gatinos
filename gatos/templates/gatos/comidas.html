@@ -1,4 +1,8 @@
 {% extends 'gatos/colonia_base.html' %}
+{% load static %}
+{% block head %}
+  <script src="{% static 'js/jsonrpc.js' %}" charset="utf-8"></script>
+{% endblock %}
 {% block body %}
 <div id="comidas-mes">
 {% for calendar in calendars %}
@@ -7,4 +11,7 @@
 </div>
 {% endfor %}
 </div>
+<script charset="utf-8">
+  const API_URL = "{% url 'RPC' %}";
+</script>
 {% endblock %}

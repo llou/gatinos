@@ -7,9 +7,11 @@
   <div class="actions"></div>
 </div>
 
-<form action="{% url 'foto-add' colonia=colonia.slug %}" method="POST" enctype="multipart/form-data">
-{{ form.as_p }}
+<form class="gatos-form" action="{% url 'foto-add' colonia=colonia.slug %}" method="POST" enctype="multipart/form-data">
+{{ form.as_div }}
 {% csrf_token %}
+<div class="buttons">
 <input type="submit" value="Guardar"\>
+</div>
 </form>
 {% endblock %}

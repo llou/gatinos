@@ -7,11 +7,11 @@
   <div class="actions"></div>
 </div>
 
-<form class="flex-form" action="{% url 'colonia-add' %}" method="POST">
+<form class="gatos-form" action="{% url 'colonia-add' %}" method="POST">
 {{ form.as_div }}
 {% csrf_token %}
 <div class="buttons">
-<input type="submit" value="Guardar">
+  <input type="submit" value="Guardar">
 </div>
 </form>
 {% endblock %}
