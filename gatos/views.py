@@ -1,5 +1,6 @@
 from datetime import date
 from htmlcalendar import htmlcalendar
+from icalendar import Calendar, Event as IcalEvent
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -37,6 +38,8 @@ from .utils import Agrupador
 from .flows import GatoFlow
 from . import tasks
 
+
+from datetime import datetime
 
 class ConfirmationView(View):
     confirmation_key = "confirmation"
@@ -887,3 +890,25 @@ class UserActivity(TemplateView):
         agrupador = AgrupadorDeActividades.build_from_user(self.request.user)
         context["agrupador"] = agrupador
         return context
+
+
+def calendario_comidas(request, colonia):
+    colonia = get_object_or_404(Colonia, slug=colonia)
+    cal = Calendar()
+    cal.add('prodid', f'-//Comidas {colonia.nombre}//mxm.dk//')
+    cal.add('version', '2.0')
+
+    comidas = colonia.comidas.filter(usuario=request.user)
+
+    for comida in comidas:
+        ical_event = IcalEvent()
+        ical_event.add('summary', f"Dar de comer a {colonia.nombre}")
+        ical_event.add('description', "")
+        ical_event.add('dtstart', comida.fecha)
+        ical_event.add('dtend', comida.fecha)
+        ical_event.add('dtstamp', datetime.now())
+        cal.add_component(ical_event)
+
+    response = HttpResponse(cal.to_ical(), content_type='text/calendar')
+    response['Content-Disposition'] = 'attachment; filename="comidas.ics"'
+    return response

@@ -11,3 +11,4 @@ html-calendar==0.0.13
 markdown==3.6
 django-viewflow==2.1.2
 django-modern-rpc[defusedxml]
+icalendar

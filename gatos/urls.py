@@ -34,6 +34,7 @@ gato_urls = [
 colonia_urls = [
     path('activity.png', views.ColoniaActivityPlotView.as_view(),
          name="colonia-activity-graph"),
+    path('comidas.ics', views.calendario_comidas, name="colonia-calendario"),
     path('actividades', views.ActividadesColonia.as_view(),
          name="colonia-activity"),
     path('comidas', views.CalendarioComidas.as_view(), name="comidas"),
