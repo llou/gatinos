@@ -15,13 +15,14 @@
     {% endif %}
     {% if perms.gatos.delete_informe %}
     <a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar</a>
+    {% endif %}
   </div>
 </div>
+
 <article>
   {{ informe.texto|render_markdown }}
 </article>
 
-    {% endif %}
 </div>
 {% if gatos %}
 <h3>Gatos</h3>
