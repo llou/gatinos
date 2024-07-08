@@ -34,6 +34,7 @@ from .forms import (FotoCreateForm,
                     )
 from .plots import activity_plot, SpanishActivityMap
 from .utils import Agrupador
+from .flows import GatoFlow
 from . import tasks
 
 
@@ -528,7 +529,8 @@ class CapturarGato(PRMixin, GatoConfirmationView):
         return f"¿Seguro que ha capturado al gato '{self.gato}'?"
 
     def confirm(self):
-        self.gato.flow.capturar()
+        flow = GatoFlow(self.gato)
+        flow.capturar()
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
     def cancel(self):
@@ -542,7 +544,8 @@ class LiberarGato(PRMixin, GatoConfirmationView):
         return f"¿Seguro que ha liberado al gato '{self.gato}'?"
 
     def confirm(self):
-        self.gato.flow.liberar()
+        flow = GatoFlow(self.gato)
+        flow.liberar()
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
     def cancel(self):
@@ -556,7 +559,8 @@ class MorirGato(PRMixin, GatoConfirmationView):
         return f"¿Seguro que quiere declarar muerto a '{self.gato}'?"
 
     def confirm(self):
-        self.gato.flow.morir()
+        flow = GatoFlow(self.gato)
+        flow.morir()
         return HttpResponseRedirect(self.gato.get_absolute_url())
 
     def cancel(self):

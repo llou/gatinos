@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'utils',
     'plottings',
     'modernrpc',
+    'viewflow',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

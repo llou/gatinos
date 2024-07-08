@@ -1,14 +1,25 @@
 from django.contrib import admin
+from viewflow import fsm
 from gatinos.admin import admin_site
-from .models import (Gato, Colonia, Foto, Informe, Enfermedad, Vacunacion,
-                     Captura, Anuncio)
+from .models import (
+        Gato,
+        Colonia,
+        Foto, Informe,
+        Enfermedad,
+        Vacunacion,
+        Captura,
+        Anuncio
+        )
+from .flows import GatoFlow
 
 
-class GatoAdmin(admin.ModelAdmin):
+class GatoAdmin(fsm.FlowAdminMixin, admin.ModelAdmin):
     list_display = ("nombre", "colonia", "estado")
+    readonly_fields = ('estado', )
+    flow_state = GatoFlow.estado
 
-    def estado(self, obj):
-        return obj.get_estado()
+    def get_object_flow(self, request, obj):
+        return GatoFlow(obj)
 
 
 class ColoniaAdmin(admin.ModelAdmin):

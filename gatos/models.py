@@ -3,7 +3,6 @@ from functools import reduce
 from pathlib import Path
 from PIL import Image
 from PIL.ExifTags import TAGS
-from viewflow.fsm import State
 from django.conf import settings
 from django.urls import reverse
 from django.db import models
@@ -44,53 +43,6 @@ class EstadoGato(models.TextChoices):
 
 
 # Ver https://docs.viewflow.io/fsm/models.html
-
-
-class GatoFlow:
-    estado = State(EstadoGato, default=EstadoGato.LIBRE)
-
-    def __init__(self, gato):
-        self.gato = gato
-
-    @estado.setter()
-    def _set_gato_estado(self, value):
-        self.gato.estado = value
-
-    @estado.getter()
-    def _get_gato_estado(self):
-        return self.gato.estado
-
-    @estado.on_success()
-    def _on_transittion_success(self, descriptor, source, target):
-        self.gato.save()
-
-    @estado.transition(source=EstadoGato.LIBRE, target=EstadoGato.CAPTURADO)
-    def capturar(self):
-        captura = Captura(gato=self.gato, fecha_captura=date.today())
-        captura.save()
-
-    @estado.transition(source=EstadoGato.CAPTURADO, target=EstadoGato.LIBRE)
-    def liberar(self):
-        capturas = self.gato.capturas.filter(fecha_liberacion=None)
-        capturas = capturas.order_by("-fecha_captura")
-        captura = capturas[0]
-        captura.fecha_liberacion = date.today()
-        captura.save()
-
-    @estado.transition(source=EstadoGato.LIBRE,
-                       target=EstadoGato.DESAPARECIDO)
-    def desaparecer(self):
-        pass
-
-    @estado.transition(source=EstadoGato.DESAPARECIDO,
-                       target=EstadoGato.OLVIDADO)
-    def olvidar(self):
-        pass
-
-    @estado.transition(source=State.ANY, target=EstadoGato.MUERTO)
-    def morir(self):
-        self.muerto = True
-        self.muerto_fecha = date.today()
 
 
 class GatosColoniaManager(models.Manager):
@@ -187,10 +139,6 @@ class Gato(models.Model):
         super().save(*args, **kwargs)
 
     @property
-    def flow(self):
-        return GatoFlow(self)
-
-    @property
     def color_estado(self):
         if self.estado == "LIBRE":
             return "green"
@@ -216,7 +164,7 @@ class Gato(models.Model):
         clase = self.__class__.__name__
         nombre = self.nombre
         colonia = self.colonia.nombre
-        return f"<{clase} nombre='{nombre}' colonia='{colonia}'>"
+        return f"<{clase} nombre={nombre} colonia='{colonia}'>"
 
 
 class Colonia(models.Model):
