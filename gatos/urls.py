@@ -36,6 +36,8 @@ colonia_urls = [
          name="colonia-activity-graph"),
     path('actividades', views.ActividadesColonia.as_view(),
          name="colonia-activity"),
+    path('comidas', views.CalendarioComidas.as_view(),
+         name="comidas"),
     path('avistamientos', views.Avistamientos.as_view(), name="avistamiento"),
     path('gatos/', views.GatosView.as_view(), name="gatos"),
     path('gato-add', views.GatoCreateView.as_view(), name="gato-add"),

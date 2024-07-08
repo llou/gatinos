@@ -33,7 +33,7 @@ function avistar_gato(colonia_slug, gato_slug) {
 
 function nuevo_codigo_qr() {
   jsonRpcRequest("nuevo_codigo_qr", []).then(() => {
-    setTimeout( window.location.reload(), 3000)
+    setTimeout( () => {window.location.reload() }, 500)
   })
 }
 

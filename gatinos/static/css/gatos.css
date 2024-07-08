@@ -874,3 +874,12 @@ ul.actividades-list {
   width: 300px;
 }
 
+#calendar-regenerar {
+  color: blue;
+  text-decoration: underline;
+}
+
+#calendar-regenerar:hover {
+  cursor: pointer;
+}
+
