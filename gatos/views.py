@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from htmlcalendar import htmlcalendar
 from icalendar import Calendar, Event as IcalEvent
 from django.conf import settings
@@ -23,6 +23,7 @@ from .models import (Gato,
                      Informe,
                      Vacunacion,
                      Avistamiento,
+                     CodigoCalendarioComidas,
                      )
 from .forms import (FotoCreateForm,
                     FotoEditForm,
@@ -33,13 +34,11 @@ from .forms import (FotoCreateForm,
                     EnfermedadUpdateForm,
                     VacunarGatoForm
                     )
-from .plots import activity_plot, SpanishActivityMap
+from .plots import activity_plot, SpanishActivityMap, get_svg_qrcode
 from .utils import Agrupador
 from .flows import GatoFlow
 from . import tasks
 
-
-from datetime import datetime
 
 class ConfirmationView(View):
     confirmation_key = "confirmation"
@@ -881,21 +880,26 @@ class ActividadesGato(SubColoniaMixin, SubGatoMixin, TemplateView):
         return context
 
 
-class UserActivity(TemplateView):
+class UserProfile(TemplateView):
     template_name = "gatos/user_profile.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        codigo = CodigoCalendarioComidas.objects.get(user=self.request.user)
+        url_codigo = reverse("calendario-comidas", kwargs=dict(codigo=codigo.codigo))
+        print(url_codigo)
+        context["codigo"] = get_svg_qrcode(url_codigo)
         context["user"] = self.request.user
         agrupador = AgrupadorDeActividades.build_from_user(self.request.user)
         context["agrupador"] = agrupador
         return context
 
 
-def calendario_comidas(request, colonia):
-    colonia = get_object_or_404(Colonia, slug=colonia)
+def calendario_comidas(request, codigo):
+    calendario = get_object_or_404(CalendarioComidas, codig=codigo)
+    colonia = calendario.colonia
     cal = Calendar()
-    cal.add('prodid', f'-//Comidas {colonia.nombre}//mxm.dk//')
+    cal.add('prodid', f'-//Comidas {codigo}//mxm.dk//')
     cal.add('version', '2.0')
 
     comidas = colonia.comidas.filter(usuario=request.user)

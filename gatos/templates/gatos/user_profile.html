@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block base_head %}
+  <script src="{% static 'js/jsonrpc.js' %}" charset="utf-8"></script>
+{% endblock %}
 {% block base_body %}
 
   <div class="main-subheader">
@@ -9,6 +13,9 @@
      </div>
   </div>
 
+  <p><a href="" onclick="nuevo_codigo_qr()">Regenerar Código</a></p>
+  {{ codigo|safe }}
+
   <div class="main-subheader">
     <div class="subtitle">
       <h3>Actividad Reciente</h3>
@@ -18,4 +25,7 @@
   </div>
 
 {% include 'gatos/actividades-block.html' with agrupador=agrupador %}
+<script charset="utf-8">
+  API_URL = "{% url 'RPC' %}";
+</script>
 {% endblock %}

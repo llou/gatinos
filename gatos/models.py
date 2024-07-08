@@ -558,3 +558,13 @@ class Anuncio(models.Model):
     hora_fin = models.DateTimeField(null=True, blank=True)
     urgencia = models.CharField(max_length=20, choices=NivelesDeAviso.choices,
                                 default=NivelesDeAviso.MEDIO)
+
+
+class CodigoCalendarioComidas(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE,
+                             related_name="calendarios_activos")
+    codigo = models.CharField(max_length=80, default=random_choice)
+
+    def get_absolute_url(self):
+        return reverse("calendario", kwargs={"nombre": self.nombre})

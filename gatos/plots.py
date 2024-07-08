@@ -1,5 +1,7 @@
+import io
 import numpy as np
 import matplotlib.pyplot as plt
+import segno
 from plottings.plots.activity import ActivityMap
 
 
@@ -25,3 +27,14 @@ def activity_plot(data, xticks=None, yticks=None):
     ax.yaxis.set_ticks_position("right")
     fig.tight_layout()
     return fig
+
+
+def get_svg_qrcode(content):
+    qrcode = segno.make(content)
+    out = io.BytesIO()
+    qrcode.save(out, kind='svg',
+                xmldecl=False,
+                svgid="calendar-qr",
+                omitsize=True)
+    value = out.getvalue()
+    return value.decode('utf-8')

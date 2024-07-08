@@ -868,3 +868,9 @@ ul.actividades-list {
 .anuncio-alto {
   border: 5px solid red;
 }
+
+#calendar-qr {
+  height: 300px;
+  width: 300px;
+}
+

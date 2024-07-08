@@ -34,10 +34,8 @@ gato_urls = [
 colonia_urls = [
     path('activity.png', views.ColoniaActivityPlotView.as_view(),
          name="colonia-activity-graph"),
-    path('comidas.ics', views.calendario_comidas, name="colonia-calendario"),
     path('actividades', views.ActividadesColonia.as_view(),
          name="colonia-activity"),
-    path('comidas', views.CalendarioComidas.as_view(), name="comidas"),
     path('avistamientos', views.Avistamientos.as_view(), name="avistamiento"),
     path('gatos/', views.GatosView.as_view(), name="gatos"),
     path('gato-add', views.GatoCreateView.as_view(), name="gato-add"),
@@ -85,6 +83,8 @@ urlpatterns = [
     path('colonia/c/<slug:colonia>/update', views.ColoniaUpdateView.as_view(),
          name="colonia-update"),
     path('colonia/c/<slug:colonia>/', include(colonia_urls)),
-    path('user/u/<str:username>/activity', views.UserActivity.as_view(),
+    path('user/u/<str:username>/profile', views.UserProfile.as_view(),
          name="user-activity"),
+    path('comidas/<str:codigo>', views.CalendarioComidas.as_view(),
+         name="calendario-comidas"),
     ]

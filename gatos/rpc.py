@@ -2,7 +2,7 @@ from datetime import date
 from modernrpc.core import rpc_method
 from modernrpc.auth.basic import http_basic_auth_permissions_required
 from modernrpc.auth.basic import http_basic_auth_login_required
-from .models import Colonia, Gato
+from .models import Colonia, Gato, CodigoCalendarioComidas
 
 
 @rpc_method(name="alternar_comida_usuario")
@@ -27,6 +27,15 @@ def avistar_gato(colonia_slug, gato_slug, **kwargs):
 
 
 @http_basic_auth_login_required
+@rpc_method(name="nuevo_codigo_qr")
+def nuevo_codigo_qr(**kwargs):
+    request = kwargs['request']
+    CodigoCalendarioComidas.objects.filter(user=request.user).delete()
+    nc = CodigoCalendarioComidas(user=request.user)
+    nc.save()
+    return "Ok"
+
+
 def gato_flow_factory(action_name):
     rpc_name = f"gato.{action_name}"
     perm_name = f"gatos.gato_{action_name}"
@@ -47,7 +56,6 @@ def gato_flow_factory(action_name):
 
 
 capturar_gato = gato_flow_factory("capturar")
-marcar_gato = gato_flow_factory("marcar")
 liberar_gato = gato_flow_factory("liberar")
 desaparecer_gato = gato_flow_factory("desaparecer")
 olvidar_gato = gato_flow_factory("olvidar")

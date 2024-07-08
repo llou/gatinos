@@ -31,6 +31,12 @@ function avistar_gato(colonia_slug, gato_slug) {
   window.location.reload())
 }
 
+function nuevo_codigo_qr() {
+  jsonRpcRequest("nuevo_codigo_qr", []).then(() => {
+    setTimeout( window.location.reload(), 3000)
+  })
+}
+
 function fabrica_de_estados(nombre) {
   async (colonia_slug, gato_slug) => {
       await jasonRpcRequest(nombre, [colonia_slug, gato_slug])
