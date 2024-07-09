@@ -26,7 +26,7 @@ ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
 
-RUN apt-get update && apt-get install -yh --no-install-recommends netcat
+RUN apt-get update && apt-get install -yh --no-install-recommends netcat sed
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
