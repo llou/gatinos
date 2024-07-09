@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from htmlcalendar import htmlcalendar
 from icalendar import Calendar, Event as IcalEvent
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -885,10 +886,14 @@ class UserProfile(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        codigo = CodigoCalendarioComidas.objects.get(user=self.request.user)
-        url_codigo = reverse("calendario-comidas",
-                             kwargs=dict(codigo=codigo.codigo))
-        context["codigo"] = get_svg_qrcode(url_codigo)
+        try:
+            user = self.request.user
+            codigo = CodigoCalendarioComidas.objects.get(user=user)
+            url_codigo = reverse("calendario-comidas",
+                                 kwargs=dict(codigo=codigo.codigo))
+            context["codigo"] = get_svg_qrcode(url_codigo)
+        except ObjectDoesNotExist:
+            context["codigo"] = None
         context["user"] = self.request.user
         agrupador = AgrupadorDeActividades.build_from_user(self.request.user)
         context["agrupador"] = agrupador

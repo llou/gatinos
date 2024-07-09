@@ -873,12 +873,17 @@ ul.actividades-list {
   width: 300px;
 }
 
-#calendar-regenerar {
+#calendar-qr-box {
+  height: 300px;
+  width: 300px;
+}
+
+.calendar-qr-action {
   color: blue;
   text-decoration: underline;
 }
 
-#calendar-regenerar:hover {
+.calendar-qr-action:hover {
   cursor: pointer;
 }
 

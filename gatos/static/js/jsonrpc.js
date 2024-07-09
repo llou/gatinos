@@ -37,6 +37,12 @@ function nuevo_codigo_qr() {
   })
 }
 
+function borrar_codigo_qr() {
+  jsonRpcRequest("borrar_codigo_qr", []).then(() => {
+    setTimeout( () => {window.location.reload() }, 500)
+  })
+}
+
 function fabrica_de_estados(nombre) {
   async (colonia_slug, gato_slug) => {
       await jasonRpcRequest(nombre, [colonia_slug, gato_slug])

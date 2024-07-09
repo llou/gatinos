@@ -36,6 +36,15 @@ def nuevo_codigo_qr(**kwargs):
     return "Ok"
 
 
+@http_basic_auth_login_required
+@rpc_method(name="borrar_codigo_qr")
+def borrar_codigo_qr(**kwargs):
+    request = kwargs['request']
+    CodigoCalendarioComidas.objects.filter(user=request.user).delete()
+    return "Ok"
+
+
+
 def gato_flow_factory(action_name):
     rpc_name = f"gato.{action_name}"
     perm_name = f"gatos.gato_{action_name}"

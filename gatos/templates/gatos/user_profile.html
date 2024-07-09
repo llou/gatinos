@@ -13,8 +13,12 @@
      </div>
   </div>
 
-  <p><span id="calendar-regenerar" onclick="nuevo_codigo_qr()">Regenerar Código</span></p>
+  <p><span class="calendar-qr-action" onclick="nuevo_codigo_qr()">Regenerar Código</span> | <span class="calendar-qr-action" onclick="borrar_codigo_qr()">Borrar Código<span></p>
+  <div id="calendar-qr-box">
+  {% if codigo is not None %}
   {{ codigo|safe }}
+  {% endif %}
+  </div>
 
   <div class="main-subheader">
     <div class="subtitle">
