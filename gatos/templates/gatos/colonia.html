@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load atleast %}
+{% load atleast markdown %}
 {% block base_body %}
   
 
@@ -21,7 +21,7 @@
   </div>
 </div>
 <div id="descripcion-colonia">
-{{ object.descripcion }}
+{{ object.descripcion|render_markdown }}
 </div>
 <div id="mapa-colonia">
   <a href="{% url 'colonia-activity' colonia=colonia.slug %}"><img src="{% url 'colonia-activity-graph' colonia=colonia.slug %}"></a>

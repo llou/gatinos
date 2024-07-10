@@ -1,5 +1,5 @@
 {% extends 'gatos/colonia_base.html' %}
-{% load atleast %}
+{% load atleast markdown %}
 {% block body %}
 <div class="ficha">
   {% if gato.retrato.foto.url %}
@@ -15,7 +15,7 @@
     <div class="entrada"><span class="label">Color</span>: {{ gato.color }}</div>
     <div class="entrada"><span class="label">Peso</span>: {% if peso is not None %}{{ peso }}Kg{% else %}No se ha pesado todavía{% endif %}</div>
     <p><span class="label">Descripcion</span>:</p>
-    <div class="texto">{{ gato.descripcion }}</div>
+    <div class="texto">{{ gato.descripcion|render_markdown }}</div>
   {% endif %}
   </div>
 
