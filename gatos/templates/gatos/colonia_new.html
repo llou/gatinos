@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% block base_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+{% endblock %}
+
 {% block base_body %}
 <div class="main-subheader">
   <div class="subtitle">
@@ -14,4 +19,8 @@
   <input type="submit" value="Guardar">
 </div>
 </form>
+
+<script>
+   const easyMDE = new EasyMDE();
+</script>
 {% endblock %}

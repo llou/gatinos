@@ -1,8 +1,6 @@
-{% extends 'gatos/gato_base.html' %}
-{% block gato_head %}
-{% endblock %}
+{% extends 'gatos/gato_form_base.html' %}
 
-{% block gato_body %}
+{% block form_body %}
 <h3>Diagnosticar Enfermedad</h3>
 <form class="gatos-form" action="{% url 'enfermedad-create' colonia=colonia.slug gato=gato.slug %}" method="POST">
 {{ form.as_div }}

@@ -79,7 +79,7 @@ TEMPLATES = [
 ]
 
 
-FORM_RENDERER = "gatinos.forms.FormRenderer"
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 
 WSGI_APPLICATION = 'gatinos.wsgi.application'

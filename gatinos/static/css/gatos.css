@@ -64,12 +64,7 @@ a:visited {
   color: var(--visited-color);
 }
 
-label {
-  display: inline-block;
-  width: 150px;
-  text-align: right;
-  font-weight: bold;
-}
+
 
 header {
   height: var(--header-height);
@@ -133,43 +128,6 @@ footer {
   width: 964px;
   padding: 20px;
   text-align: center;
-}
-
-form {
-  font-size: 1em;
-}
-
-form.gatos-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-form.gatos-form div {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-label, legend, input, textarea, select {
-  font-size: 1.2em;
-}
-
-legend {
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-input[type=checkbox] {
-  transform: scale(1.5);
-}
-
-textarea {
-  font-family: monospace;
 }
 
 .main-header {
@@ -396,7 +354,7 @@ textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}}
+}
 
 .galeria-fotos-no-miniatura {
   width: var(--foto-miniatura-ancho);
@@ -418,13 +376,7 @@ textarea {
   object-fit: contain;
 }
 
-label.foto-label {
-  display: block;
-  width: auto;
-  text-align: center;
-  font-weight: normal;
-  font-size: 1em;
-}
+
 
 #id_gatos {
   display: flex;
@@ -506,37 +458,93 @@ ul.ErrorList {
   background-color: var(--button-color);
 }
 
-.butons a:hover, .actions.a:hover .confirmations.a:hover{
+.buttons a:hover, .actions.a:hover .confirmations.a:hover{
   cursor: pointer;
 }
 
-.butons a:active, .actions.a:active, .confirmations.a:active {
+.buttons a:active, .actions.a:active, .confirmations.a:active {
   cursor: pointer;
   background-color: var(--button-active-color);
   color: var(--button-text-color);
 }
 
-input[type=submit], input[type=button], input[type=reset], button {
-  height: var(--button-height);
-  min-width: var(--button-width);
-  border: 1px solid black;
-  text-decoration: none;
-  background-color: var(--button-color);
-  padding-left: 5px;
-  padding-right: 5px;
-  color: var(--button-text-color);
+form.gatos-form {
   font-size: 1em;
-}
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 
-input[type=submit]:active, input[type=button]:active, 
-input[type=reset]:active {
-  background-color: var(--button-active-color);
-  color: var(--button-text-color);
-}
 
-input[type=submit]:hover, input[type=button]:hover, 
-input[type=reset]:hover {
-  cursor: pointer;
+  label.foto-label {
+    display: block;
+    width: auto;
+    text-align: center;
+    font-weight: normal;
+    font-size: 1em;
+  }
+
+  input {
+    border: 1px solid #ced4da;
+  }
+
+  input[type=submit], input[type=button], input[type=reset],
+  button.fancy {
+    height: var(--button-height);
+    min-width: var(--button-width);
+    border: 1px solid black;
+    text-decoration: none;
+    background-color: var(--button-color);
+    padding-left: 5px;
+    padding-right: 5px;
+    color: var(--button-text-color);
+    font-size: 1em;
+  }
+
+  input[type=submit]:active, input[type=button]:active, 
+  input[type=reset]:active {
+    background-color: var(--button-active-color);
+    color: var(--button-text-color);
+  }
+
+  input[type=submit]:hover, input[type=button]:hover, 
+  input[type=reset]:hover {
+    cursor: pointer;
+  }
+
+  label {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+    font-weight: bold;
+  }
+
+  div.gatos-field {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  label, legend, input, textarea, select {
+    font-size: 1.2em;
+  }
+
+  legend {
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+    input[type=checkbox] {
+      transform: scale(1.5);
+    }
+
+    textarea {
+      font-family: monospace;
+    }
+
 }
 
 #confirmacion-mensaje {
@@ -587,7 +595,7 @@ table.minitabla-informes tr td {
 }
 
 table.minitabla-informes tr:nth-child(odd) {
-  background-color: Whitesmoke;
+  background-color: whitesmoke;
 }
 
 table.minitabla-informes .titulo {
@@ -616,7 +624,7 @@ table.tabla-informes tr td {
 }
 
 table.tabla-informes tr:nth-child(odd) {
-  background-color: Whitesmoke;
+  background-color: whitesmoke;
 }
 
 table.tabla-informes .titulo {
@@ -624,7 +632,7 @@ table.tabla-informes .titulo {
   text-align: left;
 }
 
-table.tabla-informes .autor
+table.tabla-informes .autor {
 }
 
 table.tabla-informes .fecha {
@@ -634,7 +642,7 @@ table.tabla-informes .acciones {
 }
 
 table.tabla-capturas tr:nth-child(odd) {
-  background-color: Whitesmoke;
+  background-color: whitesmoke;
 }
 
 table.tabla-capturas th {
@@ -670,7 +678,7 @@ table.tabla-capturas .acciones {
 }
 
 table.tabla-enfermedades tr:nth-child(odd) {
-  background-color: Whitesmoke;
+  background-color: whitesmoke;
 }
 
 table.tabla-enfermedades th {
@@ -700,7 +708,7 @@ table.tabla-enfermedades .acciones {
 }
 
 table.minitabla-vacunas tr:nth-child(odd) {
-  background-color: Whitesmoke;
+  background-color: whitesmoke;
 }
 
 table.minitabla-vacunas th {
@@ -735,7 +743,7 @@ article {
   font-size: 1.4em;
   margin: 40px auto 20px auto;
   padding: 40px;
-  background-color: WhiteSmoke;
+  background-color: whitesmoke;
 }
 
 article h1 {
