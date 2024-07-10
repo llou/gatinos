@@ -545,6 +545,10 @@ form.gatos-form {
       font-family: monospace;
     }
 
+  .EasyMDEContainer {
+    width: 700px;
+  }
+
 }
 
 #confirmacion-mensaje {
