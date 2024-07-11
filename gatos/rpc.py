@@ -12,7 +12,6 @@ def alternar_comida_usuario(colonia_slug, ano, mes, dia, **kwargs):
     colonia = Colonia.objects.get(slug=colonia_slug)
     fecha = date(ano, mes, dia)
     colonia.toggle_comida(fecha, user)
-    print(fecha, user, colonia)
     return {}
 
 
@@ -42,7 +41,6 @@ def borrar_codigo_qr(**kwargs):
     request = kwargs['request']
     CodigoCalendarioComidas.objects.filter(user=request.user).delete()
     return "Ok"
-
 
 
 def gato_flow_factory(action_name):
