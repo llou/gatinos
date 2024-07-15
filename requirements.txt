@@ -6,10 +6,10 @@ django-storages==1.14.3
 celery==5.4
 redis==4.3.4
 pyyaml==6.0.1
-matplotlib==3.9
 html-calendar==0.0.13
 markdown==3.6
 django-viewflow==2.1.2
 django-modern-rpc[defusedxml]
 icalendar
 segno
+django-plottings @ git+https://github.com/llou/django-plottings.git@main
