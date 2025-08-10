@@ -2,7 +2,7 @@ import io
 import numpy as np
 import matplotlib.pyplot as plt
 import segno
-from plottings.plots.activity import ActivityMap
+from .activity import ActivityMap
 
 
 class SpanishActivityMap(ActivityMap):
@@ -14,7 +14,7 @@ class SpanishActivityMap(ActivityMap):
 def activity_plot(data, xticks=None, yticks=None):
     fig, ax = plt.subplots(figsize=(8, 1.5))
     ax.pcolormesh(data, vmin=0, vmax=5, cmap="Blues", edgecolors="white")
-    ax.set_xticks(np.arange(len(xticks)), labels=xticks)
+    ax.set_xticks(np.arange(len(xticks))*4.7, labels=xticks)
     ax.set_yticks(np.arange(len(yticks)), labels=yticks)
     ax.spines['bottom'].set_color("white")
     ax.spines['top'].set_color("white")

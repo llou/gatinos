@@ -655,7 +655,7 @@ class ColoniaActivityPlotView(SubColoniaMixin, PNGPlotView):
         self.map = self.activity_class(date.today())
         self.map.load_activity(self.colonia.get_actividad())
 
-    def get_plot_kwargs(self):
+    def get_plot_options(self):
         return {"xticks": self.map.get_x_ticks(),
                 "yticks": self.map.get_y_ticks(),
                 }
@@ -663,7 +663,7 @@ class ColoniaActivityPlotView(SubColoniaMixin, PNGPlotView):
     def get_kwargs(self):
         return {"colonia": self.colonia}
 
-    def get_data(self):
+    def get_plot_data(self):
         return self.map.get_data()
 
 

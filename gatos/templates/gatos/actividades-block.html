@@ -4,7 +4,12 @@
 <ul class="actividades-list">
   {% for actividad in grupo %}
   <li>{{ actividad }}</li>
+  {% empty %}
+  <li>No hay actividades</li>
   {% endfor %}
+
 </ul>
+{% empty %}
+  <p>No hay actividades</p>
 {% endfor %}
 </div>
