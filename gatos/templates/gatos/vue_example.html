@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load django_vite %}
+
+{% block extra_head %}
+    {# Include Vite client for HMR in development #}
+    {% vite_hmr_client %}
+    
+    {# Include Vue 3 from CDN #}
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    {# Include CSS files for production #}
+    {% vite_asset_url 'src/main.js' as main_js_url %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Vue Components con Django Vite</h1>
+    
+    <div id="app">
+        <h2>Calendario de Alimentación</h2>
+        
+        <!-- Calendar Component -->
+        <calendar-component
+            rpc-url="/rpc/"
+            rpc-method="toggle_feeding_date"
+            :extra-data="{ colonia_id: coloniaId }"
+            @date-toggled="onDateToggled"
+            @rpc-success="onRpcSuccess"
+            @rpc-error="onRpcError"
+        ></calendar-component>
+        
+        <hr>
+        
+        <!-- Example Component -->
+        <example-component
+            title="Componente de Ejemplo"
+            message="Este es un componente Vue integrado con Django"
+            @clicked="onExampleClicked"
+        ></example-component>
+    </div>
+</div>
+
+{# Include the Vite module #}
+{% vite_asset 'src/main.js' %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for Vue and components to be loaded
+    if (typeof Vue !== 'undefined' && typeof GatinosComponents !== 'undefined') {
+        const { createApp } = Vue;
+        
+        const app = createApp({
+            data() {
+                return {
+                    coloniaId: {{ colonia_id|default:"1" }}
+                };
+            },
+            methods: {
+                onDateToggled(event) {
+                    console.log('Fecha cambiada:', event.date, 'Color:', event.color);
+                },
+                onRpcSuccess(result) {
+                    console.log('RPC exitoso:', result);
+                },
+                onRpcError(error) {
+                    console.error('Error RPC:', error);
+                    alert('Error al actualizar: ' + (error.message || 'Error desconocido'));
+                },
+                onExampleClicked() {
+                    alert('¡Componente clickeado!');
+                }
+            }
+        });
+        
+        // Register components
+        app.use(GatinosComponents);
+        
+        // Mount app
+        app.mount('#app');
+    }
+});
+</script>
+{% endblock %}

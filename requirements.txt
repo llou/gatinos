@@ -13,3 +13,4 @@ django-modern-rpc[defusedxml]
 icalendar
 segno
 django-plottings @ git+https://github.com/llou/django-plottings.git@main
+django-vite

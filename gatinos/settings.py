@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'plottings',
     'modernrpc',
     'viewflow',
+    'django_vite',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -218,3 +219,15 @@ RELLENO_FOTO_URL = "fotos/relleno.svg"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MODERNRPC_METHODS_MODULES = ["gatos.rpc"]
+
+# Django Vite Configuration
+DJANGO_VITE = {
+    "default": {
+        "dev_mode": DEBUG,  # Use Vite dev server in DEBUG mode
+        "dev_server_host": "localhost",
+        "dev_server_port": 5173,
+        "static_url_prefix": "/",  # No static prefix for dev server
+        "manifest_path": BASE_DIR / "gatinos/static/js/components/manifest.json",
+        "ws_client_url": "/@vite/client",
+    }
+}
