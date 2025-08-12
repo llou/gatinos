@@ -186,9 +186,6 @@ export function createCalendarApp(coloniaId) {
           borderless
           is-expanded
         />
-        <p v-if="selectedDate" style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-          Última fecha seleccionada: {{ selectedDate.toLocaleDateString('es-ES') }}
-        </p>
       </div>
     `
   })
