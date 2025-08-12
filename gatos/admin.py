@@ -23,7 +23,13 @@ class GatoAdmin(fsm.FlowAdminMixin, admin.ModelAdmin):
 
 
 class ColoniaAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('nombre', 'slug', 'get_usuarios_count')
+    filter_horizontal = ('usuarios_autorizados',)
+    search_fields = ('nombre', 'descripcion')
+    
+    def get_usuarios_count(self, obj):
+        return obj.usuarios_autorizados.count()
+    get_usuarios_count.short_description = 'Usuarios autorizados'
 
 
 class FotoAdmin(admin.ModelAdmin):

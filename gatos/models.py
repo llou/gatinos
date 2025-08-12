@@ -172,6 +172,12 @@ class Colonia(models.Model):
     nombre = models.CharField(max_length=200)
     periodo_activo = models.DurationField(default=timedelta(120, 0, 0))
     descripcion = models.TextField(blank=True, default="")
+    usuarios_autorizados = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='colonias_autorizadas',
+        blank=True,
+        help_text='Usuarios que tienen acceso a esta colonia'
+    )
 
     def get_eventos(self, min_fecha=None, max_fecha=None):
         informes = self.informes
@@ -232,6 +238,12 @@ class Colonia(models.Model):
     def get_calendarios(self):
         return ""
 
+    def user_has_access(self, user):
+        """Check if a user has access to this colony"""
+        if user.is_superuser:
+            return True
+        return self.usuarios_autorizados.filter(id=user.id).exists()
+    
     def toggle_comida(self, fecha, user):
         if not fecha > date.today():
             return

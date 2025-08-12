@@ -111,9 +111,23 @@ class GatoConfirmationView(ConfirmationView):
 
 
 class BaseColoniaMixin:
+    """Mixin that loads colony and checks access"""
+    
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
+    
+    def dispatch(self, request, *args, **kwargs):
+        """Override dispatch to check colony access"""
+        # Setup first to get the colony
+        self.setup(request, *args, **kwargs)
+        
+        # Check access
+        if not request.user.is_superuser and not self.colonia.user_has_access(request.user):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied(f"No tiene acceso a la colonia '{self.colonia.nombre}'")
+        
+        return super().dispatch(request, *args, **kwargs)
 
 
 class SubColoniaMixin(BaseColoniaMixin):
@@ -238,8 +252,12 @@ class UserBoundMixin:
 class ColoniasList(PRMixin, ListView):
     permission_required = "gatos.view_colonia"
     template_name = "gatos/colonias.html"
-    queryset = Colonia.objects.all()
     context_object_name = "colonias"
+    
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Colonia.objects.all()
+        return self.request.user.colonias_autorizadas.all()
 
 
 class ColoniaView(PRMixin, ColoniaMixin, DetailView):

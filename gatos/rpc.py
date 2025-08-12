@@ -3,6 +3,7 @@ from modernrpc.core import rpc_method
 from modernrpc.auth.basic import http_basic_auth_permissions_required
 from modernrpc.auth.basic import http_basic_auth_login_required
 from .models import Colonia, Gato, CodigoCalendarioComidas, AsignacionComida
+from .decorators import colony_access_required, require_colony_permission
 
 
 @rpc_method(name="alternar_comida_usuario")
@@ -10,6 +11,11 @@ def alternar_comida_usuario(colonia_slug, ano, mes, dia, **kwargs):
     request = kwargs['request']
     user = request.user
     colonia = Colonia.objects.get(slug=colonia_slug)
+    
+    # Check if user has access to this colony
+    if not colonia.user_has_access(user):
+        return {"error": "No tiene acceso a esta colonia"}
+    
     fecha = date(ano, mes, dia)
     colonia.toggle_comida(fecha, user)
     return {}
@@ -27,6 +33,10 @@ def toggle_feeding_date(date_str, colonia_id, current_color=None, **kwargs):
         # Parse date string (YYYY-MM-DD format)
         fecha = datetime.strptime(date_str, "%Y-%m-%d").date()
         colonia = Colonia.objects.get(id=colonia_id)
+        
+        # Check if user has access to this colony
+        if not colonia.user_has_access(request.user):
+            return {"error": "No tiene acceso a esta colonia"}
         
         # Check if user has permission
         if not request.user.has_perm('gatos.alimentar_colonia'):
@@ -57,8 +67,14 @@ def toggle_feeding_date(date_str, colonia_id, current_color=None, **kwargs):
 @rpc_method(name="get_feeding_dates")
 def get_feeding_dates(colonia_id, start_date=None, end_date=None, **kwargs):
     """Get feeding dates for a colony to display on calendar"""
+    request = kwargs.get('request')
+    
     try:
         colonia = Colonia.objects.get(id=colonia_id)
+        
+        # Check if user has access to this colony (if request is provided)
+        if request and request.user and not colonia.user_has_access(request.user):
+            return {"error": "No tiene acceso a esta colonia"}
         
         # Query feeding assignments
         query = AsignacionComida.objects.filter(colonia=colonia)
