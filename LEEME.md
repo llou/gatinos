@@ -1,4 +1,8 @@
-# Gatinos 🐱
+# Gatinos 🐈
+
+## Aviso del Programador
+
+Se planea que este proyecto esté listo para ser usado cuando se cree la aplicación móvil que la acompaña, mientrastanto la estoy usando para practicar las últimas técnicas de programación con LLMs añadiendo características y refactorizando.
 
 **Sistema Avanzado de Gestión de Colonias Felinas**
 
@@ -9,7 +13,7 @@
 
 Gatinos es una aplicación web integral basada en Django diseñada para gestionar colonias de gatos con características avanzadas para el seguimiento de gatos individuales, sus registros de salud, horarios de alimentación y actividades de voluntarios. El sistema soporta control de acceso basado en roles y proporciona interfaces web modernas para una gestión eficiente de colonias.
 
-## 🌟 Características
+## Características
 
 ### 🐈 Funcionalidad Principal
 - **Perfiles Individuales de Gatos**: Registros completos con fotos, historial de salud y notas de comportamiento

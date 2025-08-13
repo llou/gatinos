@@ -1,4 +1,7 @@
-# Gatinos 🐱
+# Gatinos 🐈 
+
+## Programmer notice
+This project is planed to be fully functional when a companion mobile application is developed, meanwhile I am using it to practice new trends of developing using LLMs adding features and refactoring.
 
 **Advanced Cat Colony Management System**
 
@@ -26,7 +29,7 @@ Gatinos is a comprehensive Django-based web application designed to manage cat c
 - **👮 Autoridad (Authority)**: Administrative functions, colony management, user oversight
 - **👁️ Visitante (Visitor)**: Read-only access to public information and reports
 
-### 🚀 Advanced Features
+### Advanced Features
 - **State Machine Workflows**: Track cat status transitions (Free → Captured → Released, etc.)
 - **RPC API**: Modern JSON-RPC interface for external integrations
 - **Real-time Calendar**: Interactive feeding schedule with color-coded assignments
@@ -36,7 +39,7 @@ Gatinos is a comprehensive Django-based web application designed to manage cat c
 - **QR Code Integration**: Quick access to feeding calendars via mobile devices
 - **iCalendar Export**: Personal calendar integration for feeding schedules
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend Infrastructure
 - **🐍 Django 4.2.23** - Web framework with custom admin interface
@@ -537,7 +540,7 @@ copies of the Software...
 - **💬 Discussions**: Join our community discussions for general questions
 
 ### Contact Information
-- **Project Maintainer**: [Your Name](mailto:your-email@example.com)
+- **Project Maintainer**: [llou](mailto:yo@llou.net)
 - **GitHub Issues**: [Report Issues](https://github.com/your-org/gatinos/issues)
 - **Community Forum**: [Join Discussions](https://github.com/your-org/gatinos/discussions)
 
