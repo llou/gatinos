@@ -8,7 +8,7 @@
   {% csrf_token %}
   <img id="delete-foto" src="{{ foto.miniatura.url }}">
   <div class="confirmations">
-    <input type="submit" value="Confirmar"/>
+    <input type="submit" formnovalidate value="Confirmar"/>
   </div>
 </form>
 {% endblock %}

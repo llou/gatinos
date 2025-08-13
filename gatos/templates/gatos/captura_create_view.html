@@ -11,6 +11,6 @@
 <form action="{% url 'captura-create' colonia=colonia.slug gato=gato.slug %}" method="POST">
 {{ form.as_p }}
 {% csrf_token %}
-<input type="submit" value="Guardar"\>
+<input type="submit" formnovalidate value="Guardar"\>
 </form>
 {% endblock %}

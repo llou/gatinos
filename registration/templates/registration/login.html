@@ -10,7 +10,7 @@
   <form method="post" action="{% url 'registration:login' %}">
   {% csrf_token %}
   {{ form.as_div }}
-    <button id="submit" type="submit">Acceder</button>
+    <button id="submit" type="submit" formnovalidate>Acceder</button>
   </form>
 </div>
 
