@@ -6,6 +6,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.text import slugify
 from django.contrib.auth.mixins import PermissionRequiredMixin as PRMixin
 from django.views import View
 from django.views.generic import (DetailView,
@@ -116,18 +117,11 @@ class BaseColoniaMixin:
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.colonia = get_object_or_404(Colonia, slug=self.kwargs['colonia'])
-    
-    def dispatch(self, request, *args, **kwargs):
-        """Override dispatch to check colony access"""
-        # Setup first to get the colony
-        self.setup(request, *args, **kwargs)
         
-        # Check access
+        # Check access right after loading the colony
         if not request.user.is_superuser and not self.colonia.user_has_access(request.user):
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied(f"No tiene acceso a la colonia '{self.colonia.nombre}'")
-        
-        return super().dispatch(request, *args, **kwargs)
 
 
 class SubColoniaMixin(BaseColoniaMixin):
@@ -354,7 +348,10 @@ class GatoCreateView(PRMixin, SubColoniaMixin, CreateView):
               "nombre_vecino"]
 
     def form_valid(self, form):
-        form.instance.colonia_id = self.colonia.id
+        form.instance.colonia = self.colonia
+        # Ensure slug is generated
+        if not form.instance.slug:
+            form.instance.slug = slugify(form.instance.nombre)
         return super().form_valid(form)
 
 
@@ -695,7 +692,7 @@ class GatoActivityPlotView(SubGatoMixin, PNGPlotView):
         self.map = self.activity_class(date.today())
         self.map.load_activity(self.gato.get_actividad())
 
-    def get_plot_kwargs(self):
+    def get_plot_options(self):
         return {"xticks": self.map.get_x_ticks(),
                 "yticks": self.map.get_y_ticks(),
                 }
@@ -703,7 +700,7 @@ class GatoActivityPlotView(SubGatoMixin, PNGPlotView):
     def get_kwargs(self):
         return {"colonia": self.colonia}
 
-    def get_data(self):
+    def get_plot_data(self):
         return self.map.get_data()
 
 
@@ -724,7 +721,7 @@ class UserActivityPlotView(UserMixin, PNGPlotView):
         self.map = self.activity_class(date.today())
         self.map.load_activity(get_actividad_usuario(self.user))
 
-    def get_plot_kwargs(self):
+    def get_plot_options(self):
         return {"xticks": self.map.get_x_ticks(),
                 "yticks": self.map.get_y_ticks(),
                 }
@@ -732,7 +729,7 @@ class UserActivityPlotView(UserMixin, PNGPlotView):
     def get_kwargs(self):
         return {"colonia": self.colonia}
 
-    def get_data(self):
+    def get_plot_data(self):
         return self.map.get_data()
 
 

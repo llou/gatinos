@@ -51,7 +51,7 @@ class GatosColoniaManager(models.Manager):
 
 
 class Gato(models.Model):
-    slug = models.SlugField(max_length=200, unique=True, default="")
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
     nombre = models.CharField(max_length=200, unique=True)
     color = models.CharField(max_length=50)
     descripcion = models.TextField()
@@ -135,7 +135,8 @@ class Gato(models.Model):
             av.save()
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.nombre)
+        if not self.slug or self.slug.strip() == "":
+            self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
 
     @property

@@ -1,5 +1,4 @@
 from django.contrib import admin
-from viewflow import fsm
 from gatinos.admin import admin_site
 from .models import (
         Gato,
@@ -13,7 +12,7 @@ from .models import (
 from .flows import GatoFlow
 
 
-class GatoAdmin(fsm.FlowAdminMixin, admin.ModelAdmin):
+class GatoAdmin(admin.ModelAdmin):
     list_display = ("nombre", "colonia", "estado")
     readonly_fields = ('estado', )
     flow_state = GatoFlow.estado
