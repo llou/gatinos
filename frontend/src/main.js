@@ -73,10 +73,9 @@ export function createCalendarApp(coloniaId) {
           
           this.feedingDates = result.dates.map(dateInfo => ({
             dates: new Date(dateInfo.date),
-            highlight: {
+            dot: {
               color: dateInfo.color,
               class: 'feeding-date',
-              fillMode: 'outline',
             },
             popover: {
               label: dateInfo.user,
@@ -95,7 +94,6 @@ export function createCalendarApp(coloniaId) {
       },
       
       async onDayClick(day) {
-        console.log('Day clicked:', day)
         this.selectedDate = day.date
         
         const dateStr = this.formatDate(day.date)
@@ -103,8 +101,7 @@ export function createCalendarApp(coloniaId) {
           this.formatDate(attr.dates) === dateStr
         )
         
-        const currentColor = currentAttribute ? currentAttribute.highlight.color : null;
-        
+        const currentColor = currentAttribute ? currentAttribute.dot.color : null;
         try {
           this.loading = true
           const result = await makeRpcCall('toggle_feeding_date', {
@@ -123,10 +120,9 @@ export function createCalendarApp(coloniaId) {
           if (result.assigned) {
             const newAttribute = {
               dates: day.date,
-              highlight: {
+              dot: {
                 color: result.color,
                 class: 'feeding-date',
-                fillMode: 'outline',
               },
               popover: {
                 label: result.user || 'Asignado',
@@ -144,7 +140,7 @@ export function createCalendarApp(coloniaId) {
           } else {
             // Remove the date if no longer assigned
             if (existingIndex >= 0) {
-              this.feedingDates.splice(existingIndex, 1)
+              this.feedingDates.splice(existingIndex, 1);
             }
           }
           
