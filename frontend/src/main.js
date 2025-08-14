@@ -73,12 +73,16 @@ export function createCalendarApp(coloniaId) {
           
           this.feedingDates = result.dates.map(dateInfo => ({
             dates: new Date(dateInfo.date),
-            dot: {
-              color: this.getColorCode(dateInfo.color),
-              class: 'feeding-date'
+            highlight: {
+              color: dateInfo.color,
+              class: 'feeding-date',
+              fillMode: 'outline',
             },
             popover: {
-              label: `Alimentación: ${dateInfo.user || 'Sin asignar'}`
+              label: dateInfo.user,
+              visibility: 'hover',
+              hideIndicator: true,
+              isInteractive: false
             }
           }))
           
@@ -99,8 +103,7 @@ export function createCalendarApp(coloniaId) {
           this.formatDate(attr.dates) === dateStr
         )
         
-        const currentColor = currentAttribute ? 
-          this.getColorName(currentAttribute.dot.color) : null
+        const currentColor = currentAttribute ? currentAttribute.highlight.color : null;
         
         try {
           this.loading = true
@@ -120,12 +123,16 @@ export function createCalendarApp(coloniaId) {
           if (result.assigned) {
             const newAttribute = {
               dates: day.date,
-              dot: {
-                color: this.getColorCode(result.color),
-                class: 'feeding-date'
+              highlight: {
+                color: result.color,
+                class: 'feeding-date',
+                fillMode: 'outline',
               },
               popover: {
-                label: 'Alimentación asignada'
+                label: result.user || 'Asignado',
+                visibility: 'hover',
+                hideIndicator: true,
+                isInteractive: false
               }
             }
             
@@ -156,33 +163,16 @@ export function createCalendarApp(coloniaId) {
         return `${year}-${month}-${day}`
       },
       
-      getColorCode(colorName) {
-        const colorMap = {
-          'green': '#4CAF50',
-          'blue': '#2196F3',
-          'red': '#F44336',
-          'orange': '#FF9800'
-        }
-        return colorMap[colorName] || '#4CAF50'
-      },
-      
-      getColorName(colorCode) {
-        const nameMap = {
-          '#4CAF50': 'green',
-          '#2196F3': 'blue',
-          '#F44336': 'red',
-          '#FF9800': 'orange'
-        }
-        return nameMap[colorCode] || 'green'
-      }
+
     },
     template: `
       <div>
         <VCalendar 
+          locale="es"
           :attributes="feedingDates"
           @dayclick="onDayClick"
           :disabled="loading"
-          columns=2
+          :columns=2
           borderless
           is-expanded
         />

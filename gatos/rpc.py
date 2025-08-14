@@ -54,9 +54,9 @@ def toggle_feeding_date(date_str, colonia_id, current_color=None, **kwargs):
         
         # Return appropriate color based on assignment
         if asignacion:
-            return {"color": "green", "assigned": True}
+            return {"color": "red", "assigned": True, "user": request.user.username}
         else:
-            return {"color": None, "assigned": False}
+            return {"color": None, "assigned": False, "user": None}
             
     except Colonia.DoesNotExist:
         return {"error": "Colony not found"}
@@ -76,6 +76,9 @@ def get_feeding_dates(colonia_id, start_date=None, end_date=None, **kwargs):
         if request and request.user and not colonia.user_has_access(request.user):
             return {"error": "No tiene acceso a esta colonia"}
         
+        # Get current user for comparison
+        current_user = request.user if request and hasattr(request, 'user') else None
+        
         # Query feeding assignments
         query = AsignacionComida.objects.filter(colonia=colonia)
         
@@ -90,10 +93,21 @@ def get_feeding_dates(colonia_id, start_date=None, end_date=None, **kwargs):
         # Group by date and return with color based on user
         dates = []
         for asignacion in query:
+            # Determine color based on whether it's the current user's assignment
+            if asignacion.usuario:
+                if current_user and asignacion.usuario.id == current_user.id:
+                    color = "red"  # Current user's assignments
+                else:
+                    color = "blue"  # Other users' assignments
+            else:
+                color = "gray"  # Unassigned
+            
             dates.append({
                 "date": asignacion.fecha.strftime("%Y-%m-%d"),
-                "color": "green" if asignacion.usuario else "blue",
-                "user": asignacion.usuario.username if asignacion.usuario else None
+                "color": color,
+                "user": asignacion.usuario.username if asignacion.usuario else None,
+                "user_id": asignacion.usuario.id if asignacion.usuario else None,
+                "is_current_user": current_user and asignacion.usuario and asignacion.usuario.id == current_user.id
             })
         
         return {"dates": dates}
