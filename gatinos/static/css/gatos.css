@@ -34,6 +34,27 @@
   --button-active-color: cyan;
   --button-color: blue;
   --button-text-color: white;
+  --anuncio-bajo-color: black;
+  --anuncio-medio-color: blue;
+  --anuncio-alto-color: red;
+}
+
+[data-theme="dark"] {
+  --shade: #2a2a2a;
+  --page-bg-color: #1a1a1a;
+  --body-bg-color: #2d2d2d;
+  --text-color: #e0e0e0;
+  --link-color: #6db3f2;
+  --disabled-color: #666;
+  --visited-color: #8a9adf;
+  --ficha-color: #3a3a3a;
+  --img-background-color: #2a2a2a;
+  --button-active-color: #4a9aff;
+  --button-color: #6db3f2;
+  --button-text-color: #1a1a1a;
+  --anuncio-bajo-color: #888;
+  --anuncio-medio-color: #6db3f2;
+  --anuncio-alto-color: #ff6b6b;
 }
 
 html {
@@ -46,6 +67,7 @@ body {
   width: var(--page-width);
   margin: 40px auto;
   background-color: var(--body-bg-color);
+  color: var(--text-color);
 }
 
 img.foto {
@@ -63,7 +85,6 @@ img.foto {
 a:visited {
   color: var(--visited-color);
 }
-
 
 
 header {
@@ -146,6 +167,31 @@ footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.main-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--shade);
+  transform: scale(1.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
 }
 
 .main-subheader {
@@ -496,8 +542,10 @@ form.gatos-form {
     font-size: 1em;
   }
 
-  input {
+  input, select, textarea {
     border: 1px solid #ced4da;
+    background-color: var(--body-bg-color);
+    color: var(--text-color);
   }
 
   input[type=submit], input[type=button], input[type=reset],
@@ -563,6 +611,34 @@ form.gatos-form {
 
 }
 
+.EasyMDEContainer {
+    background-color: var(body-bg-color);
+}
+
+.EasyMDEContainer .CodeMirror, .EasyMDEContainer .editor-preview {
+    color: var(--text-color);
+    border-color: var(--page-bg-color);
+    background-color: var(--body-bg-color);
+}
+
+.cm-s-easymde .CodeMirror-cursor {
+    border-color: var(--page-bg-color);
+}
+
+.editor-toolbar button i {
+    color: var(--text-color);
+}
+
+.editor-toolbar button.active, .editor-toolbar button:hover {
+    background-color: var(--body-bg-color); 
+}
+
+.editor-preview pre {
+    background-color: var(--body-bg-color); 
+}
+
+
+
 #confirmacion-mensaje {
   width: 100%;
   margin-bottom: 50px;
@@ -611,7 +687,7 @@ table.minitabla-informes tr td {
 }
 
 table.minitabla-informes tr:nth-child(odd) {
-  background-color: whitesmoke;
+  background-color: var(--ficha-color);
 }
 
 table.minitabla-informes .titulo {
@@ -640,7 +716,7 @@ table.tabla-informes tr td {
 }
 
 table.tabla-informes tr:nth-child(odd) {
-  background-color: whitesmoke;
+  background-color: var(--ficha-color);
 }
 
 table.tabla-informes .titulo {
@@ -658,7 +734,7 @@ table.tabla-informes .acciones {
 }
 
 table.tabla-capturas tr:nth-child(odd) {
-  background-color: whitesmoke;
+  background-color: var(--ficha-color);
 }
 
 table.tabla-capturas th {
@@ -694,7 +770,7 @@ table.tabla-capturas .acciones {
 }
 
 table.tabla-enfermedades tr:nth-child(odd) {
-  background-color: whitesmoke;
+  background-color: var(--ficha-color);
 }
 
 table.tabla-enfermedades th {
@@ -724,7 +800,7 @@ table.tabla-enfermedades .acciones {
 }
 
 table.minitabla-vacunas tr:nth-child(odd) {
-  background-color: whitesmoke;
+  background-color: var(--ficha-color);
 }
 
 table.minitabla-vacunas th {
@@ -881,15 +957,26 @@ ul.actividades-list {
 }
 
 .anuncio-bajo {
-  border: 5px solid black;
+  border: 5px solid var(--anuncio-bajo-color);
 }
 
 .anuncio-medio {
-  border: 5px solid blue;
+  border: 5px solid var(--anuncio-medio-color);
 }
 
 .anuncio-alto {
-  border: 5px solid red;
+  border: 5px solid var(--anuncio-alto-color);
+}
+
+.vc-title, .vc-pane {
+  color: var(--text-color) !important;
+  background-color: var(--body-bg-color) !important;
+}
+
+.vc-base-icon {
+  color: var(--button-text-color);
+  background-color: var(--button-color);
+  border-color: var(--button-color);
 }
 
 #calendar-qr {

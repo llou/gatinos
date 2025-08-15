@@ -158,6 +158,11 @@ export function createCalendarApp(coloniaId) {
         const day = String(date.getDate()).padStart(2, '0')
         return `${year}-${month}-${day}`
       },
+
+      isDark() {
+    	const savedTheme = localStorage.getItem('theme') || 'light';
+        return savedTheme === 'dark';
+      },
       
 
     },
@@ -169,6 +174,7 @@ export function createCalendarApp(coloniaId) {
           @dayclick="onDayClick"
           :disabled="loading"
           :columns=2
+          :is-dark="isDark"
           borderless
           is-expanded
         />

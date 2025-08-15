@@ -675,7 +675,10 @@ class ColoniaActivityPlotView(SubColoniaMixin, PNGPlotView):
                 "yticks": self.map.get_y_ticks(),
                 }
 
-    def get_kwargs(self):
+    def get_save_options(self):
+        return {"transparent": True}
+
+    def get_options(self):
         return {"colonia": self.colonia}
 
     def get_plot_data(self):
@@ -697,7 +700,10 @@ class GatoActivityPlotView(SubGatoMixin, PNGPlotView):
                 "yticks": self.map.get_y_ticks(),
                 }
 
-    def get_kwargs(self):
+    def get_save_options(self):
+        return {"transparent": True}
+
+    def get_options(self):
         return {"colonia": self.colonia}
 
     def get_plot_data(self):
@@ -726,7 +732,7 @@ class UserActivityPlotView(UserMixin, PNGPlotView):
                 "yticks": self.map.get_y_ticks(),
                 }
 
-    def get_kwargs(self):
+    def get_options(self):
         return {"colonia": self.colonia}
 
     def get_plot_data(self):

@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="main-header-right">
-
+          <a id="theme-toggle" class="theme-icon" href="#">🌙</a> |
         {% if request.user.is_staff %}
           <a href="{% url "admin:index" %}">Admin</a> |
         {% endif %}
@@ -50,4 +50,24 @@
     &copy; {{ current_year }} Monforte Technologies
   </footer>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script>
+		(function() {
+			const toggle = document.getElementById('theme-toggle');
+			const icon = toggle;
+			const html = document.documentElement;
+			
+			const savedTheme = localStorage.getItem('theme') || 'light';
+			html.setAttribute('data-theme', savedTheme);
+			icon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+			
+			toggle.addEventListener('click', function() {
+				const currentTheme = html.getAttribute('data-theme');
+				const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+				
+				html.setAttribute('data-theme', newTheme);
+				localStorage.setItem('theme', newTheme);
+				icon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+			});
+		})();
+	</script>
 </body>
