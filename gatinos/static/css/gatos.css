@@ -221,9 +221,12 @@ footer {
   margin: 30px;
 }
 
-#mapa-colonia img {
-  display: block;
+#mapa-colonia, #mapa-gato {
+  display: grid;
   margin: 0 auto 20px auto;
+  min-height: 175px;
+  justify-items: center;
+  align-items: center;
 }
 
 #lista-de-gatos ul{

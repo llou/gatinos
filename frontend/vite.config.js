@@ -19,6 +19,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/main.js'),
+        'activity-chart': resolve(__dirname, 'src/activity-chart.js'),
       },
       output: {
         entryFileNames: '[name]-[hash].js',

@@ -4,10 +4,6 @@ from . import views
 
 
 gato_urls = [
-    path('activity.png', views.GatoActivityPlotView.as_view(),
-         name="gato-activity-graph"),
-    path('actividades', views.ActividadesGato.as_view(),
-         name="gato-activity"),
     path("capturar", views.CapturarGato.as_view(), name="capturar"),
     path("liberar", views.LiberarGato.as_view(), name="liberar"),
     path("morir", views.MorirGato.as_view(), name="morir"),
@@ -32,10 +28,6 @@ gato_urls = [
 
 
 colonia_urls = [
-    path('activity.png', views.ColoniaActivityPlotView.as_view(),
-         name="colonia-activity-graph"),
-    path('actividades', views.ActividadesColonia.as_view(),
-         name="colonia-activity"),
     path('comidas', views.CalendarioComidas.as_view(),
          name="comidas"),
     path('avistamientos', views.Avistamientos.as_view(), name="avistamiento"),
@@ -73,7 +65,6 @@ colonia_urls = [
     ]
 
 user_urls = [
-    path("activity.png", views.UserActivityPlotView.as_view()),
     ]
 
 urlpatterns = [

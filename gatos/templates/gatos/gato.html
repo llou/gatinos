@@ -1,5 +1,5 @@
 {% extends 'gatos/colonia_base.html' %}
-{% load atleast markdown %}
+{% load atleast markdown django_vite %}
 {% block body %}
 <div class="ficha">
   {% if gato.retrato.foto.url %}
@@ -57,8 +57,14 @@
 {% if not gato.vecino %}
 
 
-<div id="mapa-colonia">
-  <a href="{% url 'gato-activity' colonia=colonia.slug gato=gato.slug %}"><img src="{% url 'gato-activity-graph' colonia=colonia.slug gato=gato.slug %}"></a>
+<div id="mapa-gato">
+  <div class="cat-activity-chart" 
+       data-gato-slug="{{ gato.slug }}"
+       data-colonia-slug="{{ colonia.slug }}"
+       data-rpc-url=""
+       data-language="es">
+    <!-- Activity chart will be mounted here by Vue -->
+  </div>
 </div>
 
 
@@ -188,5 +194,20 @@
    </div>
 </div>
 {% include "gatos/fotos-block.html" with fotos=gato.fotos.all %}
+
+<script type="module">
+  // Dynamic import URL for activity chart
+  const activityChartUrl = '{% vite_asset_url 'src/activity-chart.js' %}';
+  
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', async function() {
+    // Load activity chart
+    try {
+      await import(activityChartUrl);
+    } catch (error) {
+      console.error('Failed to load activity chart module:', error);
+    }
+  });
+</script>
 
 {% endblock %}

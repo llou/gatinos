@@ -16,7 +16,6 @@ from django.views.generic import (DetailView,
                                   UpdateView,
                                   TemplateView,
                                   )
-from plottings import PNGPlotView
 from .models import (Gato,
                      Colonia,
                      Foto,
@@ -36,7 +35,7 @@ from .forms import (FotoCreateForm,
                     EnfermedadUpdateForm,
                     VacunarGatoForm
                     )
-from .plots import activity_plot, SpanishActivityMap, get_svg_qrcode
+from .plots import get_svg_qrcode
 from .utils import Agrupador
 from .flows import GatoFlow
 from . import tasks
@@ -660,83 +659,11 @@ class VacunarGato(PRMixin, SubColoniaMixin, SubGatoMixin, SubCapturaMixin,
         return self.captura.gato.get_absolute_url()
 
 
-class ColoniaActivityPlotView(SubColoniaMixin, PNGPlotView):
-    plotter_function = staticmethod(activity_plot)
-    activity_class = SpanishActivityMap
-    filename = "activity.png"
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.map = self.activity_class(date.today())
-        self.map.load_activity(self.colonia.get_actividad())
-
-    def get_plot_options(self):
-        return {"xticks": self.map.get_x_ticks(),
-                "yticks": self.map.get_y_ticks(),
-                }
-
-    def get_save_options(self):
-        return {"transparent": True}
-
-    def get_options(self):
-        return {"colonia": self.colonia}
-
-    def get_plot_data(self):
-        return self.map.get_data()
-
-
-class GatoActivityPlotView(SubGatoMixin, PNGPlotView):
-    plotter_function = staticmethod(activity_plot)
-    activity_class = SpanishActivityMap
-    filename = "activity.png"
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.map = self.activity_class(date.today())
-        self.map.load_activity(self.gato.get_actividad())
-
-    def get_plot_options(self):
-        return {"xticks": self.map.get_x_ticks(),
-                "yticks": self.map.get_y_ticks(),
-                }
-
-    def get_save_options(self):
-        return {"transparent": True}
-
-    def get_options(self):
-        return {"colonia": self.colonia}
-
-    def get_plot_data(self):
-        return self.map.get_data()
-
-
 class UserMixin:
     def __setup__(self, request, *args, **kwargs):
         super().__setup__(request, *args, **kwargs)
         self.user = get_object_or_404(settings.AUTH_USER_MODEL,
                                       username=kwargs['username'])
-
-
-class UserActivityPlotView(UserMixin, PNGPlotView):
-    plotter_function = staticmethod(activity_plot)
-    activity_class = SpanishActivityMap
-    filename = "activity.png"
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.map = self.activity_class(date.today())
-        self.map.load_activity(get_actividad_usuario(self.user))
-
-    def get_plot_options(self):
-        return {"xticks": self.map.get_x_ticks(),
-                "yticks": self.map.get_y_ticks(),
-                }
-
-    def get_options(self):
-        return {"colonia": self.colonia}
-
-    def get_plot_data(self):
-        return self.map.get_data()
 
 
 # ------------------------------------------------------------------------

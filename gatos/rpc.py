@@ -146,6 +146,55 @@ def borrar_codigo_qr(**kwargs):
     return "Ok"
 
 
+@rpc_method(name="get_colony_activity")
+def get_colony_activity(colonia_slug, **kwargs):
+    """Get activity data for a colony to display in activity chart"""
+    try:
+        colonia = Colonia.objects.get(slug=colonia_slug)
+        
+        # Check if user has access to this colony if request is provided
+        request = kwargs.get('request')
+        if request and hasattr(request, 'user') and not colonia.user_has_access(request.user):
+            return {"error": "No tiene acceso a esta colonia"}
+        
+        # Get activity dates for the colony
+        activity_dates = colonia.get_actividad()
+        dates = [d.isoformat() if hasattr(d, 'isoformat') else str(d) for d in activity_dates]
+        
+        return {"dates": dates, "colony_name": colonia.nombre}
+        
+    except Colonia.DoesNotExist:
+        return {"error": "Colony not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@rpc_method(name="get_cat_activity")
+def get_cat_activity(colonia_slug, gato_slug, **kwargs):
+    """Get activity data for a cat to display in activity chart"""
+    try:
+        colonia = Colonia.objects.get(slug=colonia_slug)
+        gato = Gato.objects.get(slug=gato_slug, colonia=colonia)
+        
+        # Check if user has access to this colony if request is provided
+        request = kwargs.get('request')
+        if request and hasattr(request, 'user') and not colonia.user_has_access(request.user):
+            return {"error": "No tiene acceso a esta colonia"}
+        
+        # Get activity dates for the cat
+        activity_dates = gato.get_actividad()
+        dates = [d.isoformat() if hasattr(d, 'isoformat') else str(d) for d in activity_dates]
+        
+        return {"dates": dates, "cat_name": gato.nombre}
+        
+    except Colonia.DoesNotExist:
+        return {"error": "Colony not found"}
+    except Gato.DoesNotExist:
+        return {"error": "Cat not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def gato_flow_factory(action_name):
     rpc_name = f"gato.{action_name}"
     perm_name = f"gatos.gato_{action_name}"

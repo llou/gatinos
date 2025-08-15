@@ -30,7 +30,12 @@
 {{ object.descripcion|render_markdown }}
 </div>
 <div id="mapa-colonia">
-  <a href="{% url 'colonia-activity' colonia=colonia.slug %}"><img src="{% url 'colonia-activity-graph' colonia=colonia.slug %}"></a>
+  <div class="colony-activity-chart" 
+       data-colonia-slug="{{ colonia.slug }}"
+       data-rpc-url=""
+       data-language="es">
+    <!-- Activity chart will be mounted here by Vue -->
+  </div>
 </div>
 
 
@@ -108,17 +113,26 @@
 {% include "gatos/fotos-block.html" with fotos=fotos %}
 
 <script type="module">
-  // Dynamic import URL that works in both dev and production
-  const moduleUrl = '{% vite_asset_url 'src/main.js' %}';
+  // Dynamic import URLs that work in both dev and production
+  const calendarModuleUrl = '{% vite_asset_url 'src/main.js' %}';
+  const activityChartUrl = '{% vite_asset_url 'src/activity-chart.js' %}';
   
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', async function() {
+    // Load calendar
     try {
-      const { createCalendarApp } = await import(moduleUrl);
+      const { createCalendarApp } = await import(calendarModuleUrl);
       const app = createCalendarApp({{ colonia.id }});
       app.mount('#calendar-app');
     } catch (error) {
       console.error('Failed to load calendar module:', error);
+    }
+    
+    // Load activity chart
+    try {
+      await import(activityChartUrl);
+    } catch (error) {
+      console.error('Failed to load activity chart module:', error);
     }
   });
 </script>
