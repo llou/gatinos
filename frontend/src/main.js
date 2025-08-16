@@ -246,7 +246,14 @@ export function createCalendarApp(coloniaId) {
           :is-dark="isDark"
           borderless
           is-expanded
-        />
+          disable-page-swipe
+          :min-page="{ month: new Date().getMonth() + 1, year: new Date().getFullYear() }"
+          :max-page="{ month: new Date().getMonth() + 2, year: new Date().getFullYear() }"
+        >
+          <template #header>
+            <!-- Hide navigation by providing empty header -->
+          </template>
+        </VCalendar>
       </div>
     `
   })

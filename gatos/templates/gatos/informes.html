@@ -26,7 +26,16 @@
     <td class="acciones"><a href="{% url 'informe-update' colonia=colonia.slug pk=informe.id %}">Editar</a> | <a href="{% url 'informe-delete' colonia=colonia.slug pk=informe.id %}">Borrar</a></td>
   </tr>
 {% else %}
+  {% if show_skeleton %}
+  <tr>
+    <td class="titulo"><div class="skeleton-text"></div></td>
+    <td class="autor"><div class="skeleton-text"></div></td>
+    <td class="fecha"><div class="skeleton-text"></div></td>
+    <td class="acciones"><div class="skeleton-text"></div></td>
+  </tr>
+  {% else %}
   <tr><td></td><td></td><td></td><td></td></tr>
+  {% endif %}
 {% endif %}
 {% endfor %}
 </table>

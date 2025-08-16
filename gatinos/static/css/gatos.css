@@ -1001,3 +1001,91 @@ ul.actividades-list {
   cursor: pointer;
 }
 
+/* Skeleton Loader Styles */
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+  opacity: 0.7;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 1em;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-text:last-child {
+  width: 80%;
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius);
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-thumbnail {
+  width: var(--foto-miniatura-ancho);
+  height: var(--foto-miniatura-alto);
+  border-radius: var(--border-radius);
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-card {
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-activity-chart {
+  width: 850px;
+  height: 150px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: var(--shade);
+  }
+  100% {
+    background-color: var(--ficha-color);
+  }
+}
+
+/* Dark mode skeleton adjustments */
+[data-theme="dark"] .skeleton,
+[data-theme="dark"] .skeleton-text,
+[data-theme="dark"] .skeleton-image,
+[data-theme="dark"] .skeleton-thumbnail,
+[data-theme="dark"] .skeleton-card,
+[data-theme="dark"] .skeleton-activity-chart {
+  animation: skeleton-loading-dark 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading-dark {
+  0% {
+    background-color: #2a2a2a;
+  }
+  100% {
+    background-color: #404040;
+  }
+}
+
+/* Hide v-calendar navigation buttons but keep month names */
+.vc-nav-arrow,
+.vc-arrows-container,
+.vc-arrow {
+  display: none !important;
+}
+
+.vc-weeks {
+  margin-top: 0 !important;
+}
+

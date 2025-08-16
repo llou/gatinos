@@ -4,7 +4,10 @@
     <div class="enlace-gato">
       <div class="marco-foto">
       {% if gato.retrato.miniatura %}
-        <img class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" src="{{ gato.retrato.miniatura.url }}">
+        <img class="galeria-gatos-miniatura {% if gato.retrato.es_fea %} fea{% endif %}" 
+             src="{{ gato.retrato.miniatura.url }}"
+             onload="this.style.opacity=1" 
+             style="opacity:0;transition:opacity 0.3s">
     {% else %}
       <div class="galeria-gatos-no-miniatura">No hay foto</div>
     {% endif %}
@@ -16,5 +19,21 @@
     {% endif %}
     </div>
 </a>
-{% empty %}No hay gatos{% endfor %}
+{% empty %}
+  <!-- Skeleton loaders when no cats are loaded yet -->
+  {% if show_skeleton %}
+    {% for i in "123456789" %}
+      <div class="enlace-gato">
+        <div class="marco-foto">
+          <div class="skeleton-thumbnail"></div>
+        </div>
+        <div class="enlace-gato-nombre">
+          <div class="skeleton-text" style="width: 100px; height: 1em;"></div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    No hay gatos
+  {% endif %}
+{% endfor %}
 </div>
