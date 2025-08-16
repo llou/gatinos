@@ -57,7 +57,11 @@ export function createCalendarApp(coloniaId) {
         coloniaId,
         selectedDate: new Date(),
         feedingDates: [],
-        loading: false
+        availableUsers: [],
+        currentUserId: null,
+        loading: false,
+        isAdmin: false,
+        calendarKey: 0
       }
     },
     async mounted() {
@@ -67,25 +71,48 @@ export function createCalendarApp(coloniaId) {
       async loadFeedingDates() {
         try {
           this.loading = true
-          const result = await makeRpcCall('get_feeding_dates', {
+          
+          // Load feeding dates
+          const datesResult = await makeRpcCall('get_feeding_dates', {
             colonia_id: this.coloniaId
           })
           
-          this.feedingDates = result.dates.map(dateInfo => ({
-            dates: new Date(dateInfo.date),
-            dot: {
-              color: dateInfo.color,
-              class: 'feeding-date',
-            },
-            popover: {
-              label: dateInfo.user,
-              visibility: 'hover',
-              hideIndicator: true,
-              isInteractive: false
-            }
-          }))
+          // Load available users and admin status
+          const usersResult = await makeRpcCall('get_colony_feeding_users', {
+            colonia_id: this.coloniaId
+          })
           
-          console.log('Loaded feeding dates:', this.feedingDates)
+          // Store admin status and current user
+          this.isAdmin = usersResult.is_admin || false
+          this.currentUserId = usersResult.current_user_id
+          this.availableUsers = usersResult.users || []
+          
+          // Process feeding dates with client-side color logic
+          this.feedingDates = datesResult.dates.map(dateInfo => {
+            // Determine color based on user
+            let color = null
+            if (dateInfo.user_id) {
+              color = dateInfo.user_id === this.currentUserId ? 'red' : 'blue'
+            }
+            
+            return {
+              dates: new Date(dateInfo.date),
+              dot: {
+                color: color,
+                class: 'feeding-date',
+              },
+              popover: {
+                label: dateInfo.full_name || dateInfo.username,
+                visibility: 'hover',
+                hideIndicator: true,
+                isInteractive: false
+              },
+              userId: dateInfo.user_id,
+              username: dateInfo.username,
+              fullName: dateInfo.full_name
+            }
+          })
+          
         } catch (error) {
           console.error('Error loading feeding dates:', error)
         } finally {
@@ -101,16 +128,47 @@ export function createCalendarApp(coloniaId) {
           this.formatDate(attr.dates) === dateStr
         )
         
-        const currentColor = currentAttribute ? currentAttribute.dot.color : null;
+        let targetUserId = null
+        
+        if (this.isAdmin) {
+          // Admin: cycle through users
+          
+          if (!currentAttribute || !currentAttribute.userId) {
+            // No assignment, assign first user
+            targetUserId = this.availableUsers.length > 0 ? this.availableUsers[0].id : null
+          } else {
+            // Find next user in cycle
+            const currentIndex = this.availableUsers.findIndex(u => u.id === currentAttribute.userId)
+            
+            if (currentIndex < 0 || currentIndex >= this.availableUsers.length) {
+              // Current user not in list (shouldn't happen), start with first user
+              targetUserId = this.availableUsers.length > 0 ? this.availableUsers[0].id : 0
+            } else if (currentIndex < this.availableUsers.length - 1) {
+              // Next user
+              targetUserId = this.availableUsers[currentIndex + 1].id
+            } else {
+              // At end of list, cycle back to unassigned (0)
+              targetUserId = 0
+            }
+          }
+        } else {
+          // Normal user: check if it's someone else's assignment
+          if (currentAttribute && currentAttribute.userId !== this.currentUserId) {
+            return
+          }
+          // Toggle self - let backend handle it
+          targetUserId = null
+        }
+        
         try {
           this.loading = true
-          const result = await makeRpcCall('toggle_feeding_date', {
+          const result = await makeRpcCall('set_feeding_assignment', {
             date_str: dateStr,
             colonia_id: this.coloniaId,
-            current_color: currentColor
+            user_id: targetUserId
           })
           
-          console.log('RPC result:', result)
+          console.log('RPC set feeding assignment:', result)
           
           // Update the feedingDates array
           const existingIndex = this.feedingDates.findIndex(attr => 
@@ -118,19 +176,25 @@ export function createCalendarApp(coloniaId) {
           )
           
           if (result.assigned) {
+            // Determine color based on user
+            console.log("Assigning to: ", result.username);
+            const color = result.user_id === this.currentUserId ? 'red' : 'blue'
+            
             const newAttribute = {
               dates: day.date,
               dot: {
-                color: result.color,
+                color: color,
                 class: 'feeding-date',
               },
               popover: {
-                label: result.user || 'Asignado',
+                label: result.username,
                 visibility: 'hover',
-                hideIndicator: true,
-                isInteractive: false
-              }
+              },
+              userId: result.user_id,
+              username: result.username,
+              fullName: result.full_name
             }
+
             
             if (existingIndex >= 0) {
               this.feedingDates[existingIndex] = newAttribute
@@ -144,9 +208,13 @@ export function createCalendarApp(coloniaId) {
             }
           }
           
+          // Force v-calendar to re-render by changing the key
+          this.calendarKey++
         } catch (error) {
           console.error('Error toggling feeding date:', error)
-          alert('Error al actualizar el calendario: ' + error.message)
+          if (error.message && error.message !== 'undefined') {
+            alert('Error al actualizar el calendario: ' + error.message)
+          }
         } finally {
           this.loading = false
         }
@@ -169,6 +237,7 @@ export function createCalendarApp(coloniaId) {
     template: `
       <div>
         <VCalendar 
+          :key="calendarKey"
           locale="es"
           :attributes="feedingDates"
           @dayclick="onDayClick"
