@@ -225,22 +225,22 @@ export default {
       return cellData
     })
     
-    // Get cell color based on activity count
+    // Get cell color based on activity count (blue/cyan theme)
     const getCellColor = (count) => {
       if (isDarkMode.value) {
-        // Dark mode colors (similar to GitHub dark theme)
+        // Dark mode colors (blue/cyan theme)
         if (count === 0) return '#161b22'
-        if (count === 1) return '#0e4429'
-        if (count === 2) return '#006d32'
-        if (count === 3) return '#26a641'
-        return '#39d353'
+        if (count === 1) return '#0e3a4a'
+        if (count === 2) return '#006d8f'
+        if (count === 3) return '#00a3cc'
+        return '#00d4ff'
       } else {
-        // Light mode colors
+        // Light mode colors (blue/cyan theme)
         if (count === 0) return '#ebedf0'
-        if (count === 1) return '#9be9a8'
-        if (count === 2) return '#40c463'
-        if (count === 3) return '#30a14e'
-        return '#216e39'
+        if (count === 1) return '#9be6ff'
+        if (count === 2) return '#40c4ff'
+        if (count === 3) return '#00a3cc'
+        return '#0078a3'
       }
     }
     
